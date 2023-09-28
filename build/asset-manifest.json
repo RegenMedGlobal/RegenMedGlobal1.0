@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/static/css/main.b8d2d326.css",
+    "main.js": "/static/js/main.2db4dbbe.js",
+    "static/media/newdnagif.gif": "/static/media/newdnagif.310ce8ce23511262c451.gif",
+    "static/media/logo.png": "/static/media/logo.2fd45552974af3e8dcaa.png",
+    "index.html": "/index.html",
+    "main.b8d2d326.css.map": "/static/css/main.b8d2d326.css.map",
+    "main.2db4dbbe.js.map": "/static/js/main.2db4dbbe.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b8d2d326.css",
+    "static/js/main.2db4dbbe.js"
+  ]
+}

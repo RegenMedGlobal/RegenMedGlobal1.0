@@ -1,0 +1,8 @@
+[build]
+  command = "npm install --force && npm run build"
+  environment = { NODE_OPTIONS = "--no-warnings" }
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
