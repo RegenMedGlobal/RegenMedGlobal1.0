@@ -46,14 +46,20 @@ const OptionWithCheckbox = (props) => (
 
 const ConditionsInput = ({
   control,
-  showConditionsDropdown,
   conditionRef,
   handleConditionSelect,
   terms,
   watch,
 }) => {
-  const selectRef = conditionRef; // Use the conditionRef prop as a ref
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
+ const selectRef = conditionRef; // Use the conditionRef prop as a ref
+  const [inputValue, setInputValue] = useState(""); // Track user input
+
+  // Handle input change and toggle menu visibility
+  const handleInputChange = (newValue) => {
+    setInputValue(newValue);
+  };
+  // Determine whether the menu should be open based on input value
+  const isMenuOpen = inputValue !== "";
 
   return (
     <StyledControllerContainer>
@@ -70,6 +76,8 @@ const ConditionsInput = ({
               components={{ Option: OptionWithCheckbox }}
               options={terms.map((term) => ({ value: term, label: term }))}
               {...field}
+              inputValue={inputValue}
+              onInputChange={handleInputChange}
               onChange={(selectedOptions) => {
                 console.log("Selected Options:", selectedOptions);
                 // Update your state variable with the selected options
@@ -79,9 +87,7 @@ const ConditionsInput = ({
               mode="tags"
               label="Conditions"
               ref={selectRef}
-              menuIsOpen={menuIsOpen}
-              onMenuOpen={() => setMenuIsOpen(true)}
-              onMenuClose={() => setMenuIsOpen(false)}
+              menuIsOpen={isMenuOpen} // Set menuIsOpen based on inputValue
               style={{ width: '25rem', marginTop: '1rem' }}
               placeholder="Select or type Conditions/Diseases treated" // Update the placeholder text
               onSelect={handleConditionSelect}
