@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useForm, Controller } from "react-hook-form";
 import Select, { components } from 'react-select';
 import { useState, useEffect, useRef } from "react";
+import CreatableSelect from 'react-select/creatable'; 
 
 
 const StyledControllerContainer = styled.div`
@@ -63,29 +64,31 @@ const ConditionsInput = ({
         control={control}
         render={({ field }) => (
           <div>
- <Select
-  isMulti
-  components={{ Option: OptionWithCheckbox }}
-  options={terms.map((term) => ({ value: term, label: term }))}
-  {...field}
-  onChange={(selectedOptions) => {
-    console.log("Selected Options:", selectedOptions);
-    // Update your state variable with the selected options
-    field.onChange(selectedOptions);
-  }}
-  value={watch('conditionsSuggestions')} // Ensure this reflects your selected options
-  mode="tags"
-  label="Conditions"
-  ref={selectRef}
-  menuIsOpen={menuIsOpen}
-  onMenuOpen={() => setMenuIsOpen(true)}
-  onMenuClose={() => setMenuIsOpen(false)}
-  style={{ width: '25rem', marginTop: '1rem' }}
-  placeholder="Select Your Conditions/Diseases treated"
-  onSelect={handleConditionSelect}
-  closeMenuOnSelect={false} // Prevent menu from closing on selection
-/>
-
+            {/* Replace the Select component with CreatableSelect */}
+            <CreatableSelect
+              isMulti
+              components={{ Option: OptionWithCheckbox }}
+              options={terms.map((term) => ({ value: term, label: term }))}
+              {...field}
+              onChange={(selectedOptions) => {
+                console.log("Selected Options:", selectedOptions);
+                // Update your state variable with the selected options
+                field.onChange(selectedOptions);
+              }}
+              value={watch('conditionsSuggestions')} // Ensure this reflects your selected options
+              mode="tags"
+              label="Conditions"
+              ref={selectRef}
+              menuIsOpen={menuIsOpen}
+              onMenuOpen={() => setMenuIsOpen(true)}
+              onMenuClose={() => setMenuIsOpen(false)}
+              style={{ width: '25rem', marginTop: '1rem' }}
+              placeholder="Select or type Conditions/Diseases treated" // Update the placeholder text
+              onSelect={handleConditionSelect}
+              closeMenuOnSelect={false} // Prevent menu from closing on selection
+              createOptionPosition="first" // Show newly created options at the top
+              formatCreateLabel={(inputValue) => `Create "${inputValue}"`} // Customize the label for creating a new option
+            />
           </div>
         )}
       />
