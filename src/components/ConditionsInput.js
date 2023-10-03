@@ -57,13 +57,13 @@ const ConditionsInput = ({
   return (
     <StyledControllerContainer>
       <label className="label-contact">Conditions Treated</label>
-      <p className="sublabel">Select up to five</p>
+      {/* <p className="sublabel">Select up to five</p> */}
       <Controller
         name="conditionsSuggestions"
         control={control}
         render={({ field }) => (
           <div>
-            <Select
+ <Select
   isMulti
   components={{ Option: OptionWithCheckbox }}
   options={terms.map((term) => ({ value: term, label: term }))}
@@ -83,7 +83,9 @@ const ConditionsInput = ({
   style={{ width: '25rem', marginTop: '1rem' }}
   placeholder="Select Your Conditions/Diseases treated"
   onSelect={handleConditionSelect}
+  closeMenuOnSelect={false} // Prevent menu from closing on selection
 />
+
           </div>
         )}
       />
