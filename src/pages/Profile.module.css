@@ -1,0 +1,141 @@
+
+/* Add a class to style the name field as a header */
+.headerName {
+  font-size: 24px; /* Adjust the font size as needed */
+  font-weight: bold;
+  margin-bottom: 8px; /* Add some margin below the header */
+  color: #333; /* Customize the text color */
+}
+
+
+/* Profile.module.css */
+.name-header {
+  font-size: 24px; /* Adjust the font size as needed */
+  font-weight: bold;
+  margin-bottom: 8px; /* Add margin to separate it from other fields */
+}
+
+
+/* Add styles for the profile field container */
+.profile-field-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* Style the icons */
+.profile-field-container .anticon {
+  margin-right: 8px;
+}
+
+
+
+.profile-field-container a:hover {
+  color: white;
+}
+
+/* Style the phone number */
+.profile-field-container .phone {
+  display: flex;
+  align-items: center;
+}
+
+.profile-field-container .phone .anticon {
+  margin-right: 4px;
+}
+
+
+/* Style the container for the profile card */
+.profile-card {
+  display: flex;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Style the profile header (Name) */
+.profile-header {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Style the profile name */
+.profile-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  margin-top: 16px;
+  color: var(--main-color);
+}
+
+/* Style the profile fields container */
+.profile-fields {
+  flex: 2;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Style the icons */
+.profile-fields .anticon {
+  margin-right: 4px;
+}
+
+/* Style the email and website links */
+.profile-fields a {
+  text-decoration: none;
+  color: var(--main-color);
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.profile-fields a:hover {
+  color: white;
+}
+
+/* Style the phone number */
+.profile-fields .phone {
+  display: flex;
+  align-items: center;
+}
+
+.profile-fields .phone .anticon {
+  margin-right: 4px;
+}
+/* Add this to your Profile.module.css */
+.profile-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 200px; /* Adjust the width as needed */
+  padding: 16px;
+  background-color: #f2f2f2;
+  border-right: 1px solid #ddd; /* Add a right border to separate the sidebar */
+}
+
+.profile-field-container {
+  margin-top: 16px;
+}
+
+
+.name-header,
+.contact-field {
+  background-color: transparent;
+  border: none !important;
+  box-shadow: none !important;
+  text-align: center; /* Center text horizontally */
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  height: 100%; /* Make the sidebar take the full height */
+  width: 25%; /* Adjust the width as needed */
+}
+
