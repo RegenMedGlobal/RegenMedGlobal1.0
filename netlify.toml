@@ -9,3 +9,6 @@
 
 [[plugins]]
   package = "@netlify/plugin-emails"
+
+  [build.environment]
+  CI = "false"
