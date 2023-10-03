@@ -4,9 +4,10 @@ import { useForm, Controller } from "react-hook-form";
 import styled from "styled-components";
 import { TextField, Button, Snackbar, MenuItem } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { states, countries, provinces, terms, EDGE_URL } from "../config";
+import { states, countries, provinces, EDGE_URL } from "../config";
 import { insertNewUser, isEmailAlreadyInDB } from "./insertNewUser";
 import insertErrorLog from "../functions/insertErrors";
+import { fetchTopSearches } from  "../functions/topSearches";
 import zxcvbn from "zxcvbn";
 import { Select } from "antd";
 import _ from "lodash"; // Import lodash
@@ -14,6 +15,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TextArea from "antd/es/input/TextArea";
 import axios from 'axios';
+import Confirmation from "../components/Confirmation";
+import ConditionsInput from "../components/ConditionsInput";
+import { terms } from "../config";
 
 const Container = styled.div`
   display: flex;
@@ -77,6 +81,7 @@ const Register = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [isStateDisabled, setIsStateDisabled] = useState(false);
+ // const [terms, setTerms] = useState([]); 
   const [selectedValue, setSelectedValue] = useState(""); // Add state for selected value
   const [selectedCountry, setSelectedCountry] = useState("United States");
   const {
@@ -101,6 +106,18 @@ const Register = () => {
   const [isEmailInDB, setisEmailInDB] = useState(false);
   const [fieldsVisibility, setFieldsVisibility] = useState(false)
   const [email, setEmail] = useState("")
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
+//  useEffect(() => {
+//     async function fetchData() {
+//       const topSearches = await fetchTopSearches();
+//       console.log('Top searches:', topSearches);
+//       setTerms(topSearches); // Update the terms state with the fetched data
+//     }
+
+//     fetchData();
+//   }, []);
+
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -225,6 +242,7 @@ const handleStateChange = (selectedState) => {
         // Data inserted successfully
         reset(); // Reset the form fields
         toast.success("Registration Successful. Thank you for signing up!");
+        setIsSubmitted(true)
       } else {
         // Data insertion failed
         toast.error("Registration Failed. Please try again.");
@@ -317,7 +335,7 @@ const handleStateChange = (selectedState) => {
       setValue("conditions", watch("conditions").concat(selectedOption));
     }
     setValue("conditionsSuggestions", []);
-    setShowConditionsDropdown(false);
+    //setShowConditionsDropdown(false);
   };
 
   return (
@@ -330,19 +348,9 @@ const handleStateChange = (selectedState) => {
             <div className="col-lg-12">
               <div className="form-all register-form">
 
-                <FormContainer>
-                  {/* Add ToastContainer at the top-level of the component */}
-                  <ToastContainer
-                    position="top-center"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                  />
+               {isSubmitted ? <Confirmation /> : (
+                 <FormContainer>
+             
 
                   {errorMessage && <p>{errorMessage}</p>}
                   <form onSubmit={(e) => handleSubmit(onSubmit)(e)}>
@@ -661,6 +669,7 @@ const handleStateChange = (selectedState) => {
                                   rules={{ required: "Country is required" }}
                                   render={({ field }) => (
                                     <TextField
+
                                       variant="outlined"
                                       style={{ width: "25rem" }}
                                       error={Boolean(errors.country)}
@@ -763,80 +772,7 @@ const handleStateChange = (selectedState) => {
                           </div>
                         </div>
 
-                        <div className="row">
-                          <div className="col-lg-12">
-                            <div className="mar-15">
-                              <label className="label-contact">Treatment Type(s) offered</label>
-                              <StyledControllerContainer>
-                                <Controller
-                                  name="treatments"
-                                  control={control}
-                                  defaultValue={[]}
-                                  rules={{
-                                    required: "At least one Treatment Type must be selected",
-                                  }}
-                                  render={({ field }) => (
-                                    <div>
-
-                                      <div className="flexmen">
-                                        <Button
-                                          variant={
-                                            field.value.includes("PRP") ? "contained" : "outlined"
-                                          }
-                                          color="primary"
-                                          onClick={() =>
-                                            handleTreatmentSelection(field.value, "PRP", field)
-                                          }
-                                          className={field.value.includes("PRP") ? " active " : ""}
-                                        >
-                                          PRP
-                                        </Button>
-                                        <Button
-                                          variant={
-                                            field.value.includes("Stem Cell")
-                                              ? "contained"
-                                              : "outlined"
-                                          }
-                                          className={field.value.includes("Stem Cell") ? " active " : ""}
-                                          color="primary"
-                                          onClick={() =>
-                                            handleTreatmentSelection(
-                                              field.value,
-                                              "Stem Cell",
-                                              field
-                                            )
-                                          }
-                                        >
-                                          Stem Cell Therapy
-                                        </Button>
-                                        <Button
-                                          variant={
-                                            field.value.includes("Prolotherapy")
-                                              ? "contained"
-                                              : "outlined"
-                                          }
-                                          className={field.value.includes("Prolotherapy") ? " active " : ""}
-                                          color="primary"
-                                          onClick={() =>
-                                            handleTreatmentSelection(
-                                              field.value,
-                                              "Prolotherapy",
-                                              field
-                                            )
-                                          }
-                                        >
-                                          Prolotherapy
-                                        </Button>
-                                      </div>
-                                      {/* Add more buttons for different treatments */}
-                                    </div>
-                                  )}
-                                />
-                                {errors.treatments && <p>{errors.treatments.message}</p>}
-                              </StyledControllerContainer>
-                            </div>
-                          </div>
-                        </div>
+                       
 
                         <div className="row">
                           <div className="col-lg-12">
@@ -868,43 +804,25 @@ const handleStateChange = (selectedState) => {
                         </div>
 
 
+
                         <div className="row">
                           <div className="col-lg-12">
                             <div className="mar-15-0 sero-rad">
-                              <StyledControllerContainer
-                                onMouseEnter={() => setShowConditionsDropdown(true)}
-                                onMouseLeave={() => setShowConditionsDropdown(false)}
-                              >
-                                <label className="label-contact">Conditions Treated</label>
-                                <Controller
-                                  name="conditionsSuggestions"
-                                  control={control}
-                                  render={({ field }) => (
-                                    <div>
-                                      <Select
-                                        mode="tags"
-                                        label="Conditions"
 
-                                        ref={conditionRef}
-                                        open={showConditionsDropdown}
-                                        style={{ width: "25rem", marginTop: "1rem" }}
-                                        placeholder="Select Your Conditions/Diseases treated"
-                                        {...field}
-                                        onChange={(e) => {
-                                          field.onChange(e);
-                                        }}
-                                        onSelect={handleConditionSelect}
-                                        value={watch("conditionsSuggestions")}
-                                        options={terms.map((term) => ({ value: term }))}
-                                      />
-                                    </div>
-                                  )}
-                                />
-                              </StyledControllerContainer>
-
+                             <ConditionsInput
+    control={control}
+    showConditionsDropdown={showConditionsDropdown}
+    conditionRef={conditionRef}
+    handleConditionSelect={handleConditionSelect}
+    terms={terms}
+    watch={watch}
+    //setShowConditionsDropdown={setShowConditionsDropdown} // Pass setShowConditionsDropdown as a prop
+  />
                             </div>
                           </div>
                         </div>
+
+
                         <div className="row">
                           <div className="col-lg-12">
                             <div className="mar-15 zer-radi">
@@ -933,59 +851,6 @@ const handleStateChange = (selectedState) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        {/* <div className="row">
-                      <div className="col-lg-12">
-                        <div className="mar-15">
-
-                          <StyledControllerContainer>
-                            <Controller
-                              name="confirmEmail"
-                              control={control}
-                              defaultValue=""
-                              rules={{
-                                required: "Confirm Email is required",
-                                validate: (value) =>
-                                  value === getValues("email") ||
-                                  "Email and Confirm Email must match",
-                              }}
-                              render={({ field }) => (
-                                <TextField
-                                  label="Confirm Email"
-                                  className="input-form"
-                                  variant="outlined"
-                                  style={{ width: "25rem" }}
-                                  fullWidth
-                                  error={Boolean(errors.confirmEmail)}
-                                  helperText={
-                                    errors.confirmEmail ? errors.confirmEmail.message : ""
-                                  }
-                                  {...field}
-                                />
-                              )}
-                            />
-                          </StyledControllerContainer>
-
-                        </div>
-                      </div>
-                    </div> */}
-
-
-
-
-
                         <div className="row">
                           <div className="col-lg-12">
                             <div className="mar-no">
@@ -999,6 +864,8 @@ const handleStateChange = (selectedState) => {
                   </form>
 
                 </FormContainer>
+               )
+               }
               </div>
 
             </div>
