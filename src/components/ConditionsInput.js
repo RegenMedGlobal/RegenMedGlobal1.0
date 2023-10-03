@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 import styled from "styled-components";
 import { useForm, Controller } from "react-hook-form";
@@ -51,15 +52,16 @@ const ConditionsInput = ({
   terms,
   watch,
 }) => {
- const selectRef = conditionRef; // Use the conditionRef prop as a ref
+  const selectRef = conditionRef; // Use the conditionRef prop as a ref
   const [inputValue, setInputValue] = useState(""); // Track user input
 
   // Handle input change and toggle menu visibility
   const handleInputChange = (newValue) => {
     setInputValue(newValue);
   };
-  // Determine whether the menu should be open based on input value
-  const isMenuOpen = inputValue !== "";
+
+  // Determine whether the menu should be open based on input value length
+  const isMenuOpen = inputValue.length >= 2;
 
   return (
     <StyledControllerContainer>
@@ -87,7 +89,7 @@ const ConditionsInput = ({
               mode="tags"
               label="Conditions"
               ref={selectRef}
-              menuIsOpen={isMenuOpen} // Set menuIsOpen based on inputValue
+              menuIsOpen={isMenuOpen} // Set menuIsOpen based on input value length
               style={{ width: '25rem', marginTop: '1rem' }}
               placeholder="Select or type Conditions/Diseases treated" // Update the placeholder text
               onSelect={handleConditionSelect}
