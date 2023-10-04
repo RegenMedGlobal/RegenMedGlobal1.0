@@ -1,6 +1,6 @@
 [build]
   command = "npm install --force && npm run build"
-  environment = { NODE_OPTIONS = "--no-warnings" }
+  environment = { NODE_OPTIONS = "--no-warnings", CI = "false" }
 
 [[redirects]]
   from = "/*"
@@ -9,6 +9,3 @@
 
 [[plugins]]
   package = "@netlify/plugin-emails"
-
-  [build.environment]
-  CI = "false"
