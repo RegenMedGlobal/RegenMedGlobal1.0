@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { Layout, Input, Button, Form, AutoComplete } from "antd";
@@ -19,6 +19,7 @@ import Faq from "../components/Faq";
 import ContactForm from "../components/ContactForm";
 import Contact from "./Contact";
 import Services from "./Services";
+import { getConditions } from  "../functions/getConditions";
 
 
 const questions = [
@@ -62,21 +63,40 @@ const Main = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+   const [conditions, setConditions] = useState([]);
 
   const [options, setOptions] = useState([]);
   // Define suggestions state
   const [suggestions, setSuggestions] = useState([]);
 
-  const handleSearch = useCallback((value) => {
-    const filterTerm = value.trim(); // Trim any leading or trailing whitespace
-    setSearchTerm(filterTerm);
+const handleSearch = useCallback((value) => {
+  const filterTerm = value.trim(); // Trim any leading or trailing whitespace
+  console.log("Filter Term:", filterTerm); // Log filterTerm
+  setSearchTerm(filterTerm);
 
-    const filteredOptions = terms
-      .filter((term) => term.toLowerCase().includes(filterTerm.toLowerCase()))
-      .map((term) => ({ value: term }));
+  const filteredOptions = conditions
+    .filter((condition) => {
+      const lowercasedCondition = condition.toLowerCase();
+      const includesFilterTerm = lowercasedCondition.includes(filterTerm.toLowerCase());
+      console.log(`Checking: ${condition}, Includes Filter Term: ${includesFilterTerm}`); // Log condition check
+      return includesFilterTerm;
+    })
+    .map((condition) => ({ value: condition }));
 
-    setOptions(filteredOptions);
-  }, []);
+  console.log("Filtered Options:", filteredOptions); // Log filteredOptions
+  setOptions(filteredOptions);
+}, [conditions]);
+
+
+  useEffect(() => {
+  const fetchConditions = async () => {
+    const conditionsData = await getConditions();
+    setConditions(conditionsData);
+  };
+
+  fetchConditions();
+}, []);
+
 
   const handleSubmit = () => {
     form
@@ -205,13 +225,15 @@ const Main = () => {
                       </li>
                       <li>
                         <img src={imgVector} className="vec-1" alt="" />
-                        <AutoComplete
-                          style={{ width: "70vw", maxWidth: "450px", height: "50px" }}
-                          options={options}
-                          onSelect={(value) => setSearchTerm(value)}
-                          onSearch={handleSearch}
-                          placeholder="Medical condition (optional)"
-                        />
+<AutoComplete
+  style={{ width: "70vw", maxWidth: "450px", height: "50px" }}
+  options={options} // Ensure that it uses the updated options
+  onSelect={(value) => setSearchTerm(value)}
+  onSearch={handleSearch}
+  placeholder="Medical condition (optional)"
+/>
+
+
                       </li>
 
                       <li>

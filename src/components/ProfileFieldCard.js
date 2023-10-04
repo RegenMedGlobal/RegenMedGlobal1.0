@@ -202,10 +202,10 @@ const handleTreatmentButtonClick = (option) => {
 
 
 
-  const shouldDisplayLabel = (fieldName) => {
-    // Determine whether to display a label based on the field name
-    return !["name", "email", "phone"].includes(fieldName);
-  };
+const shouldDisplayLabel = (fieldName) => {
+  // Determine whether to display a label based on the field name and edit mode
+  return !["name", "email", "phone", "website"].includes(fieldName) || editMode;
+};
 
   return (
     <CardContainer>

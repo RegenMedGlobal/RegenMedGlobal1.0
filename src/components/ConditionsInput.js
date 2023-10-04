@@ -65,7 +65,7 @@ const ConditionsInput = ({
 
   return (
     <StyledControllerContainer>
-      <label className="label-contact">Conditions Treated</label>
+      <label className="label-contact">Conditions/Specialties</label>
       {/* <p className="sublabel">Select up to five</p> */}
       <Controller
         name="conditionsSuggestions"
@@ -91,7 +91,7 @@ const ConditionsInput = ({
               ref={selectRef}
               menuIsOpen={isMenuOpen} // Set menuIsOpen based on input value length
               style={{ width: '25rem', marginTop: '1rem' }}
-              placeholder="Select or type Conditions/Diseases treated" // Update the placeholder text
+              placeholder="Type or select Conditions/Specialities" // Update the placeholder text
               onSelect={handleConditionSelect}
               closeMenuOnSelect={false} // Prevent menu from closing on selection
               createOptionPosition="first" // Show newly created options at the top

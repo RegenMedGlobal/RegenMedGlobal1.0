@@ -34,6 +34,18 @@ const Container = styled.div`
 const StyledControllerContainer = styled.div`
   margin-bottom: 1rem;
 
+  /* Added border styles for all input fields */
+  input,
+  select,
+  textarea,
+  && .MuiSelect-root
+   {
+    width: 100%;
+    border: 1px solid #ccc; /* Add border styles here */
+    border-radius: 4px; /* Add border radius if desired */
+    padding: 10px;
+  }
+
   /* Added styles for positioning */
   position: relative;
   z-index: 0;
@@ -42,6 +54,22 @@ const StyledControllerContainer = styled.div`
   .country-dropdown-container {
     position: relative;
     z-index: 9999;
+  }
+
+ .dropdown-element {
+  width: 100% !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  padding: 10px !important;
+}
+
+  
+  /* Added styles for Material-UI Select component */
+  .MuiOutlinedInput-input.MuiSelect-root {
+    width: 100%;
+    border: 1px solid #ccc; /* Add border styles here */
+    border-radius: 4px; /* Add border radius if desired */
+    padding: 10px;
   }
 
   /* Added styles for dropdown menu */
@@ -75,6 +103,7 @@ const Title = styled.h3`
   text-align: center;
   margin-bottom: 20px;
 `;
+
 
 const Register = () => {
 
@@ -113,6 +142,12 @@ const Register = () => {
   const [isSubmitted, setIsSubmitted] = useState(false)
 
   const [conditions, setConditions] = useState([]);
+
+  const inputFieldStyle = {
+  width: "25rem",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+};
 
 useEffect(() => {
   const fetchConditions = async () => {
@@ -386,7 +421,7 @@ const handleStateChange = (selectedState) => {
                                 <TextField
 
                                   variant="outlined"
-                                  style={{ width: "25rem" }}
+                        style={inputFieldStyle}
                                   error={Boolean(errors.clinicName)}
                                   helperText={
                                     errors.clinicName ? errors.clinicName.message : ""
@@ -427,7 +462,7 @@ const handleStateChange = (selectedState) => {
                                     value={email}
                                     className="input-text"
                                     variant="outlined"
-                                    style={{ width: "25rem" }}
+                                   style={inputFieldStyle}
                                     error={Boolean(errors.email)}
                                     helperText={errors.email ? errors.email.message : ""}
                                     {...field}
@@ -478,7 +513,7 @@ const handleStateChange = (selectedState) => {
                                   render={({ field }) => (
                                     <TextField
                                       variant="outlined"
-                                      style={{ width: "25rem" }}
+                                     style={inputFieldStyle}
                                       error={Boolean(errors.password)}
                                       helperText={errors.password ? errors.password.message : ""}
                                       {...field}
@@ -516,7 +551,7 @@ const handleStateChange = (selectedState) => {
                                   render={({ field }) => (
                                     <TextField
                                       variant="outlined"
-                                      style={{ width: "25rem" }}
+                                      style={inputFieldStyle}
                                       fullWidth
                                       error={Boolean(errors.confirmPassword)}
                                       helperText={
@@ -547,7 +582,7 @@ const handleStateChange = (selectedState) => {
                                   render={({ field }) => (
                                     <TextField
                                       variant="outlined"
-                                      style={{ width: "25rem" }}
+                                       style={inputFieldStyle}
                                       error={Boolean(errors.address)}
                                       helperText={errors.address ? errors.address.message : ""}
                                       {...field}
@@ -578,7 +613,7 @@ const handleStateChange = (selectedState) => {
                                   render={({ field }) => (
                                     <TextField
                                       variant="outlined"
-                                      style={{ width: "25rem" }}
+                                     style={inputFieldStyle}
                                       error={Boolean(errors.city)}
                                       helperText={errors.city ? errors.city.message : ""}
                                       {...field}
@@ -613,7 +648,7 @@ const handleStateChange = (selectedState) => {
                 render={({ field }) => (
                   <TextField
                     variant="outlined"
-                    style={{ width: "25rem" }}
+                       style={inputFieldStyle}
                     error={Boolean(errors.state)}
                     helperText={errors.state ? errors.state.message : ""}
                     select
@@ -657,8 +692,7 @@ const handleStateChange = (selectedState) => {
                                   rules={{ required: "Zip is required" }}
                                   render={({ field }) => (
                                     <TextField
-                                      variant="outlined"
-                                      style={{ width: "25rem" }}
+                                      style={inputFieldStyle}
                                       error={Boolean(errors.zip)}
                                       helperText={errors.zip ? errors.zip.message : ""}
                                       {...field}
@@ -685,9 +719,9 @@ const handleStateChange = (selectedState) => {
                                   rules={{ required: "Country is required" }}
                                   render={({ field }) => (
                                     <TextField
-
+                                    className="dropdown-element"
                                       variant="outlined"
-                                      style={{ width: "25rem" }}
+                                      style={inputFieldStyle}
                                       error={Boolean(errors.country)}
                                       helperText={errors.country ? errors.country.message : ""}
                                       select
@@ -740,7 +774,7 @@ const handleStateChange = (selectedState) => {
                                   render={({ field }) => (
                                     <TextField
                                       variant="outlined"
-                                      style={{ width: "25rem" }}
+                                    style={inputFieldStyle}
                                       error={Boolean(errors.phone)}
                                       helperText={errors.phone ? errors.phone.message : ""}
                                       {...field}
@@ -766,7 +800,7 @@ const handleStateChange = (selectedState) => {
                                     <TextField
 
                                       variant="outlined"
-                                      style={{ width: "25rem" }}
+                                      style={inputFieldStyle}
                                       rules={{
                                         pattern: {
                                           value: /^(ftp|http|https):\/\/[^ "]+$/,
@@ -801,9 +835,8 @@ const handleStateChange = (selectedState) => {
                                   defaultValue=""
                                   render={({ field }) => (
                                     <TextArea
-
                                       variant="outlined"
-                                      style={{ width: "25rem" }}
+                                       style={inputFieldStyle}
                                       error={Boolean(errors.description)}
                                       helperText={errors.description ? errors.description.message : ""}
                                       {...field}
@@ -845,7 +878,7 @@ const handleStateChange = (selectedState) => {
                           </div>
                         </div>
 
-
+{/* 
                         <div className="row">
                           <div className="col-lg-12">
                             <div className="mar-15 zer-radi">
@@ -870,7 +903,7 @@ const handleStateChange = (selectedState) => {
                               </StyledControllerContainer>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
 
 
 

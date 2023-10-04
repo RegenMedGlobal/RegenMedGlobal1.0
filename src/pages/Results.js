@@ -17,8 +17,9 @@ import Result from "./Result";
 import ResultsMap from "./ResultsMap";
 import Sort from "./Sort";
 import getData from "./getData";
-import { terms, MAPBOX_TOKEN } from "../config";
+import {  MAPBOX_TOKEN } from "../config";
 import geocodeCity from "../functions/geoCodeCity";
+import { getConditions } from  "../functions/getConditions";
 
 const StyledForm = styled(Form)`
   width: 40%;
@@ -110,34 +111,33 @@ const Results = () => {
     radius: "",
   });
 
-  const [options, setOptions] = useState([]);
+  //const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [address, setAddress] = useState(state?.location ?? "");
   const [addressss, setAddressss] = useState(state?.location ?? "");
   const [userLocation, setUserLocation] = useState(null);
   const [filterCoordinates, setFilterCoordinates] = useState(null);
   const [percent, setPercent] = useState(0);
+    const [conditions, setConditions] = useState([]);
 
   const [showSuggestions, setShowSuggestions] = useState(false);
 
 
-  // modify sakib
-  // const handleSuggestionClick = (suggestion, event) => {
-  //   event.stopPropagation(); // Stop event propagation
-
-  //   const filterTerm = suggestion.value.toString(); // Convert to string
-  //   setSearchTerm(filterTerm.toLowerCase());
-  //   console.log(`search term: ${searchTerm}`);
-  // };
-
-  // const handleUseCurrentLocationChange = (event) => {
-  //   setUseCurrentLocation(event.target.checked);
-  // };
-
-  const handleSearch = (value) => {
-    setFilterTerm(value);
-    setOptions(getFilteredOptions(value));
+  useEffect(() => {
+  const fetchConditions = async () => {
+    const conditionsData = await getConditions();
+    setConditions(conditionsData);
   };
+
+  fetchConditions();
+}, []);
+
+const handleSearch = useCallback((value) => {
+  setFilterTerm(value);
+  console.log("Condition Search Term:", value);
+}, []);
+
+
 
   const handleAddressChange = async (value) => {
     setAddress(value);
@@ -271,13 +271,13 @@ const Results = () => {
     }
   };
 
-  const getFilteredOptions = (value) => {
-    const filterTerm = value.trim().toLowerCase();
-    const filteredOptions = terms.filter((term) =>
-      term.toLowerCase().includes(filterTerm)
-    );
-    return filteredOptions.map((label) => ({ value: label }));
-  };
+ // Replace the getFilteredOptions function with this simplified version
+const getFilteredConditions = (value) => {
+  const filterTerm = value.trim().toLowerCase();
+  return conditions.filter((condition) =>
+    condition.toLowerCase().includes(filterTerm)
+  );
+};
 
 
 
@@ -473,12 +473,14 @@ const Results = () => {
 
             <h4 className="search-top">Condition (Optional)</h4>
             <AutoComplete
-              style={{ width: "100%", margin: "0 auto" }}
-              value={filterTerm}
-              options={getFilteredOptions(filterTerm)}
-              onChange={handleSearch}
-              placeholder="Search medical conditions"
-            />
+  style={{ width: "100%", margin: "0 auto" }}
+  value={filterTerm}
+  options={getFilteredConditions(filterTerm).map((condition) => ({
+    value: condition,
+  }))}
+  onChange={handleSearch}
+  placeholder="Search medical conditions"
+/>
 
             <div className="mar-test"></div>
 
@@ -575,7 +577,5 @@ const Results = () => {
 };
 
 export default Results;
-
-
 
 
