@@ -38,14 +38,9 @@ export const Sidebar = styled.div`
   flex-direction: column;
   border-radius: 8px; // Add border-radius for a modern look
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); // Add shadow for depth
-  height: 80%;
+  height: ${sidebarHeight};
   position: sticky;
-
-  @media (max-width: 768px) {
-    width: ${sidebarWidth}; // Full width on small screens
-  }
 `;
-
 
 export const Content = styled.div`
   flex: 3;
@@ -53,7 +48,6 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
 `;
 
 export const Card = styled.section`
@@ -61,13 +55,10 @@ export const Card = styled.section`
   border-radius: 8px;
   font-family: 'Arial', sans-serif;
   margin: 2% auto; /* Adjust the margin-top and margin-bottom to move the card */
-  width: 60%;
+  width: 100%; /* Cards take full width on smaller screens */
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
 `;
-
-
 
 export const ProfileHeader = styled.div`
   display: flex;
@@ -107,7 +98,6 @@ export const ProfileWrapper = styled.div`
 
   @media (min-width: 768px) {
     flex-direction: row;
-    margin-left: 2rem;
   }
 `;
 
@@ -115,18 +105,12 @@ export const MapContainer = styled.div`
   flex: 1;
   margin-right: 2rem;
   margin-bottom: 2rem;
-
-  @media (min-width: 768px) {
-    margin-right: 0;
-    margin-bottom: 0;
-  }
 `;
 
 export const CardContainer = styled.div`
   margin-bottom: 16px;
+  width: 100%; /* Cards take full width on smaller screens */
 `;
-
-
 
 export const StyledContactSection = styled.div`
   padding: 20px;
@@ -141,21 +125,15 @@ export const ContactHeader = styled.h2`
   margin-bottom: 1rem;
   text-align: center;
   width: 100%;
-
-  @media (min-width: 768px) {
-    width: 100%;
-  }
 `;
 
 export const NameCard = styled(CardContainer)`
   margin-bottom: 16px;
-
-  @media (min-width: 768px) {
-    width: 100%;
-  }
+  width: 100%;
 `;
 
 export const ConditionsContainer = styled.section`
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap; /* Wrap conditions to new line on smaller screens */
 `;

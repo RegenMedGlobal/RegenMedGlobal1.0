@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { TextField, Button, Snackbar, MenuItem } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { states, countries, provinces, EDGE_URL } from "../config";
-import { insertNewUser, isEmailAlreadyInDB } from "./insertNewUser";
+import { insertNewUser, isEmailAlreadyInDB } from "../functions/insertNewUser";
 import insertErrorLog from "../functions/insertErrors";
 import { getConditions } from  "../functions/getConditions";
 import zxcvbn from "zxcvbn";
@@ -31,6 +31,7 @@ const Container = styled.div`
   color: var(--main-color);
   padding: 20px;
 `;
+
 const StyledControllerContainer = styled.div`
   margin-bottom: 1rem;
 
@@ -38,8 +39,7 @@ const StyledControllerContainer = styled.div`
   input,
   select,
   textarea,
-  && .MuiSelect-root
-   {
+  && .MuiSelect-root {
     width: 100%;
     border: 1px solid #ccc; /* Add border styles here */
     border-radius: 4px; /* Add border radius if desired */
@@ -56,14 +56,13 @@ const StyledControllerContainer = styled.div`
     z-index: 9999;
   }
 
- .dropdown-element {
-  width: 100% !important;
-  border: 1px solid #ccc !important;
-  border-radius: 4px !important;
-  padding: 10px !important;
-}
+  .dropdown-element {
+    width: 100% !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    padding: 10px !important;
+  }
 
-  
   /* Added styles for Material-UI Select component */
   .MuiOutlinedInput-input.MuiSelect-root {
     width: 100%;
@@ -85,19 +84,17 @@ const StyledControllerContainer = styled.div`
 
 const FormContainer = styled.div`
   width: 100%;
-  max-width: 600px; /* Set the maximum width for the form */
+  max-width: 600px;
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  text-align: center; /* Add this line to center the form */
+  text-align: center;
 
   @media screen and (max-width: 768px) {
-    padding: 20px; /* Adjust padding for mobile devices */
+    padding: 20px;
   }
 `;
-
-
 
 const Title = styled.h3`
   text-align: center;

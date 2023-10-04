@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { Layout, Input, Button, Form, AutoComplete } from "antd";
-import insertTopSearch from "./insertTopSearch";
+import insertTopSearch from  "../functions/insertTopSearch";
 import axios from "axios";
 import { terms, MAPBOX_TOKEN } from "../config";
 import imgHeroBG from "../assets/hero-bg.png";

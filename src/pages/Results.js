@@ -16,7 +16,7 @@ import styled from "styled-components";
 import Result from "./Result";
 import ResultsMap from "./ResultsMap";
 import Sort from "./Sort";
-import getData from "./getData";
+import getData from "../functions/getData";
 import {  MAPBOX_TOKEN } from "../config";
 import geocodeCity from "../functions/geoCodeCity";
 import { getConditions } from  "../functions/getConditions";

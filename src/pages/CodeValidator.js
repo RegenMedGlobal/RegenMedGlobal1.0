@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import styled from "styled-components";
@@ -7,9 +7,7 @@ import { TextField, Button, Snackbar, MenuItem } from "@mui/material";
 import zxcvbn from "zxcvbn";
 import { EDGE_URL } from "../config";
 import axios from 'axios';
-import { resetPassword } from "./insertNewUser";
-import { AuthContext } from '../AuthContext';
-
+import { resetPassword }  from  "../functions/insertNewUser";
 
 
 const FormContainer = styled.div`
@@ -54,7 +52,6 @@ const StyledControllerContainer = styled.div`
 const CodeValidator = () => {
 
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
 
     const {
         watch,
@@ -117,13 +114,10 @@ const CodeValidator = () => {
             reset(); // Reset the form fields
             setIsResetted(true)
             // toast.success();
-            const resp = {
-                userId: id
-            };
-            login({ userData: JSON.stringify(resp), id });
-            // Redirect to the user's profile page
-            const userData = { ...resp, loggedIn: true };
-            navigate(`/profile/${id}`, { state: userData });
+            // setTimeout(()=> {
+            //     navigate('/DoctorLogin')
+            // }, 1000)
+
             
         }
 

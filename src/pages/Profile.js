@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
-import getProfile from "./getProfile";
+import getProfile from "../functions/getProfile";
 import updateData from "./updateData";
 import { Typography, Button } from 'antd';
 import ProfileFieldCard from "../components/ProfileFieldCard";

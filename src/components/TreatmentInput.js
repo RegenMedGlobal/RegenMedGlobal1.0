@@ -24,6 +24,13 @@ const StyledControllerContainer = styled.div`
     z-index: 99999;
     margin-top: 4px;
   }
+
+  /* Media query for mobile */
+  @media (max-width: 768px) {
+    .flexmen {
+      flex-direction: column; /* Stack buttons vertically */
+    }
+  }
 `;
 
 const TreatmentInput = ({ control, errors, field, handleTreatmentSelection }) => {
@@ -42,7 +49,7 @@ const TreatmentInput = ({ control, errors, field, handleTreatmentSelection }) =>
               }}
               render={({ field }) => (
                 <div>
-                  <div className="flexmen">
+                  <div className="flexmen"> {/* Updated className */}
                     <Button
                       variant={field.value.includes("PRP") ? "contained" : "outlined"}
                       color="primary"
