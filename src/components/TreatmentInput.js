@@ -1,4 +1,30 @@
+import styled from "styled-components";
 import { Button } from 'antd'
+import { useForm, Controller } from 'react-hook-form';
+
+const StyledControllerContainer = styled.div`
+  margin-bottom: 1rem;
+
+  /* Added styles for positioning */
+  position: relative;
+  z-index: 0;
+
+  /* Added styles for dropdown container */
+  .country-dropdown-container {
+    position: relative;
+    z-index: 9999;
+  }
+
+  /* Added styles for dropdown menu */
+  .react-dropdown-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 99999;
+    margin-top: 4px;
+  }
+`;
 
 const TreatmentInput = ({ control, errors, field, handleTreatmentSelection }) => {
   return (
