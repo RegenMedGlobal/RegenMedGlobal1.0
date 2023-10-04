@@ -7,7 +7,7 @@ import MuiAlert from "@mui/material/Alert";
 import { states, countries, provinces, EDGE_URL } from "../config";
 import { insertNewUser, isEmailAlreadyInDB } from "./insertNewUser";
 import insertErrorLog from "../functions/insertErrors";
-import { fetchTopSearches } from  "../functions/topSearches";
+import { getConditions } from  "../functions/getConditions";
 import zxcvbn from "zxcvbn";
 import { Select } from "antd";
 import _ from "lodash"; // Import lodash
@@ -18,6 +18,10 @@ import axios from 'axios';
 import Confirmation from "../components/Confirmation";
 import ConditionsInput from "../components/ConditionsInput";
 import { terms } from "../config";
+import TreatmentInput from "../components/TreatmentInput";
+
+
+
 
 const Container = styled.div`
   display: flex;
@@ -107,6 +111,18 @@ const Register = () => {
   const [fieldsVisibility, setFieldsVisibility] = useState(false)
   const [email, setEmail] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const [conditions, setConditions] = useState([]);
+
+useEffect(() => {
+  const fetchConditions = async () => {
+    const conditionsData = await getConditions();
+    setConditions(conditionsData);
+  };
+
+  fetchConditions();
+}, []);
+
 
 //  useEffect(() => {
 //     async function fetchData() {
@@ -803,21 +819,28 @@ const handleStateChange = (selectedState) => {
                           </div>
                         </div>
 
+                        <TreatmentInput
+  control={control}
+  errors={errors}
+  field={watch("treatments")} // Pass the value of "treatments" field
+  handleTreatmentSelection={handleTreatmentSelection}
+/>
+
 
 
                         <div className="row">
                           <div className="col-lg-12">
                             <div className="mar-15-0 sero-rad">
 
-                             <ConditionsInput
-    control={control}
-    showConditionsDropdown={showConditionsDropdown}
-    conditionRef={conditionRef}
-    handleConditionSelect={handleConditionSelect}
-    terms={terms}
-    watch={watch}
-    //setShowConditionsDropdown={setShowConditionsDropdown} // Pass setShowConditionsDropdown as a prop
-  />
+<ConditionsInput
+  control={control}
+  showConditionsDropdown={showConditionsDropdown}
+  conditionRef={conditionRef}
+  handleConditionSelect={handleConditionSelect}
+  terms={conditions} // Pass the conditions array
+  watch={watch}
+  //setShowConditionsDropdown={setShowConditionsDropdown} // Pass setShowConditionsDropdown as a prop
+/>
                             </div>
                           </div>
                         </div>
