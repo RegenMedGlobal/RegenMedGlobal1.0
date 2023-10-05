@@ -11,18 +11,21 @@ import imgCombined from "../assets/Combined-Shape.png";
 import imgPro2 from "../assets/pro-2.png";
 import imgPro1 from "../assets/pro-1.png";
 import imgPro3 from "../assets/pro-3.png";
-import imgPro4 from "../assets/pro-4.png";
-import imgEli1 from "../assets/eli.png"
-import imgEli2 from "../assets/eli-2.png"
-import imgEli3 from "../assets/eli-3.png"
+
 import Faq from "../components/Faq";
 import ContactForm from "../components/ContactForm";
 import Contact from "./Contact";
 import Services from "./Services";
 import { getConditions } from  "../functions/getConditions";
 import debounce from 'lodash/debounce';
+import Downshift from "downshift";
 
-
+const CustomAutoComplete = styled(AutoComplete)`
+  .custom-dropdown {
+    margin-top: 10px; /* Adjust the margin-top as needed to prevent overlap */
+    border: 2px solid red;
+  }
+`;
 
 const StyledErrorMessage = styled.div`
   color: red;
@@ -45,18 +48,18 @@ const Main = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
-// Create a debounced version of handleSearch
-const debouncedHandleSearch = debounce((value) => {
-  if (value.trim().length >= 3) {
-    handleSearch(value);
-  }
-}, 300);
+// // Create a debounced version of handleSearch
+// const debouncedHandleSearch = debounce((value) => {
+//   if (value.trim().length >= 3) {
+//     handleSearch(value);
+//   }
+// }, 300);
 
-useEffect(() => {
-  if (searchTerm.trim().length >= 3) {
-    debouncedHandleSearch(searchTerm);
-  }
-}, [searchTerm]);
+// useEffect(() => {
+//   if (searchTerm.trim().length >= 3) {
+//     debouncedHandleSearch(searchTerm);
+//   }
+// }, [searchTerm]);
 
 
 
@@ -64,14 +67,21 @@ const handleSearch = useCallback(async (value) => {
   const filterTerm = value.trim();
   setSearchTerm(filterTerm);
 
-  try {
-    const conditionsData = await getConditions(filterTerm); // Pass the filter term
-    const filteredOptions = conditionsData.map((condition) => ({ value: condition }));
-    setOptions(filteredOptions);
-  } catch (error) {
-    console.error('Error fetching conditions:', error);
+  if (filterTerm.length >= 3) {
+    try {
+      const conditionsData = await getConditions(filterTerm); // Pass the filter term
+      const filteredOptions = conditionsData.map((condition) => ({ value: condition }));
+      setOptions(filteredOptions);
+    } catch (error) {
+      console.error('Error fetching conditions:', error);
+    }
+  } else {
+    // Clear the options when the input length is less than 3 characters
+    setOptions([]);
   }
 }, []);
+
+
 
   useEffect(() => {
   const fetchConditions = async () => {
@@ -118,6 +128,7 @@ const handleSearch = useCallback(async (value) => {
   };
 
   const handleAddressChange = async (value) => {
+    console.log("value from handleAddressChange: ", value)
     setAddress(value);
 
     try {
@@ -137,6 +148,7 @@ const handleSearch = useCallback(async (value) => {
       );
 
       setSuggestions(usCities);
+      console.log('suggestions: ', suggestions)
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     }
@@ -162,8 +174,6 @@ const handleSearch = useCallback(async (value) => {
       ? { color: "white", backgroundColor: "var(--main-color)" }
       : {};
   };
-
-  console.log("Render options:", options);
 
   return (
     <Layout>
@@ -196,28 +206,130 @@ const handleSearch = useCallback(async (value) => {
                   <ul className="banner-ul">
                       <li>
                         <img src={imgCombined} className="vec-1" alt="" />
-                        <AutoComplete
-                          style={{ width: "70vw", maxWidth: "300px", height: "50px", marginLeft: '4rem' }}
-                          value={address}
-                          onSelect={(value) => setAddress(value)}
-                          onSearch={handleAddressChange}
-                          placeholder="Enter a location..."
-                          options={suggestions.map((suggestion) => ({
-                            label: suggestion.place_name,
-                            value: suggestion.place_name,
-                          }))}
-                        />
+                 <Downshift
+  inputValue={address}
+  onInputValueChange={(inputValue) => {
+    console.log("Input Value:", inputValue);
+    handleAddressChange(inputValue);
+  }}
+  itemToString={(item) => (item ? item.label : "")}
+   onSelect={(selectedItem) => {
+    setAddress(selectedItem.place_name); // Update the input value
+  }}
+  onStateChange={(state) => {
+    console.log("Downshift State:", state);
+  }}
+>
+  {({
+    getInputProps,
+    getItemProps,
+    getMenuProps,
+    isOpen,
+    highlightedIndex,
+  }) => (
+    <div>
+      <Input
+  {...getInputProps({
+    placeholder: "Enter a location...",
+    style: {
+      width: "80%",
+            maxWidth: "450px",
+            height: "50px",
+            marginLeft: "4rem",
+    },
+  })}
+/>
+      {isOpen && (
+        <div {...getMenuProps()}>
+          {suggestions.map((suggestion, index) => (
+            <div
+              {...getItemProps({
+                key: suggestion.place_name,
+                index,
+                item: suggestion,
+                style: {
+                  backgroundColor:
+                    highlightedIndex === index ? "#f0f0f0" : "white",
+                },
+                onClick: () => {
+                  // Handle the click event here
+                  setAddress(suggestion.place_name); // Update the input value with the full suggestion
+                },
+              })}
+            >
+              {suggestion.place_name}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+</Downshift>
+
                       </li>
                       <li>
                         <img src={imgVector} className="vec-1" alt="" />
-<AutoComplete
-  style={{ width: "70vw", maxWidth: "450px", height: "50px" }}
-  options={options} // Ensure that it uses the updated options
-  onSelect={(value) => setSearchTerm(value)}
-  onSearch={debouncedHandleSearch}
-  placeholder="Medical condition (optional)"
+<Downshift
+  inputValue={searchTerm}
+  onInputValueChange={(inputValue) => {
+    console.log("Input Value:", inputValue);
+    setSearchTerm(inputValue);
+     if (!inputValue) {
+      // Handle the case when inputValue is empty (backspace pressed)
+      setSearchTerm(""); // Clear the search term
+    }
+    // Call handleSearch here
+    handleSearch(inputValue);
+  }}
+  itemToString={(item) => (item ? item.value : "")}
+  onSelect={(selectedItem) => {
+    setSearchTerm(selectedItem.value); // Update the input value
+  }}
+  onStateChange={(state) => {
+    console.log("Downshift State:", state);
+  }}
+>
+  {({
+    getInputProps,
+    getItemProps,
+    getMenuProps,
+    isOpen,
+    highlightedIndex,
+  }) => (
+    <div>
+      <Input
+  {...getInputProps({
+    placeholder: "Enter a location...",
+    style: {
+     width: "80%",
+            maxWidth: "450px",
+            height: "50px",
+            marginLeft: "4rem",
+    },
+  })}
 />
-
+      {isOpen && (
+        <div {...getMenuProps()}>
+          {options.map((option, index) => (
+            <div
+              {...getItemProps({
+                key: option.value,
+                index,
+                item: option,
+                style: {
+                  backgroundColor:
+                    highlightedIndex === index ? "#f0f0f0" : "white",
+                },
+              })}
+            >
+              {option.value}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+</Downshift>
 
                       </li>
 
@@ -264,22 +376,7 @@ const handleSearch = useCallback(async (value) => {
 
       <Services />
       <Contact />
-      {/* <div className="faq">
-        <div className="container">
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="service-top">
 
-                  <p className="service-2">Frequently asked questions</p>
-                  <p className="service-3">Everything you need to know about the product and billing.</p>
-
-                  <Faq questions={questions}/>
-
-                </div>
-              </div>
-            </div>
-        </div>
-      </div> */}
 
     </Layout>
   );
