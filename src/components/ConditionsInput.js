@@ -78,37 +78,40 @@ const ConditionsInput = ({
       <label className="label-contact">Conditions/Specialties</label>
       {/* <p className="sublabel">Select up to five</p> */}
       <Controller
-        name="conditionsSuggestions"
+        name="conditions"
         control={control}
         render={({ field }) => (
           <div>
             {/* Replace the Select component with CreatableSelect */}
             <CreatableSelect
-              isMulti
-              components={{ Option: OptionWithCheckbox }}
-              options={terms.map((term) => ({ value: term, label: term }))}
-              {...field}
-              inputValue={inputValue}
-              onInputChange={handleInputChange}
-              onChange={(selectedOptions) => {
-                console.log("Selected Options:", selectedOptions);
-                // Update your state variable with the selected options
-                field.onChange(selectedOptions);
-              }}
-              value={watch('conditionsSuggestions')} // Ensure this reflects your selected options
-              mode="tags"
-              label="Conditions"
-              ref={selectRef}
-              menuIsOpen={isMenuOpen} // Set menuIsOpen based on input value length
-              style={{ width: '25rem', marginTop: '1rem'}}
-              placeholder="Type or select Conditions/Specialities" // Update the placeholder text
-              onSelect={handleConditionSelect}
-              closeMenuOnSelect={false} // Prevent menu from closing on selection
-              createOptionPosition="first" // Show newly created options at the top
-              formatCreateLabel={(inputValue) => `Create "${inputValue}"`} // Customize the label for creating a new option
-              // Apply custom styles to the CreatableSelect component
-              styles={customStyles}
-            />
+  isMulti
+  components={{ Option: OptionWithCheckbox }}
+  options={terms.map((term) => ({ value: term, label: term }))}
+  {...field}
+  inputValue={inputValue}
+  onInputChange={handleInputChange}
+  onChange={(selectedOptions, actionMeta) => {
+    if (actionMeta.action === 'select-option') {
+      // Handle the selection of an option
+      console.log("Selected Options:", selectedOptions);
+      // Update your state variable with the selected options
+      field.onChange(selectedOptions);
+    }
+  }}
+  value={watch('conditionsSuggestions')} // Ensure this reflects your selected options
+  mode="tags"
+  label="Conditions"
+  ref={selectRef}
+  menuIsOpen={isMenuOpen} // Set menuIsOpen based on input value length
+  style={{ width: '25rem', marginTop: '1rem'}}
+  placeholder="Type or select Conditions/Specialities" // Update the placeholder text
+  closeMenuOnSelect={false} // Prevent menu from closing on selection
+  createOptionPosition="first" // Show newly created options at the top
+  formatCreateLabel={(inputValue) => `Create "${inputValue}"`} // Customize the label for creating a new option
+  // Apply custom styles to the CreatableSelect component
+  styles={customStyles}
+/>
+
           </div>
         )}
       />
