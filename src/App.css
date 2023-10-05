@@ -299,7 +299,7 @@ p.span-clr span {
 }
 .dr-1 {
   font-family: 'Poppins', sans-serif;
-  font-size: 66px;
+  font-size: 46px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -945,7 +945,7 @@ margin-left: 0;
   position: relative;
   padding: 150px 0 0 0;
 }
-.banner-left-p {
+/* .banner-left-p {
   color: #FFF;
   font-size: 54px;
   font-style: normal;
@@ -954,7 +954,7 @@ margin-left: 0;
   font-family: 'Poppins', sans-serif;
   margin: 0 0 23px 0;
   text-align: left;
-}
+} */
 .banner-left-p-1 {
   color: #FFF;
   font-family: 'Poppins', sans-serif;
@@ -964,6 +964,14 @@ margin-left: 0;
   line-height: normal;
   margin: 0 0 0 0;
 }
+
+@media screen and (max-width: 850px) {
+  /* CSS styles to apply when the screen width is 600px or less */
+  .banner-left-p {
+    font-size: 12px; /* Decrease the font size for smaller screens */
+  }
+}
+
 .pro-img-2 {
   width: 100%;
 }
@@ -1071,7 +1079,7 @@ margin-left: 0;
   line-height: normal;
   height: 74px;
   padding: 0 30px;
-  width: 100%;
+  width: 80%;
 }
 .banner-ul li {
   position: relative;
@@ -1831,6 +1839,16 @@ p.red-error {
 }
 
 
+/* Add this CSS in your component's stylesheet or a global stylesheet */
+/* Custom styles for Ant Design AutoComplete */
+.ant-select-selection {
+  border: 2px solid red; /* Add border style here */
+}
+
+/* Adjust the margin-top as needed to prevent overlap */
+.ant-select-dropdown {
+  margin-top: 10px;
+}
 
 
 

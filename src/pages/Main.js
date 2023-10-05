@@ -34,6 +34,24 @@ const StyledErrorMessage = styled.div`
   font-weight: bold;
 `;
 
+const StyledParagraph = styled.p`
+ color: #FFF;
+  font-size: 54px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 64px; 
+  font-family: 'Poppins', sans-serif;
+  margin: 0 0 23px 0;
+  text-align: left;
+
+   /* Media query for screens with a maximum width of 600px */
+  @media screen and (max-width: 857px) {
+    font-size: 26px; /* Decrease the font size for smaller screens */
+    line-height: 34px;
+    margin-bottom: 2px;
+  }
+`
+
 
 const Main = () => {
   const [address, setAddress] = useState("");
@@ -183,7 +201,7 @@ const handleSearch = useCallback(async (value) => {
           <div className="row">
             <div className="col-lg-8">
               <div className="banner-left">
-                <p className="banner-left-p">Find a Regenerative Medicine Doctor based on your condition</p>
+                <StyledParagraph>Find a Regenerative Medicine Doctor based on your condition</StyledParagraph>
                 <div className="banner-bottom">
                   <Form form={form} onFinish={handleSubmit} >
                   {errorMessage && (
@@ -299,7 +317,7 @@ const handleSearch = useCallback(async (value) => {
     <div>
       <Input
   {...getInputProps({
-    placeholder: "Enter a location...",
+    placeholder: "Search medical conditions",
     style: {
      width: "80%",
             maxWidth: "450px",
