@@ -20,34 +20,9 @@ import ContactForm from "../components/ContactForm";
 import Contact from "./Contact";
 import Services from "./Services";
 import { getConditions } from  "../functions/getConditions";
+import debounce from 'lodash/debounce';
 
 
-const questions = [
-  {
-    question: "Is there a free trial available?",
-    answer: "Yes, you can try us for free for 30 days. If you want, we'll provide with a free, personalized 30-minute onboarding call to get you up and running as soon as possible.",
-  },
-  {
-    question: "Can I change my plan later?",
-    answer: "Yes, you can try us for free for 30 days. If you want, we'll provide with a free, personalized 30-minute onboarding call to get you up and running as soon as possible.",
-  },
-  {
-    question: "What is your cancellation policy?",
-    answer: "Yes, you can try us for free for 30 days. If you want, we'll provide with a free, personalized 30-minute onboarding call to get you up and running as soon as possible.",
-  },
-  {
-    question: "Can other info be added to an invoice?",
-    answer: "Yes, you can try us for free for 30 days. If you want, we'll provide with a free, personalized 30-minute onboarding call to get you up and running as soon as possible.",
-  },
-  {
-    question: "How does billing work?",
-    answer: "Yes, you can try us for free for 30 days. If you want, we'll provide with a free, personalized 30-minute onboarding call to get you up and running as soon as possible.",
-  },
-  {
-    question: "How do I change my account email?",
-    answer: "Yes, you can try us for free for 30 days. If you want, we'll provide with a free, personalized 30-minute onboarding call to get you up and running as soon as possible.",
-  },
-];
 
 const StyledErrorMessage = styled.div`
   color: red;
@@ -68,25 +43,35 @@ const Main = () => {
   const [options, setOptions] = useState([]);
   // Define suggestions state
   const [suggestions, setSuggestions] = useState([]);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
-const handleSearch = useCallback((value) => {
-  const filterTerm = value.trim(); // Trim any leading or trailing whitespace
-  console.log("Filter Term:", filterTerm); // Log filterTerm
+// Create a debounced version of handleSearch
+const debouncedHandleSearch = debounce((value) => {
+  if (value.trim().length >= 3) {
+    handleSearch(value);
+  }
+}, 300);
+
+useEffect(() => {
+  if (searchTerm.trim().length >= 3) {
+    debouncedHandleSearch(searchTerm);
+  }
+}, [searchTerm]);
+
+
+
+const handleSearch = useCallback(async (value) => {
+  const filterTerm = value.trim();
   setSearchTerm(filterTerm);
 
-  const filteredOptions = conditions
-    .filter((condition) => {
-      const lowercasedCondition = condition.toLowerCase();
-      const includesFilterTerm = lowercasedCondition.includes(filterTerm.toLowerCase());
-      console.log(`Checking: ${condition}, Includes Filter Term: ${includesFilterTerm}`); // Log condition check
-      return includesFilterTerm;
-    })
-    .map((condition) => ({ value: condition }));
-
-  console.log("Filtered Options:", filteredOptions); // Log filteredOptions
-  setOptions(filteredOptions);
-}, [conditions]);
-
+  try {
+    const conditionsData = await getConditions(filterTerm); // Pass the filter term
+    const filteredOptions = conditionsData.map((condition) => ({ value: condition }));
+    setOptions(filteredOptions);
+  } catch (error) {
+    console.error('Error fetching conditions:', error);
+  }
+}, []);
 
   useEffect(() => {
   const fetchConditions = async () => {
@@ -229,7 +214,7 @@ const handleSearch = useCallback((value) => {
   style={{ width: "70vw", maxWidth: "450px", height: "50px" }}
   options={options} // Ensure that it uses the updated options
   onSelect={(value) => setSearchTerm(value)}
-  onSearch={handleSearch}
+  onSearch={debouncedHandleSearch}
   placeholder="Medical condition (optional)"
 />
 

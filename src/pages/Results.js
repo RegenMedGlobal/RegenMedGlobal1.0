@@ -20,6 +20,8 @@ import getData from "../functions/getData";
 import {  MAPBOX_TOKEN } from "../config";
 import geocodeCity from "../functions/geoCodeCity";
 import { getConditions } from  "../functions/getConditions";
+import debounce from 'lodash.debounce';
+
 
 const StyledForm = styled(Form)`
   width: 40%;
@@ -118,14 +120,28 @@ const Results = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [filterCoordinates, setFilterCoordinates] = useState(null);
   const [percent, setPercent] = useState(0);
-    const [conditions, setConditions] = useState([]);
-
+  const [conditions, setConditions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+    // Define a debounced version of fetchConditions
+  const debouncedFetchConditions = useCallback(
+    debounce(async (term) => {
+      const conditionsData = await getConditions(term);
+      setConditions(conditionsData);
+    }, 300), // Adjust the debounce delay (in milliseconds) as needed
+    []
+  );
+
+    useEffect(() => {
+    // Call the debounced function when filterTerm changes
+    debouncedFetchConditions(filterTerm);
+  }, [filterTerm, debouncedFetchConditions]);
 
 
   useEffect(() => {
+    console.log('filter term:', filterTerm)
   const fetchConditions = async () => {
-    const conditionsData = await getConditions();
+    const conditionsData = await getConditions(filterTerm);
     setConditions(conditionsData);
   };
 

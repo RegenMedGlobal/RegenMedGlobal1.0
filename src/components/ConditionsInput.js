@@ -31,19 +31,6 @@ const StyledControllerContainer = styled.div`
   }
 `;
 
-// Custom option component with checkboxes
-const OptionWithCheckbox = (props) => (
-  <div>
-    <components.Option {...props}>
-      <input
-        type="checkbox"
-        checked={props.isSelected}
-        onChange={() => props.selectOption(props.data)}
-      />
-      {props.label}
-    </components.Option>
-  </div>
-);
 
 // Define custom styles for the CreatableSelect component
 const customStyles = {
@@ -58,17 +45,19 @@ const customStyles = {
 const ConditionsInput = ({
   control,
   conditionRef,
-  handleConditionSelect,
+  handleInputChange,
   terms,
   watch,
 }) => {
   const selectRef = conditionRef; // Use the conditionRef prop as a ref
   const [inputValue, setInputValue] = useState(""); // Track user input
 
-  // Handle input change and toggle menu visibility
-  const handleInputChange = (newValue) => {
+const handleLocalInputChange = (newValue) => {
+    console.log('Input Value in ConditionsInput:', newValue); // Add this line
     setInputValue(newValue);
+    handleInputChange(newValue); // Call the parent's handleInputChange function
   };
+
 
   // Determine whether the menu should be open based on input value length
   const isMenuOpen = inputValue.length >= 2;
@@ -83,13 +72,13 @@ const ConditionsInput = ({
         render={({ field }) => (
           <div>
             {/* Replace the Select component with CreatableSelect */}
-            <CreatableSelect
+      <CreatableSelect
   isMulti
-  components={{ Option: OptionWithCheckbox }}
+  // Remove components prop to use default Option component
   options={terms.map((term) => ({ value: term, label: term }))}
   {...field}
   inputValue={inputValue}
-  onInputChange={handleInputChange}
+  onInputChange={handleLocalInputChange}
   onChange={(selectedOptions, actionMeta) => {
     if (actionMeta.action === 'select-option') {
       // Handle the selection of an option
@@ -111,6 +100,7 @@ const ConditionsInput = ({
   // Apply custom styles to the CreatableSelect component
   styles={customStyles}
 />
+
 
           </div>
         )}

@@ -19,6 +19,7 @@ import Confirmation from "../components/Confirmation";
 import ConditionsInput from "../components/ConditionsInput";
 import { terms } from "../config";
 import TreatmentInput from "../components/TreatmentInput";
+import debounce from 'lodash/debounce';
 
 
 
@@ -132,6 +133,7 @@ const Register = () => {
   const [fieldsVisibility, setFieldsVisibility] = useState(false)
   const [email, setEmail] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
+const [filterTerm, setFilterTerm] = useState('');
 
   const [conditions, setConditions] = useState([]);
 
@@ -141,25 +143,39 @@ const Register = () => {
   borderRadius: "4px",
 };
 
+// useEffect(() => {
+//   const fetchConditions = async () => {
+//     const conditionsData = await getConditions();
+//     setConditions(conditionsData);
+//   };
+
+//   fetchConditions();
+// }, []);
+
+const handleInputChange = (newValue) => {
+  console.log('Input Value in Register:', newValue);
+   setFilterTerm(newValue);
+};
+
+console.log('filter term:', filterTerm)
+
+
 useEffect(() => {
-  const fetchConditions = async () => {
-    const conditionsData = await getConditions();
+  // Define a debounced version of fetchConditions
+  const debouncedFetchConditions = debounce(async () => {
+    const conditionsData = await getConditions(filterTerm); // Pass the filterTerm to getConditions
     setConditions(conditionsData);
+  }, 300); // Adjust the debounce delay (in milliseconds) as needed
+
+  // Call the debounced function when the component mounts
+  debouncedFetchConditions();
+
+  return () => {
+    // Cleanup: Clear the debounced function when the component unmounts
+    debouncedFetchConditions.cancel();
   };
+}, [filterTerm]); // Include filterTerm in the dependency array
 
-  fetchConditions();
-}, []);
-
-
-//  useEffect(() => {
-//     async function fetchData() {
-//       const topSearches = await fetchTopSearches();
-//       console.log('Top searches:', topSearches);
-//       setTerms(topSearches); // Update the terms state with the fetched data
-//     }
-
-//     fetchData();
-//   }, []);
 
 
   useEffect(() => {
@@ -875,8 +891,12 @@ const handleStateChange = (selectedState) => {
   handleConditionSelect={handleConditionSelect}
   terms={conditions} // Pass the conditions array
   watch={watch}
+  filterTerm={filterTerm} // Pass the filter term as a prop
+  handleInputChange={handleInputChange} // Pass the handleInputChange function
   //setShowConditionsDropdown={setShowConditionsDropdown} // Pass setShowConditionsDropdown as a prop
 />
+
+
                             </div>
                           </div>
                         </div>
