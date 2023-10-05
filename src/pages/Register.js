@@ -256,6 +256,9 @@ const handleStateChange = (selectedState) => {
   }
 
   const onSubmit = async (data, event) => {
+    console.log("Value of conditions:", data.conditions);
+
+    console.log('data', data)
     // Prevent the default form submission
     event.preventDefault();
 
@@ -263,9 +266,17 @@ const handleStateChange = (selectedState) => {
     setIsButtonDisabled(true);
 
     try {
+      // Extract the 'value' property from each object in the 'data.conditions' array
+    const conditionsArray = data.conditions.map((condition) => condition.value);
+
       const treatments = data.treatments.join(","); // Convert treatments array to string
-      const conditions = data.conditions.join(","); // Convert conditions array to string
-      const requestData = { ...data, treatments, conditions }; // Add treatments and conditions to the request data
+        // Convert the array to a comma-separated string
+    const conditions = conditionsArray.join(",");
+      const requestData = {
+      ...data,
+      treatments,
+      conditions,
+    };
 
       // Use omit to remove the "conditionsSelect" field from the request data
       const requestDataWithoutConditionsSelect = _.omit(
@@ -870,8 +881,8 @@ const handleStateChange = (selectedState) => {
                           </div>
                         </div>
 
-{/* 
-                        <div className="row">
+
+                         <div className="row">
                           <div className="col-lg-12">
                             <div className="mar-15 zer-radi">
                               <StyledControllerContainer>
@@ -895,8 +906,7 @@ const handleStateChange = (selectedState) => {
                               </StyledControllerContainer>
                             </div>
                           </div>
-                        </div> */}
-
+                        </div>  
 
 
                         <div className="row">
