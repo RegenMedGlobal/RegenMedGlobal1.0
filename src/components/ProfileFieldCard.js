@@ -51,7 +51,7 @@ const NameValue = styled.div`
 
 const Label = styled.div`
   font-weight: bold;
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   margin-bottom: 4px;
   text-align: left;
   margin-top: 0;
@@ -81,9 +81,10 @@ const LabelText = styled.span`
   }
 `;
 
+
 const WebsiteLabel = styled.div`
   font-weight: bold;
-  font-size: 1em;
+  font-size: 1.1rem; /* Set a smaller font size for the website label */
   margin-bottom: 4px;
   text-align: left; /* Left-align the label */
 `;
@@ -219,10 +220,13 @@ const handleTreatmentButtonClick = (option) => {
 
 
 
-const shouldDisplayLabel = (fieldName) => {
-  // Determine whether to display a label based on the field name and edit mode
-  return !["name", "email", "phone", "website"].includes(fieldName) || editMode;
+const shouldDisplayLabel = (fieldName, editMode) => {
+  return true;
 };
+
+
+
+
 
   return (
     <CardContainer>
@@ -252,38 +256,40 @@ const shouldDisplayLabel = (fieldName) => {
           )}
           <div>
             <div>
-              {shouldDisplayLabel(fieldName) && (
-                <>
-                  {fieldName === "website" ? (
-                    <div>
-                      <IconContainer>
-                        <CheckCircleOutlined />{" "}
-                        {/* Add the CheckCircleOutlined icon */}
-                        <a href={fieldValue} target="_blank" rel="noopener noreferrer">
-                          {fieldValue}
-                        </a>
-                      </IconContainer>
-                    </div>
-                  ) : (
-                    <>
-                      <Label>
-                        <LabelText>
-                          {fieldName === "description"
-                            ? "About Us:"
-                            : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"}
-                        </LabelText>
-                      </Label>
-                      <LabelBar /> {/* Add the horizontal bar */}
-                      <div>
-                        {renderFieldValue()}
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
+             {shouldDisplayLabel(fieldName, editMode) && (
+  <>
+    {fieldName === "website" ? (
+      <div>
+        <WebsiteLabel>Website:</WebsiteLabel>
+        <IconContainer>
+          <CheckCircleOutlined />{" "}
+          {/* Add the CheckCircleOutlined icon */}
+          <a href={fieldValue} target="_blank" rel="noopener noreferrer">
+            {fieldValue}
+          </a>
+        </IconContainer>
+      </div>
+    ) : (
+      <>
+        <Label>
+          <LabelText>
+            {fieldName === "description"
+              ? "About Us:"
+              : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"}
+          </LabelText>
+        </Label>
+        <LabelBar /> {/* Add the horizontal bar */}
+        <div>
+          {renderFieldValue()}
+        </div>
+      </>
+    )}
+  </>
+)}
+
             </div>
 
-            {!shouldDisplayLabel(fieldName) && (
+            {!shouldDisplayLabel(fieldName, editMode) && (
               <div>
                 {fieldName === "name" ? (
                   <NameValue>{fieldValue}</NameValue>
