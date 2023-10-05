@@ -38,8 +38,7 @@ const StyledControllerContainer = styled.div`
   /* Added border styles for all input fields */
   input,
   select,
-  textarea,
-  && .MuiSelect-root {
+  textarea{
     width: 100%;
     border: 1px solid #ccc; /* Add border styles here */
     border-radius: 4px; /* Add border radius if desired */
