@@ -1,29 +1,44 @@
 import React, { useState } from 'react';
-import { useForm, Controller  } from 'react-hook-form';
 import { Link, useLocation } from 'react-router-dom';
 import { Input, Button, Typography } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import updateUserPassword from "../functions/UpdatePassword";
+import { EDGE_URL } from "../config";
+import axios from 'axios';
+import { useForm, Controller } from 'react-hook-form';
+
+const { Paragraph  } = Typography;
+
+const StyledTypography = styled(Paragraph)`
+  margin-bottom: 3%;
+`
 
 const Container = styled.div`
   width: 80%;
   max-width: 400px;
-  margin: 100px auto;
+  margin: 9rem auto;
   padding: 20px;
   border: 1px solid #e8e8e8;
+  margin-bottom: 12%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: var(--main-color);
 `;
 
-const Title = styled.h3`
+
+const StyledText = styled(Paragraph)`
+  margin-bottom: 2%;
+  margin-top: 4%;
+`;
+
+const StyledTitle = styled.h3`
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 3rem;
 `;
 
 const StyledForm = styled.form`
+  margin-top: 3%;
   .input-group {
-    margin-bottom: 15px;
+    margin-bottom: 3rem;
   }
 
   .btn-login {
@@ -43,115 +58,78 @@ const StyledForm = styled.form`
 `;
 
 const ResetPassword = () => {
-
   const [resetRequested, setResetRequested] = useState(false);
-  const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const location = useLocation();
-   // Now you can access all properties of the location object directly
-   console.log('Location:', location);
-  const {
+
+  const id = location.pathname.substring(12); // Extract the user ID from the URL
+
+   const {
     control,
     handleSubmit,
-    getValues,
-    reset,
     formState: { errors },
-  } = useForm();
-  const onSubmit = async (data) => {
+    watch,
+  } = useForm({
+    mode: 'onBlur', // Validate on blur
+  });
+
+
+  const claimEmail = async (formData) => {
     try {
-      // Call the updateUserPassword function with the email and password values from the form
-      await updateUserPassword(data.email, data.password);
-      setResetRequested(true);
-      setEmail(data.email); // Store the email in the state variable
-      reset();
-    } catch (error) {
-      console.error('Error updating password:', error);
-      // Handle any errors that may occur during password update
-      if (error.message === 'User not found') {
-        // Set the error message in the state variable
-        setErrorMessage('User not found. Please check the email and try again.');
-      } else {
-        // For other errors, you can handle them accordingly or show a generic error message
-        setErrorMessage('An error occurred. Please try again later.');
+      const response = await axios.post(EDGE_URL + '/sendgrid-emailer', formData);
+      const responseData = response.data;
+      if (responseData.status) {
+        setResetRequested(true);
       }
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle any errors that may occur during the API request
+      setErrorMessage('An error occurred. Please try again later.');
     }
   };
-  
-  return (
+ return (
     <Container>
-      <Title>Reset Password</Title>
-      {errorMessage && <p className='error-message'>{errorMessage}</p>}
-
-      <StyledForm onSubmit={handleSubmit(onSubmit)}>
-        <div className='input-group'>
-          <Controller
-            name='email'
-            control={control}
-            defaultValue=''
-            rules={{ required: 'Email is required' }}
-            render={({ field }) => (
-              <Input
-                type='text'
-                placeholder='Email'
-                prefix={<UserOutlined />}
-                {...field}
-              />
-            )}
-          />
-          {errors.email && <p className='error-message'>{errors.email.message}</p>}
-        </div>
-        <div className='input-group'>
-          <Controller
-            name='password'
-            control={control}
-            defaultValue=''
-            rules={{ required: 'Password is required' }}
-            render={({ field }) => (
-              <Input.Password
-                type='password'
-                placeholder='Password'
-                prefix={<LockOutlined />}
-                {...field}
-              />
-            )}
-          />
-          {errors.password && <p className='error-message'>{errors.password.message}</p>}
-        </div>
-        <div className='input-group'>
-          <Controller
-            name='confirmPassword'
-            control={control}
-            defaultValue=''
-            rules={{
-              required: 'Confirm Password is required',
-              validate: (value) =>
-                value === getValues('password') || 'Passwords do not match',
-            }}
-            render={({ field }) => (
-              <Input.Password
-                type='password'
-                placeholder='Confirm Password'
-                prefix={<LockOutlined />}
-                {...field}
-              />
-            )}
-          />
-          {errors.confirmPassword && (
-            <p className='error-message'>{errors.confirmPassword.message}</p>
+      <StyledTitle>Reset Password</StyledTitle>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
+      <StyledTypography>
+        Please enter the email you used when signing up, and a one-time code will be sent to your email.
+      </StyledTypography>
+      <div className="input-group">
+        <Controller
+          name="email"
+          control={control}
+          defaultValue=""
+          rules={{
+            required: 'Email is required',
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+              message: 'Enter a valid email address',
+            },
+          }}
+          render={({ field }) => (
+            <Input
+              type="text"
+              placeholder="Email"
+              prefix={<UserOutlined />}
+              {...field}
+            />
           )}
-        </div>
-        <Button className='btn-login' type='primary' htmltype='submit'>
-          Reset Password
-        </Button>
-        {resetRequested && (
-          <Typography>
-            Your password has been reset, please use your new password to log in.
-          </Typography>
-        )}
-        <p>
-          Go back to <Link to='/DoctorLogin'>Login</Link>
-        </p>
-      </StyledForm>
+        />
+        {errors.email && <p className="error-message">{errors.email.message}</p>}
+      </div>
+
+      <Button className="btn-login" type="primary" onClick={handleSubmit(claimEmail)}>
+        Reset Password
+      </Button>
+
+      {resetRequested && (
+        <StyledText>
+          An email has been sent to <strong>{watch('email')}</strong> with instructions on how to reset your password if an account with this email was found.
+        </StyledText>
+      )}
+      <p>
+        Go back to <Link to="/DoctorLogin">Login</Link>
+      </p>
     </Container>
   );
 };
