@@ -62,13 +62,7 @@ const StyledControllerContainer = styled.div`
     padding: 10px !important;
   }
 
-  /* Added styles for Material-UI Select component */
-  .MuiOutlinedInput-input.MuiSelect-root {
-    width: 100%;
-    border: 1px solid #ccc; /* Add border styles here */
-    border-radius: 4px; /* Add border radius if desired */
-    padding: 10px;
-  }
+
 
   /* Added styles for dropdown menu */
   .react-dropdown-select-dropdown {
@@ -92,6 +86,8 @@ const FormContainer = styled.div`
 
   @media screen and (max-width: 768px) {
     padding: 20px;
+    width: 80%;
+    margin: 0 auto;
   }
 `;
 

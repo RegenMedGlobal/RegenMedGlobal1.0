@@ -15,7 +15,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 100px;
+  margin-top: 5%;
 
   .link {
     text-decoration: none;
@@ -29,6 +29,7 @@ export const Container = styled.div`
   }
 `;
 
+
 export const Sidebar = styled.div`
   flex: 1;
   width: ${sidebarWidth};
@@ -36,18 +37,74 @@ export const Sidebar = styled.div`
   background-color: ${sidebarBackgroundColor};
   display: flex;
   flex-direction: column;
-  border-radius: 8px; // Add border-radius for a modern look
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); // Add shadow for depth
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   height: ${sidebarHeight};
   position: sticky;
+
+  @media (max-width: 850px) {
+    padding: 10px;
+    font-size: 14px;
+  
+    margin: 0 auto;
+    margin-top: 2rem;
+    height: 30%; /* Adjusted height for mobile */
+  }
 `;
+
+// StyledContactSection styles
+export const StyledContactSection = styled.div`
+  padding: 20px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  flex: 1;
+  overflow-wrap: break-word; /* Add this to allow the text to wrap */
+  word-wrap: break-word; /* For compatibility with older browsers */
+  word-break: break-word; /* Break words when needed */
+  hyphens: auto; /* Enable hyphenation */
+
+  @media (max-width: 850px) {
+    padding: 10px; /* Adjust padding for smaller screens */
+    font-size: 10px; /* Adjust font size for smaller screens */
+
+  }
+`;
+
+export const ProfileWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+ 
+
+  @media (min-width: 854px) {
+    
+    flex-direction: row;
+  }
+
+   @media (max-width: 850px) {
+   
+    height: 30%;
+  }
+`;
+
 
 export const Content = styled.div`
   flex: 3;
   padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-between; 
+  
+  @media (min-width: 850px) {
+    height: 70%;
+ 
+
+  }
+
+  @media (max-width: 850px) {
+    height: 70%;
+   
+
+  }
 `;
 
 export const Card = styled.section`
@@ -67,6 +124,7 @@ export const ProfileHeader = styled.div`
   align-items: center;
   width: 100%;
   margin-bottom: 16px;
+
 
   .profile-header-title {
     font-size: 24px;
@@ -92,15 +150,6 @@ export const ReturnLink = styled(Typography)`
   }
 `;
 
-export const ProfileWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-  }
-`;
-
 export const MapContainer = styled.div`
   flex: 1;
   margin-right: 2rem;
@@ -112,12 +161,6 @@ export const CardContainer = styled.div`
   width: 100%; /* Cards take full width on smaller screens */
 `;
 
-export const StyledContactSection = styled.div`
-  padding: 20px;
-  margin-bottom: 16px;
-  border-radius: 8px;
-  flex: 1;
-`;
 
 export const ContactHeader = styled.h2`
   font-size: 1.5rem;
@@ -130,6 +173,8 @@ export const ContactHeader = styled.h2`
 export const NameCard = styled(CardContainer)`
   margin-bottom: 16px;
   width: 100%;
+
+   
 `;
 
 export const ConditionsContainer = styled.section`

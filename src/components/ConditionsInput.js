@@ -45,6 +45,16 @@ const OptionWithCheckbox = (props) => (
   </div>
 );
 
+// Define custom styles for the CreatableSelect component
+const customStyles = {
+  // Style for the input field
+  input: (provided) => ({
+    ...provided,
+    minHeight: '3rem', // Increase the height as needed
+  }),
+};
+
+
 const ConditionsInput = ({
   control,
   conditionRef,
@@ -90,12 +100,14 @@ const ConditionsInput = ({
               label="Conditions"
               ref={selectRef}
               menuIsOpen={isMenuOpen} // Set menuIsOpen based on input value length
-              style={{ width: '25rem', marginTop: '1rem' }}
+              style={{ width: '25rem', marginTop: '1rem'}}
               placeholder="Type or select Conditions/Specialities" // Update the placeholder text
               onSelect={handleConditionSelect}
               closeMenuOnSelect={false} // Prevent menu from closing on selection
               createOptionPosition="first" // Show newly created options at the top
               formatCreateLabel={(inputValue) => `Create "${inputValue}"`} // Customize the label for creating a new option
+              // Apply custom styles to the CreatableSelect component
+              styles={customStyles}
             />
           </div>
         )}

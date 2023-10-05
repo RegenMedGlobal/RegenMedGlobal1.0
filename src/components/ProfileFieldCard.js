@@ -12,10 +12,16 @@ const CardContainer = styled.div`
   margin: 8px 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align children to the top of the card */
+  align-items: flex-start;
 
-  margin-bottom: 16px; /* Add margin to create space below the card */
+  margin-bottom: 16px;
+
+  @media (max-width: 768px) {
+    font-size: 14px; /* Adjust font size for smaller screens */
+    height: 0%;
+  }
 `;
+
 
 
 const StyledTreatmentButton = styled(Button)`
@@ -48,9 +54,14 @@ const Label = styled.div`
   font-size: 2.5rem;
   margin-bottom: 4px;
   text-align: left;
-  margin-top: 0; /* Adjust the margin-top to move the label closer to the top */
+  margin-top: 0;
 
+  @media (max-width: 768px) {
+    font-size: 1.3rem; /* Adjust font size for smaller screens */
+    height: 60%;
+  }
 `;
+
 
 
 const LabelText = styled.span`
@@ -122,6 +133,12 @@ const StyledValueWithIcon = styled.div`
 
   .anticon {
     margin-right: 8px; /* Add a margin to separate the icon and the value */
+  }
+
+   @media (max-width: 768px) {
+    font-size: 1.3rem; /* Adjust font size for smaller screens */
+    height: 50%;
+   
   }
 `;
 
