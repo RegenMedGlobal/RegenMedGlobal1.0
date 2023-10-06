@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import getProfile from "../functions/getProfile";
+import isVerified from "../functions/isVerified";
 import updateData from "./updateData";
 import { Typography, Button } from 'antd';
 import ProfileFieldCard from "../components/ProfileFieldCard";
@@ -27,6 +28,7 @@ const Profile = () => {
   const [editedConditions, setEditedConditions] = useState([]);
   const [selectedConditions, setSelectedConditions] = useState([]);
   const [profileData, setProfileData] = useState([]);
+  const [isProfileVerified, setIsProfileVerified] = useState(false);
 
   // Add console.log statements to check values
   console.log("loggedIn:", loggedIn);
@@ -40,6 +42,8 @@ const Profile = () => {
   } catch (error) {
     console.error("Error parsing or accessing user data:", error);
   }
+
+
 
 
 useEffect(() => {
@@ -67,6 +71,18 @@ useEffect(() => {
       console.error('Error fetching profile data:', error);
     });
 }, [currentUser]);
+
+  useEffect(() => {
+    // Call the isVerified function with the profileId as a parameter
+    isVerified(profileId)
+      .then((result) => {
+        console.log("verified")
+        setIsProfileVerified(result);
+      })
+      .catch((error) => {
+        console.error('Error verifying profile:', error);
+      });
+  }, [profileId]);
 
 
   useEffect(() => {
@@ -358,7 +374,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
 </Card>
 
           </CardContainer>
-          <DoctorContact />
+       <DoctorContact />
           <MapContainer>
             <Map address={profileData.find((field) => field.fieldName === "address")?.fieldValue} />
           </MapContainer>
