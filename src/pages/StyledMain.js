@@ -106,6 +106,6 @@ export const StyledContainer = styled.div`
 
   .search-button {
     margin-top: 1rem;
-    width: 7rem;
+    width: 5rem;
   }
 `;
