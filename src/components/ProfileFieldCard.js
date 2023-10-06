@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input, Button } from 'antd';
 import { EditOutlined, MailOutlined, PhoneOutlined, CheckCircleOutlined  } from '@ant-design/icons';
 import styled from "styled-components";
+import { getConditions } from "../functions/getConditions";
+import debounce from 'lodash/debounce';
+import CreatableSelect from 'react-select/creatable'; 
 
 const CardContainer = styled.div`
   background-color: transparent;
@@ -171,7 +174,15 @@ const ProfileFieldCard = ({
   //customClass,
 }) => {
 
-  
+  const [filteredConditions, setFilteredConditions] = useState([]);
+const [filterTerm, setFilterTerm] = useState('');
+const [selectedConditions, setSelectedConditions] = useState([]);
+
+ const handleAddConditions = () => {
+    // Convert selectedConditions to a comma-separated string
+    const updatedValue = selectedConditions.map(condition => condition.value).join(', ');
+    onInputChange(fieldName, updatedValue);
+  };
 
  const renderFieldValue = () => {
     if (fieldName === "Conditions" && fieldValue && !editMode) {
@@ -202,6 +213,20 @@ const ProfileFieldCard = ({
     }
   };
 
+  useEffect(() => {
+  const debouncedFetchConditions = debounce(async () => {
+    const conditionsData = await getConditions(filterTerm);
+    setFilteredConditions(conditionsData);
+  }, 300);
+
+  debouncedFetchConditions();
+
+  return () => {
+    debouncedFetchConditions.cancel();
+  };
+}, [filterTerm]);
+
+
     const renderTreatmentButtons = () => {
     if (fieldName === "treatments" && editMode) {
       return (
@@ -221,6 +246,9 @@ const ProfileFieldCard = ({
     return null;
   };
 
+  const handleConditionClick = (option) => {
+
+  }
 
 
 const handleTreatmentButtonClick = (option) => {
@@ -248,25 +276,56 @@ const handleTreatmentButtonClick = (option) => {
   }
 };
 
+  const handleCreateOption = (inputValue) => {
+    // Create a new option with the inputValue
+    const newOption = { value: inputValue, label: inputValue };
+    // Add the new option to the selectedConditions array
+    setSelectedConditions([...selectedConditions, newOption]);
+    // Trigger the onChange event with the updated selectedConditions
+    setSelectedConditions(selectedConditions);
+  };
+
 
 const shouldDisplayLabel = (fieldName, editMode) => {
   return true;
 };
-
+console.log('filteredConditions', filteredConditions)
 
   return (
     <CardContainer>
       {editMode ? (
         <>
-          {fieldName === "treatments" ? (
-            <div>
-              {renderTreatmentButtons()}
-             <Input
-              type="text"
-              value={fieldValue || ""}
-              onChange={(event) => onInputChange(fieldName, event)}
-            />
-            </div>
+            {(fieldName === "treatments" || fieldName === "conditions") ? (
+    <div>
+      {fieldName === "treatments" && (
+        <div>
+          <p>Choose your treatment type(s):</p>
+          {renderTreatmentButtons()}
+          {/* <Input
+            type="text"
+            value={fieldValue || ""}
+            onChange={(event) => onInputChange(fieldName, event)}
+          /> */}
+        </div>
+      )}
+      {fieldName === "conditions" && editMode && (
+      <div>
+        <CreatableSelect
+          isMulti
+          value={selectedConditions}
+          onChange={(selectedConditions) => setSelectedConditions(selectedConditions)}
+          options={filteredConditions.map(condition => ({ value: condition, label: condition }))}
+          onCreateOption={handleCreateOption}
+        />
+        <Input
+      type="text"
+      value={fieldValue || ""}
+      onChange={(event) => onInputChange(fieldName, event)}
+    />
+      </div>
+         
+      )}
+    </div>
           ) : (
             <Input
               type="text"
