@@ -124,6 +124,7 @@ const Navbar = () => {
   const isMobile = useMediaQuery('(max-width: 767px)');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false); 
   console.log('current user from navbar', currentUser);
 
   let currentUserID;
@@ -136,6 +137,18 @@ const Navbar = () => {
     }
   }
 
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen); // Toggle the mobile menu state
+  };
+
+
+  const handleLinkClick = (text) => {
+    // Close the mobile menu when a link is clicked
+    setMobileOpen(false);
+    console.log(`Clicked on link: ${text}`);
+  };
+
+
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
@@ -147,185 +160,77 @@ const Navbar = () => {
 
   return (
 
-
-
-    
-    <AppBar position="fixed">
+   <AppBar position="fixed">
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
-          <div className="container-fluid">
-            <Link className="navbar-brand" to="/"><img src={img3} /></Link>
-            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                <li className="nav-item">
-                  <Link className="nav-link active" aria-current="page" to="/">Home</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/services">About</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/contact">Contact</Link>
-                </li>
-                {loggedIn && (
-  <li className="nav-item">
-    <a className="nav-link" href={`/profile/${currentUserID}`}>Profile</a>
-  </li>
-)}
-
-                {/* <li className="nav-item">
-                  <a className="nav-link" href="#">FAQ</a>
-                </li> */}
-              </ul>
-              <form className="d-flex" role="search">
-                <ul className='right-nav'>
-                  {loggedIn ? (
-                    <li className="nav-item">
-                      <a className="nav-link" onClick={handleLogout} style={{ color: '#000 !important' }}>Logout</a>
-                    </li>
-                  ) :(
-                  <li> <Link className="nav-link doc-login" to="/doctorlogin">Doctor Login</Link></li>
-                )} 
-                </ul>
-              </form>
-            </div>
-          </div>
-        </nav>
-      {/* <Toolbar>
-        <div style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          <Link to="/" style={{ textDecoration: 'none', color: '#fff' }}>
-            <LogoImage src={Logo} alt="Regen Global Logo" />
+        <div className="container-fluid">
+          <Link className="navbar-brand" to="/" onClick={() => handleLinkClick('Home')}>
+            <img src={img3} alt="Logo" />
           </Link>
-        </div>
-        {isMobile ? (
-          <>
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              onClick={toggleDrawer}
-            >
-              <MenuIconWrapper open={drawerOpen} />
-            </IconButton>
-            <Drawer
-              anchor="right"
-              open={drawerOpen}
-              onClose={toggleDrawer}
-              classes={{ paper: 'drawerContent' }}
-              PaperProps={{ component: 'div', style: { zIndex: 1200 } }}
-            >
-              <StyledList className="drawerList">
-                {loggedIn && (
-                  <NavbarItem
-                    key="Profile"
-                    to={`/profile/${currentUserID}`}
-                    className="navbarItem"
-                    onClick={toggleDrawer}
-                    active={location.pathname === `/profile/${currentUserID}`}
-                  >
-                    <ListItemText primary="Profile" />
-                  </NavbarItem>
-                )}
-                <NavbarItem
-                  key="About"
-                  to="/services"
-                  sidebar={isMobile}
-                  className="navbarItem"
-                  onClick={toggleDrawer}
-                  active={location.pathname === '/services'}
-                >
-                  <ListItemText primary="About" />
-                </NavbarItem>
-                <NavbarItem
-                  key="Contact"
-                  to="/contact"
-                  sidebar={isMobile}
-                  className="navbarItem"
-                  onClick={toggleDrawer}
-                  active={location.pathname === '/contact'}
-                >
-                  <ListItemText primary="Contact" />
-                </NavbarItem>
-                {loggedIn ? (
-                  <NavbarItem
-                    key="Logout"
-                    to="/"
-                    sidebar={isMobile}
-                    className="navbarItem"
-                    onClick={() => {
-                      toggleDrawer();
-                      handleLogout();
-                    }}
-                  >
-                    <ListItemText primary="Logout" />
-                  </NavbarItem>
-                ) : (
-                  <NavbarItem
-                    key="Login"
-                    to="/doctorlogin"
-                    sidebar={isMobile}
-                    className="navbarItem"
-                    onClick={toggleDrawer}
-                    active={location.pathname === '/doctorlogin'}
-                  >
-                    <ListItemText primary="Doctor Login" />
-                  </NavbarItem>
-                )}
-              </StyledList>
-            </Drawer>
-          </>
-        ) : (
-          <Hidden smDown implementation="css">
-            <NavbarMenu>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+            onClick={handleDrawerToggle} // Toggle mobile menu
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+             <div className={`collapse navbar-collapse${mobileOpen ? ' show' : ''}`} id="navbarSupportedContent">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                <Link className="nav-link active" aria-current="page" to="/" onClick={() => handleLinkClick('Home')}>
+                  Home
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/services" onClick={() => handleLinkClick('About')}>
+                  About
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/contact" onClick={() => handleLinkClick('Contact')}>
+                  Contact
+                </Link>
+              </li>
               {loggedIn && (
-                <NavbarItem
-                  key="Profile"
-                  to={`/profile/${currentUserID}`}
-                  className="navbarItem"
-                  active={location.pathname === `/profile/${currentUserID}`}
-                >
-                  <ListItemText primary="Profile" />
-                </NavbarItem>
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href={`/profile/${currentUserID}`}
+                    onClick={() => handleLinkClick('Profile')}
+                  >
+                    Profile
+                  </a>
+                </li>
               )}
-              <NavbarItem
-                key="About"
-                to="/services"
-                className="navbarItem"
-                active={location.pathname === '/services'}
-              >
-                <ListItemText primary="About" />
-              </NavbarItem>
-              <NavbarItem
-                key="Contact"
-                to="/contact"
-                className="navbarItem"
-                active={location.pathname === '/contact'}
-              >
-                <ListItemText primary="Contact" />
-              </NavbarItem>
-              {loggedIn ? (
-                <NavbarItem
-                  key="Logout"
-                  to="/"
-                  className="navbarItem"
-                  onClick={handleLogout}
-                >
-                  <ListItemText primary="Logout" />
-                </NavbarItem>
-              ) : (
-                <NavbarItem
-                  key="Login"
-                  to="/doctorlogin"
-                  className="navbarItem"
-                >
-                  <ListItemText primary="Doctor Login" />
-                </NavbarItem>
-              )}
-            </NavbarMenu>
-          </Hidden>
-        )}
-      </Toolbar> */}
+            </ul>
+            <form className="d-flex" role="search">
+              <ul className="right-nav">
+                {loggedIn ? (
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      onClick={handleLogout}
+                      style={{ color: '#000 !important' }}
+                    >
+                      Logout
+                    </a>
+                  </li>
+                ) : (
+                  <li>
+                    <Link className="nav-link doc-login" to="/doctorlogin" onClick={() => handleLinkClick('Doctor Login')}>
+                      Doctor Login
+                    </Link>
+                  </li>
+                )}
+              </ul>
+            </form>
+          </div>
+        </div>
+      </nav>
     </AppBar>
   );
 };
