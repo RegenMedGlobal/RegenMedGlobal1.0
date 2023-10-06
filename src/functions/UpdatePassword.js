@@ -34,11 +34,17 @@ const updateUserPassword = async (email, newPassword) => {
       throw new Error('User not found');
     }
 
+    console.log('User data fetched successfully:', user);
+
     // Generate a new salt for the password update
     const salt = generateSalt();
 
+    console.log('Generated salt:', salt);
+
     // Hash the new password with the new salt
     const hashedPassword = await hashPassword(newPassword, salt);
+
+    console.log('Password hashed successfully:', hashedPassword);
 
     // Update the user's password and salt in Supabase
     const { error: updateError } = await supabase
@@ -50,8 +56,11 @@ const updateUserPassword = async (email, newPassword) => {
       .eq('email', email);
 
     if (updateError) {
+      console.error('Password update failed:', updateError);
       throw new Error('Password update failed');
     }
+
+    console.log('Password updated successfully');
 
     return { message: 'Password updated successfully' };
   } catch (error) {
@@ -59,5 +68,6 @@ const updateUserPassword = async (email, newPassword) => {
     throw error; // Throw the specific error from updateUserPassword
   }
 };
+
 
 export default updateUserPassword;
