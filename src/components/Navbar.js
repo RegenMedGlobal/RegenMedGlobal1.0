@@ -121,7 +121,7 @@ const LogoImage = styled.img`
 
 const Navbar = () => {
   const { loggedIn, logout, currentUser } = useContext(AuthContext);
-  const isMobile = useMediaQuery('(max-width: 767px)');
+  const isMobile = useMediaQuery('(max-width: 856px)');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false); 
