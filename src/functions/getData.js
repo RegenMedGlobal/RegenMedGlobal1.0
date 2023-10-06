@@ -56,35 +56,54 @@ const getData = async (filterTerm, checkboxOptions, city, state, country, maxDis
   console.log('Executing getData...');
   console.log('Filter term from getData:', filterTerm);
   console.log('Checkbox options:', checkboxOptions);
-  //console.log('City:', city);
-  //console.log('State:', state);
-  //console.log('Country:', country);
-  //console.log('Max Distance:', maxDistance);
 
-  // Split the filterTerm into individual words
-  const searchWords = filterTerm.split(/\s+/).filter(word => word.length > 0);
 
-  console.log('search words: ', searchWords)
+  try {
+    // Initialize an empty array to store the results
+   let combinedResults = [];
 
-try {
-  // Build a text search query with ILIKE filter for each search word
- // const searchText = searchWords.map(word => `'%${word}%'`).join(' | ');
+// Query 1: Search by checkboxOptions
+const selectedOptions = checkboxOptions.filter(option => option.checked);
+if (selectedOptions.length > 0) {
+  console.log('selected options', selectedOptions)
+  // Build a text search query with ILIKE filter for each selected checkbox option
+    const optionSearchText = selectedOptions.map(option => `'%${option.value}%'`).join(' & ');
+  console.log('Checkbox Options Query Text:', optionSearchText); // Debugging log
 
-  const { data: allData, error } = await supabase
-    .from(maindataTable)
+  const { data: checkboxResults, error: checkboxError } = await supabase
+      .from(maindataTable)
     .select()
-    .textSearch('conditions', filterTerm)
+    .textSearch('treatments', optionSearchText)
     .limit(150);
 
-    
+  console.log('Checkbox Options Query Result:', checkboxResults); // Debugging log
 
-  console.log('Supabase query result:', allData);
+  if (checkboxError) {
+    console.error('Error executing checkboxOptions query:', checkboxError);
+    return { error: 'Internal Server Error' };
+  }
 
+  combinedResults = [...combinedResults, ...checkboxResults];
+}
 
-    if (error) {
-      console.error('Error executing query:', error);
-      setPercent(0); // Set loading progress to 0% in case of an error
-      return { error: 'Internal Server Error' };
+console.log('Combined Results:', combinedResults); // Debugging log
+
+    // Query 2: Search by filterTerm (if present)
+    if (filterTerm && filterTerm.trim() !== '') {
+      // Build a text search query with ILIKE filter for filterTerm
+      const searchText = `'%${filterTerm}%'`;
+      const { data: filterResults, error: filterError } = await supabase
+        .from(maindataTable)
+        .select()
+        .textSearch('conditions', searchText)
+        .limit(150);
+
+      if (filterError) {
+        console.error('Error executing filterTerm query:', filterError);
+        return { error: 'Internal Server Error' };
+      }
+
+      combinedResults = [...combinedResults, ...filterResults];
     }
 
     // Geocode the provided city, state, country
@@ -103,7 +122,8 @@ try {
     console.log('City longitude:', cityLongitude);
 
     // Filter the data
-    const filteredData = allData.filter(item => {
+    const filteredData = combinedResults.filter(item => {
+     // console.log('item', item)
       const conditions = item.conditions || '';
       const treatments = item.treatments || '';
 
@@ -111,7 +131,6 @@ try {
       const conditionsMatch = conditions.toLowerCase().includes(filterTerm.toLowerCase());
 
       // Check if any of the checkbox options are selected and included in the treatments
-      const selectedOptions = checkboxOptions.filter(option => option.checked);
       const optionsMatch = selectedOptions.every(option =>
         treatments.toLowerCase().includes(option.value.toLowerCase())
       );
@@ -129,14 +148,14 @@ try {
         const distanceInKm = distance; // Haversine formula already returns distance in kilometers
 
         // Debugging log to see which items pass the filtering conditions
-       // console.log('Item filtered:', item, conditionsMatch, optionsMatch, distanceInKm <= maxDistance);
+        // console.log('Item filtered:', item, conditionsMatch, optionsMatch, distanceInKm <= maxDistance);
 
         return conditionsMatch && optionsMatch && distanceInKm <= maxDistance;
       }
 
       // Progress tracking for each filtered item
       setPercent(percent => {
-        const progressStep = 100 / allData.length;
+        const progressStep = 100 / combinedResults.length;
         return percent + progressStep;
       });
 
