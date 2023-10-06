@@ -56,17 +56,23 @@ const getData = async (filterTerm, checkboxOptions, city, state, country, maxDis
   console.log('Executing getData...');
   console.log('Filter term from getData:', filterTerm);
   console.log('Checkbox options:', checkboxOptions);
-  console.log('City:', city);
-  console.log('State:', state);
-  console.log('Country:', country);
-  console.log('Max Distance:', maxDistance);
+  //console.log('City:', city);
+  //console.log('State:', state);
+  //console.log('Country:', country);
+  //console.log('Max Distance:', maxDistance);
+
+    // Preprocess the filterTerm to make it more inclusive
+  const preprocessedFilterTerm = filterTerm
+    .toLowerCase()
+    .replace(/[\s()]/g, ''); // Remove spaces and parentheses
+
 
   try {
     // Query data from Supabase
     const { data: allData, error } = await supabase
       .from(maindataTable)
       .select('*')
-      .ilike('conditions', `%${filterTerm}%`);
+      .ilike('conditions', `%${preprocessedFilterTerm}%`);
 
     console.log('Supabase query result:', allData);
 
