@@ -16,19 +16,26 @@ const CardContainer = styled.div`
 
   margin-bottom: 16px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 855px) {
     font-size: 14px; /* Adjust font size for smaller screens */
     height: 0%;
+    width: 90%;
+    margin: 0 auto;
   }
 `;
 
-
-
 const StyledTreatmentButton = styled(Button)`
-  background-color: transparent;
-  border: 1px solid ${(props) => (props.active ? "#592CB8" : "inherit")};
-  color: ${(props) => (props.active ? "white" : "inherit")}; /* Set text color to white when active */
+  background-color: ${(props) => (props.active ? "#592CB8" : "white")};
+  border: 1px solid ${(props) => (props.active ? "#592CB8" : "black")};
+  color: ${(props) => (props.active ? "white" : "black")};
   margin-right: 8px;
+  
+  /* Add media query for mobile devices */
+  @media (max-width: 768px) {
+    width: 40%;
+    padding: 0 4px; /* Add padding to control button size */
+    font-size: 12px; /* Adjust the font size for mobile */
+  }
 
   &:hover {
     background-color: ${(props) => (props.active ? "#592CB8" : "transparent")};
@@ -36,11 +43,14 @@ const StyledTreatmentButton = styled(Button)`
   }
 `;
 
+
+
 const StyledTreatmentButtons = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 4%;
+  
 `;
 
 const NameValue = styled.div`
@@ -192,6 +202,26 @@ const ProfileFieldCard = ({
     }
   };
 
+    const renderTreatmentButtons = () => {
+    if (fieldName === "treatments" && editMode) {
+      return (
+        <StyledTreatmentButtons>
+          {treatmentOptions.map((option) => (
+            <StyledTreatmentButton
+              key={option}
+              active={fieldValue && fieldValue.includes(option)}
+              onClick={() => handleTreatmentButtonClick(option)}
+            >
+              {option}
+            </StyledTreatmentButton>
+          ))}
+        </StyledTreatmentButtons>
+      );
+    }
+    return null;
+  };
+
+
 
 const handleTreatmentButtonClick = (option) => {
   console.log('Option clicked:', option);
@@ -219,13 +249,9 @@ const handleTreatmentButtonClick = (option) => {
 };
 
 
-
 const shouldDisplayLabel = (fieldName, editMode) => {
   return true;
 };
-
-
-
 
 
   return (
@@ -234,7 +260,12 @@ const shouldDisplayLabel = (fieldName, editMode) => {
         <>
           {fieldName === "treatments" ? (
             <div>
-              {/* ... (other treatment-related code) */}
+              {renderTreatmentButtons()}
+             <Input
+              type="text"
+              value={fieldValue || ""}
+              onChange={(event) => onInputChange(fieldName, event)}
+            />
             </div>
           ) : (
             <Input
