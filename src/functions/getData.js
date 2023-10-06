@@ -61,20 +61,25 @@ const getData = async (filterTerm, checkboxOptions, city, state, country, maxDis
   //console.log('Country:', country);
   //console.log('Max Distance:', maxDistance);
 
-    // Preprocess the filterTerm to make it more inclusive
-  const preprocessedFilterTerm = filterTerm
-    .toLowerCase()
-    .replace(/[\s()]/g, ''); // Remove spaces and parentheses
+  // Split the filterTerm into individual words
+  const searchWords = filterTerm.split(/\s+/).filter(word => word.length > 0);
 
+  console.log('search words: ', searchWords)
 
-  try {
-    // Query data from Supabase
-    const { data: allData, error } = await supabase
-      .from(maindataTable)
-      .select('*')
-      .ilike('conditions', `%${preprocessedFilterTerm}%`);
+try {
+  // Build a text search query with ILIKE filter for each search word
+ // const searchText = searchWords.map(word => `'%${word}%'`).join(' | ');
 
-    console.log('Supabase query result:', allData);
+  const { data: allData, error } = await supabase
+    .from(maindataTable)
+    .select()
+    .textSearch('conditions', filterTerm)
+    .limit(150);
+
+    
+
+  console.log('Supabase query result:', allData);
+
 
     if (error) {
       console.error('Error executing query:', error);
@@ -124,7 +129,7 @@ const getData = async (filterTerm, checkboxOptions, city, state, country, maxDis
         const distanceInKm = distance; // Haversine formula already returns distance in kilometers
 
         // Debugging log to see which items pass the filtering conditions
-        console.log('Item filtered:', item, conditionsMatch, optionsMatch, distanceInKm <= maxDistance);
+       // console.log('Item filtered:', item, conditionsMatch, optionsMatch, distanceInKm <= maxDistance);
 
         return conditionsMatch && optionsMatch && distanceInKm <= maxDistance;
       }
