@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { createGlobalStyle } from 'styled-components';
+
 import { useNavigate } from "react-router-dom";
 import { Layout, Input, Button, Form, AutoComplete } from "antd";
 import insertTopSearch from  "../functions/insertTopSearch";
@@ -11,21 +12,32 @@ import imgCombined from "../assets/Combined-Shape.png";
 import imgPro2 from "../assets/pro-2.png";
 import imgPro1 from "../assets/pro-1.png";
 import imgPro3 from "../assets/pro-3.png";
-
-import Faq from "../components/Faq";
-import ContactForm from "../components/ContactForm";
 import Contact from "./Contact";
 import Services from "./Services";
 import { getConditions } from  "../functions/getConditions";
-import debounce from 'lodash/debounce';
 import Downshift from "downshift";
 
-const CustomAutoComplete = styled(AutoComplete)`
-  .custom-dropdown {
-    margin-top: 10px; /* Adjust the margin-top as needed to prevent overlap */
+const GlobalStyles = createGlobalStyle`
+  .downshift-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 9999 !important; /* Increase the z-index value */
+    background-color: white;
+    max-height: 200px;
+    overflow-y: auto;
     border: 2px solid red;
   }
+
+  /* Additional styles for the open dropdown */
+  .downshift-dropdown.open {
+    /* Add your custom styles here */
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid red;
+    /* Add more styles as needed */
+  }
 `;
+
 
 const StyledErrorMessage = styled.div`
   color: red;
@@ -51,6 +63,81 @@ const StyledParagraph = styled.p`
     margin-bottom: 2px;
   }
 `
+const StyledTreatmentSection = styled.p`
+  color: #FFF;
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin: 0px 0 18px 0;
+  text-align: left;
+  width: 100%;
+
+  @media screen and (max-width: 857px) {
+    height: 10%;
+  }
+  `
+
+const StyledTreatmentContainer = styled.div`
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(8.5px);
+  backdrop-filter: blur(8.5px);
+  margin: 0;
+  list-style: none;
+  padding: 15px;
+  max-width: 460px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 70px;
+  position: relative; /* Add this line to create a stacking context */
+
+  /* Add the following CSS to make buttons transparent */
+  button {
+    background: transparent;
+    border: none;
+    color: white;
+  }
+
+ .downshift-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 9999 !important; /* Increase the z-index value */
+  background-color: white;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+`;
+
+
+  const StyledButton = styled.button`
+   border-radius: 12px;
+  border: 1px solid #E409E8;
+  background: linear-gradient(180deg, #0019FB 0%, #E409E8 100%);
+  color: #FFF;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  height: 74px;
+  padding: 0 30px;
+  width: 80%;
+  z-index: 2;
+
+   @media screen and (max-width: 600px) {
+    /* Add the styles you want to apply on mobile */
+   border: 2px solid purple;
+
+  }
+  `
 
 
 const Main = () => {
@@ -60,25 +147,8 @@ const Main = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
    const [conditions, setConditions] = useState([]);
-
   const [options, setOptions] = useState([]);
-  // Define suggestions state
   const [suggestions, setSuggestions] = useState([]);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-
-// // Create a debounced version of handleSearch
-// const debouncedHandleSearch = debounce((value) => {
-//   if (value.trim().length >= 3) {
-//     handleSearch(value);
-//   }
-// }, 300);
-
-// useEffect(() => {
-//   if (searchTerm.trim().length >= 3) {
-//     debouncedHandleSearch(searchTerm);
-//   }
-// }, [searchTerm]);
-
 
 
 const handleSearch = useCallback(async (value) => {
@@ -193,6 +263,11 @@ const handleSearch = useCallback(async (value) => {
       : {};
   };
 
+
+  const selectStyles = {
+    menu: provided => ({ ...provided, zIndex: "9999 !important" })
+};
+
   return (
     <Layout>
       <div className="banner-top">
@@ -207,8 +282,8 @@ const handleSearch = useCallback(async (value) => {
                   {errorMessage && (
                     <StyledErrorMessage>{errorMessage}</StyledErrorMessage>
                   )}
-                  <div className="more">
-                      <p className="more-p">Choose Treatment Type(s):</p>
+                  <StyledTreatmentContainer>
+                      <StyledTreatmentSection>Choose Treatment Type(s):</StyledTreatmentSection>
                       {checkboxOptions.map((option) => (
                         <Button
                           className={option.checked ? "type-button active" : "type-button"}
@@ -220,7 +295,7 @@ const handleSearch = useCallback(async (value) => {
                           {option.label}
                         </Button>
                       ))}
-                    </div>
+                    </StyledTreatmentContainer>
                   <ul className="banner-ul">
                       <li>
                         <img src={imgCombined} className="vec-1" alt="" />
@@ -323,6 +398,7 @@ const handleSearch = useCallback(async (value) => {
             maxWidth: "450px",
             height: "50px",
             marginLeft: "4rem",
+            
     },
   })}
 />
@@ -334,10 +410,11 @@ const handleSearch = useCallback(async (value) => {
                 key: option.value,
                 index,
                 item: option,
-                style: {
-                  backgroundColor:
-                    highlightedIndex === index ? "#f0f0f0" : "white",
-                },
+                 style: {
+                
+      backgroundColor: highlightedIndex === index ? "#f0f0f0" : "white",
+      zIndex: 9999, // Add the desired z-index value here
+    },
               })}
             >
               {option.value}
@@ -352,7 +429,7 @@ const handleSearch = useCallback(async (value) => {
                       </li>
 
                       <li>
-                        <button className="serch search-button" htmltype="submit" >Search</button>
+                        <StyledButton className="styled-button" htmltype="submit" >Search</StyledButton>
                       </li>
                     </ul>
                     
@@ -394,6 +471,7 @@ const handleSearch = useCallback(async (value) => {
 
       <Services />
       <Contact />
+      <GlobalStyles />
 
 
     </Layout>
