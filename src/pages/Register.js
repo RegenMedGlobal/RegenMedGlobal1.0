@@ -33,6 +33,23 @@ const Container = styled.div`
   padding: 20px;
 `;
 
+const StyledControllerContainerConditions = styled.div`
+  /* Other styles */
+
+  /* Added styles for positioning */
+  position: relative;
+  z-index: 1; /* Set a higher z-index for the ConditionsInput dropdown container */
+`;
+
+const StyledControllerContainerSelect = styled.div`
+  /* Other styles */
+
+  /* Added styles for positioning */
+  position: relative;
+  z-index: 2; /* Set a higher z-index for the Select dropdown container */
+`;
+
+
 const StyledControllerContainer = styled.div`
   margin-bottom: 1rem;
 
@@ -883,8 +900,8 @@ const handleStateChange = (selectedState) => {
                         <div className="row">
                           <div className="col-lg-12">
                             <div className="mar-15-0 sero-rad">
-
-<ConditionsInput
+<StyledControllerContainerConditions>
+  <ConditionsInput
   control={control}
   showConditionsDropdown={showConditionsDropdown}
   conditionRef={conditionRef}
@@ -895,6 +912,8 @@ const handleStateChange = (selectedState) => {
   handleInputChange={handleInputChange} // Pass the handleInputChange function
   //setShowConditionsDropdown={setShowConditionsDropdown} // Pass setShowConditionsDropdown as a prop
 />
+</StyledControllerContainerConditions>
+
 
 
                             </div>
@@ -905,7 +924,7 @@ const handleStateChange = (selectedState) => {
                          <div className="row">
                           <div className="col-lg-12">
                             <div className="mar-15 zer-radi">
-                              <StyledControllerContainer>
+                              <StyledControllerContainerSelect>
                                 <Controller
                                   name="conditions"
                                   control={control}
@@ -923,7 +942,7 @@ const handleStateChange = (selectedState) => {
                                     </div>
                                   )}
                                 />
-                              </StyledControllerContainer>
+                              </StyledControllerContainerSelect>
                             </div>
                           </div>
                         </div>  
