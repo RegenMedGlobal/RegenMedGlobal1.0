@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_API_KEY, tom, SCHEMA_NAME } from '../config.js';
+import { SUPABASE_URL, SUPABASE_API_KEY, SCHEMA_NAME } from '../config.js';
 import axios from 'axios'
 import geolib from 'geolib';
 const supabaseUrl = SUPABASE_URL;
@@ -53,7 +53,6 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return distanceMiles;
 };
 
-
 const getData = async (filterTerm, checkboxOptions, city, state, country, maxDistance = 25, setPercent) => {
   console.log('Executing getData...');
   console.log('Filter term from getData:', filterTerm);
@@ -76,16 +75,16 @@ if (selectedOptions.length > 0) {
       .from(maindataTable)
     .select()
     .textSearch('treatments', optionSearchText)
-    .limit(150);
+    .limit(1000);
 
-//  console.log('Checkbox Options Query Result:', checkboxResults); // Debugging log
+ console.log('Checkbox Options Query Result:', checkboxResults); // Debugging log
 
   if (checkboxError) {
     console.error('Error executing checkboxOptions query:', checkboxError);
     return { error: 'Internal Server Error' };
   }
 
- // console.log('checkbox results', checkboxResults)
+  console.log('checkbox results', checkboxResults)
 
   combinedResults = [...combinedResults, ...checkboxResults];
 }
@@ -111,7 +110,7 @@ if (filterTerm && filterTerm.trim() !== '') {
       .from(maindataTable)
       .select()
       .textSearch('conditions', wordSearchText)
-      .limit(150);
+      .limit(1000);
 
     if (wordFilterError) {
       console.error('Error executing filterTerm query:', wordFilterError);
@@ -127,7 +126,7 @@ if (filterTerm && filterTerm.trim() !== '') {
   combinedResults = [...combinedResults, ...wordSearchResults];
 }
 
- //  console.log('combined results:', combinedResults)
+ // console.log('combined results:', combinedResults)
 
     
 
@@ -146,7 +145,7 @@ if (filterTerm && filterTerm.trim() !== '') {
     console.log('City latitude:', cityLatitude);
     console.log('City longitude:', cityLongitude);
 
-     // console.log('combined results:', combinedResults)
+      console.log('combined results:', combinedResults)
 
     // Filter the data
     const filteredData = combinedResults.filter(item => {
@@ -165,7 +164,7 @@ if (filterTerm && filterTerm.trim() !== '') {
      : [];
    
       const conditionsMatch = filterWords.length === 0 // No filter term
-      ? true // Return true if no filter term provided
+      ? false // Return true if no filter term provided
      : conditions.toLowerCase().split(/\s+/).some(conditionWord => {
       return filterWords.some(filterWord => conditionWord.includes(filterWord));
       });
@@ -196,7 +195,7 @@ if (filterTerm && filterTerm.trim() !== '') {
   );
 
         // Debugging log to see which items pass the filtering conditions
-     //  console.log('Item filtered:', item, conditionsMatch, optionsMatch, distanceInMiles);
+      console.log('Item filtered:', item, optionsMatch, distanceInMiles);
 
         // Use a ternary expression to conditionally include conditionsMatch
      //  console.log('filterterm: ',filterTerm)
