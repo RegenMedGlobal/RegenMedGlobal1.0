@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_API_KEY, tom, SCHEMA_NAME } from '../config.js';
 import axios from 'axios'
+import geolib from 'geolib';
 const supabaseUrl = SUPABASE_URL;
 const supabaseKey = SUPABASE_API_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey, {db: {schema: SCHEMA_NAME} });
@@ -16,7 +17,7 @@ const geocodeCity = async (city, state, country) => {
     );
 
     const results = response.data;
-    console.log('geocode results:', results);
+ //   console.log('geocode results:', results);
 
     if (results && results.length > 0) {
       const result = results[0];
@@ -34,7 +35,7 @@ const geocodeCity = async (city, state, country) => {
 
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  const earthRadius = 6371; // in kilometers
+  const earthRadiusMiles = 3958.8; // Earth's radius in miles
 
   const toRadians = degrees => (degrees * Math.PI) / 180;
 
@@ -47,10 +48,11 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  const distance = earthRadius * c;
+  const distanceMiles = earthRadiusMiles * c;
 
-  return distance;
+  return distanceMiles;
 };
+
 
 const getData = async (filterTerm, checkboxOptions, city, state, country, maxDistance = 25, setPercent) => {
   console.log('Executing getData...');
@@ -65,10 +67,10 @@ const getData = async (filterTerm, checkboxOptions, city, state, country, maxDis
 // Query 1: Search by checkboxOptions
 const selectedOptions = checkboxOptions.filter(option => option.checked);
 if (selectedOptions.length > 0) {
-  console.log('selected options', selectedOptions)
+ // console.log('selected options', selectedOptions)
   // Build a text search query with ILIKE filter for each selected checkbox option
     const optionSearchText = selectedOptions.map(option => `'%${option.value}%'`).join(' & ');
-  console.log('Checkbox Options Query Text:', optionSearchText); // Debugging log
+ // console.log('Checkbox Options Query Text:', optionSearchText); // Debugging log
 
   const { data: checkboxResults, error: checkboxError } = await supabase
       .from(maindataTable)
@@ -76,35 +78,58 @@ if (selectedOptions.length > 0) {
     .textSearch('treatments', optionSearchText)
     .limit(150);
 
-  console.log('Checkbox Options Query Result:', checkboxResults); // Debugging log
+//  console.log('Checkbox Options Query Result:', checkboxResults); // Debugging log
 
   if (checkboxError) {
     console.error('Error executing checkboxOptions query:', checkboxError);
     return { error: 'Internal Server Error' };
   }
 
+ // console.log('checkbox results', checkboxResults)
+
   combinedResults = [...combinedResults, ...checkboxResults];
 }
 
-console.log('Combined Results:', combinedResults); // Debugging log
+
 
     // Query 2: Search by filterTerm (if present)
-    if (filterTerm && filterTerm.trim() !== '') {
-      // Build a text search query with ILIKE filter for filterTerm
-      const searchText = `'%${filterTerm}%'`;
-      const { data: filterResults, error: filterError } = await supabase
-        .from(maindataTable)
-        .select()
-        .textSearch('conditions', searchText)
-        .limit(150);
+   // Query 2: Search by filterTerm (if present)
+if (filterTerm && filterTerm.trim() !== '') {
+  const searchWords = filterTerm.split(/\s+/).filter(word => word.length > 0);
 
-      if (filterError) {
-        console.error('Error executing filterTerm query:', filterError);
-        return { error: 'Internal Server Error' };
-      }
+ // console.log('search words:', searchWords)
 
-      combinedResults = [...combinedResults, ...filterResults];
+  // Initialize an array to store results for each word search
+  const wordSearchResults = [];
+
+  // Perform a text search for each word and collect the results
+  for (const word of searchWords) {
+ //   console.log('word: ', word)
+    const wordSearchText = `'%${word}%'`;
+ //   console.log('Word Search Text:', wordSearchText); // Debugging log
+    const { data: wordFilterResults, error: wordFilterError } = await supabase
+      .from(maindataTable)
+      .select()
+      .textSearch('conditions', wordSearchText)
+      .limit(150);
+
+    if (wordFilterError) {
+      console.error('Error executing filterTerm query:', wordFilterError);
+      return { error: 'Internal Server Error' };
     }
+
+    wordSearchResults.push(...wordFilterResults);
+
+    console.log('word filtered results:', wordFilterResults)
+  }
+
+  // Combine the results from all word searches
+  combinedResults = [...combinedResults, ...wordSearchResults];
+}
+
+ //  console.log('combined results:', combinedResults)
+
+    
 
     // Geocode the provided city, state, country
     const cityLocation = await geocodeCity(city, state, country);
@@ -121,36 +146,63 @@ console.log('Combined Results:', combinedResults); // Debugging log
     console.log('City latitude:', cityLatitude);
     console.log('City longitude:', cityLongitude);
 
+     // console.log('combined results:', combinedResults)
+
     // Filter the data
     const filteredData = combinedResults.filter(item => {
      // console.log('item', item)
       const conditions = item.conditions || '';
       const treatments = item.treatments || '';
 
+    //  console.log('item: ', item, 'treatments: ', item.treatments)
+
+    //  console.log('treatments', treatments)
+  
+
       // Check if the conditions include the filter term
-      const conditionsMatch = conditions.toLowerCase().includes(filterTerm.toLowerCase());
+      const filterWords = filterTerm
+     ? filterTerm.split(/\s+/).map(word => word.toLowerCase())
+     : [];
+   
+      const conditionsMatch = filterWords.length === 0 // No filter term
+      ? true // Return true if no filter term provided
+     : conditions.toLowerCase().split(/\s+/).some(conditionWord => {
+      return filterWords.some(filterWord => conditionWord.includes(filterWord));
+      });
+
+
+    //  console.log(`filterterm: ${filterTerm}, Item: ${item.conditions}, Conditions Match: ${conditionsMatch}`);
+
+
 
       // Check if any of the checkbox options are selected and included in the treatments
       const optionsMatch = selectedOptions.every(option =>
         treatments.toLowerCase().includes(option.value.toLowerCase())
       );
 
+     // console.log('options match: ', optionsMatch, 'item: ', item.treatments);
+
+    // console.log('combined results:', combinedResults)
+
       const latitude = parseFloat(item.latitude);
       const longitude = parseFloat(item.longitude);
 
       if (!isNaN(latitude) && !isNaN(longitude)) {
-        const distance = calculateDistance(
-          latitude,
-          longitude,
-          parseFloat(cityLatitude),
-          parseFloat(cityLongitude)
-        );
-        const distanceInKm = distance; // Haversine formula already returns distance in kilometers
+     const distanceInMiles = calculateDistance(
+    latitude,
+    longitude,
+    parseFloat(cityLatitude),
+    parseFloat(cityLongitude)
+  );
 
         // Debugging log to see which items pass the filtering conditions
-        // console.log('Item filtered:', item, conditionsMatch, optionsMatch, distanceInKm <= maxDistance);
+     //  console.log('Item filtered:', item, conditionsMatch, optionsMatch, distanceInMiles);
 
-        return conditionsMatch && optionsMatch && distanceInKm <= maxDistance;
+        // Use a ternary expression to conditionally include conditionsMatch
+     //  console.log('filterterm: ',filterTerm)
+    return filterTerm
+      ? conditionsMatch && optionsMatch && distanceInMiles <= maxDistance
+      : optionsMatch && distanceInMiles <= maxDistance;
       }
 
       // Progress tracking for each filtered item
