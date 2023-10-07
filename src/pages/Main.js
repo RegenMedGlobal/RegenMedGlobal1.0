@@ -327,17 +327,22 @@ const handleAddressChange = async (value) => {
                   <ul className="banner-ul">
                         <li>
                         <img src={imgCombined} className="vec-1" alt="" />
-                        <AutoComplete
-                          style={{ width: "70vw", maxWidth: "300px", height: "50px", marginLeft: '4rem' }}
-                          value={address}
-                          onSelect={(value) => setAddress(value)}
-                          onSearch={handleAddressChange}
-                          placeholder="Enter a location..."
-                          options={suggestions.map((suggestion) => ({
-                            label: suggestion.place_name,
-                            value: suggestion.place_name,
-                          }))}
-                        />
+                    <AutoComplete
+  style={{ width: "70vw", maxWidth: "300px", height: "50px", marginLeft: '4rem' }}
+  value={address}
+  onChange={(value) => setAddress(value)} // Use onChange instead of onSelect
+  onSearch={handleAddressChange}
+  placeholder="Enter a location..."
+  options={suggestions.map((suggestion) => ({
+    label: suggestion.place_name,
+    value: suggestion.place_name,
+  }))}
+  filterOption={(inputValue, option) =>
+    option.label.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+  }
+/>
+
+
                       </li>
                       <li>
                         <img src={imgVector} className="vec-1" alt="" />
