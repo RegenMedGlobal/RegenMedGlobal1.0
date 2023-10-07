@@ -16,6 +16,10 @@ import Contact from "./Contact";
 import Services from "./Services";
 import { getConditions } from  "../functions/getConditions";
 import Downshift from "downshift";
+import Autosuggest from 'react-autosuggest';
+import './Autosuggest.css'; // Import your custom CSS for styling
+
+
 
 const GlobalStyles = createGlobalStyle`
   .downshift-dropdown {
@@ -35,6 +39,19 @@ const GlobalStyles = createGlobalStyle`
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
     border: 2px solid red;
     /* Add more styles as needed */
+  }
+`;
+
+const CustomSuggestion = styled.div`
+  /* Add your custom styling here */
+  padding: 8px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+ 
+
+  &:hover {
+    /* Add styles for hover state here */
+    background-color: #ccc;
   }
 `;
 
@@ -149,11 +166,16 @@ const Main = () => {
    const [conditions, setConditions] = useState([]);
   const [options, setOptions] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
+  // Define separate state variables for address and condition input values
+const [addressInputValue, setAddressInputValue] = useState("");
+const [conditionInputValue, setConditionInputValue] = useState("");
+
 
 
 const handleSearch = useCallback(async (value) => {
   const filterTerm = value.trim();
   setSearchTerm(filterTerm);
+  console.log('search term', searchTerm)
 
   if (filterTerm.length >= 3) {
     try {
@@ -181,66 +203,72 @@ const handleSearch = useCallback(async (value) => {
 }, []);
 
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        if (!address) {
-          setErrorMessage("Please enter a location");
-        } else {
-          const filterTerm = searchTerm.trim(); // Trim any leading or trailing whitespace
-          console.log("Search term:", filterTerm);
+const handleSubmit = () => {
+  form
+    .validateFields()
+    .then((values) => {
+      if (!address) {
+        setErrorMessage("Please enter a location");
+      } else {
+        const filterTerm = searchTerm.trim(); // Trim any leading or trailing whitespace
+        console.log("Search term:", filterTerm);
+        console.log("Location:", address); // Log the location
 
-          // Update top searches in the database
-          insertTopSearch(filterTerm);
+        // Update top searches in the database
+        insertTopSearch(filterTerm);
 
-          // Update top searches in the database
-          console.log("Before updateTopSearches");
-          // updateTopSearches(filterTerm);
-          console.log("After updateTopSearches");
+        // Update top searches in the database
+        console.log("Before updateTopSearches");
+        // updateTopSearches(filterTerm);
+        console.log("After updateTopSearches");
 
-          navigate("/results", {
-            state: {
-              searchTerm: filterTerm,
-              location: address,
-              checkedOptions: checkboxOptions,
-            },
-          });
-        }
-      })
-      .catch((errorInfo) => {
-        console.log("Validation Failed:", errorInfo);
-      });
+        navigate("/results", {
+          state: {
+            searchTerm: filterTerm,
+            location: address,
+            checkedOptions: checkboxOptions,
+          },
+        });
+      }
+    })
+    .catch((errorInfo) => {
+      console.log("Validation Failed:", errorInfo);
+    });
 
-      return false
-  };
+  return false;
+};
 
-  const handleAddressChange = async (value) => {
-    console.log("value from handleAddressChange: ", value)
-    setAddress(value);
 
-    try {
-      const response = await axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          value
-        )}.json?access_token=${MAPBOX_TOKEN}`
-      );
+const handleAddressChange = async (value) => {
+  try {
+    const response = await axios.get(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        value
+      )}.json?access_token=${MAPBOX_TOKEN}`
+    );
 
-      // Filter suggestions for US cities
-      const usCities = response.data.features.filter(
-        (suggestion) =>
-          suggestion.context &&
-          suggestion.context.find(
-            (context) => context.id.startsWith("country") && context.short_code === "us"
-          )
-      );
+    // Filter suggestions for US cities
+    const usCities = response.data.features.filter(
+      (suggestion) =>
+        suggestion.context &&
+        suggestion.context.find(
+          (context) => context.id.startsWith("country") && context.short_code === "us"
+        )
+    );
 
-      setSuggestions(usCities);
-      console.log('suggestions: ', suggestions)
-    } catch (error) {
-      console.error("Error fetching suggestions:", error);
-    }
-  };
+    // Update suggestions using the state updater function
+    setSuggestions(usCities);
+
+    // You can log the updated state inside a useEffect hook
+    useEffect(() => {
+      console.log("Updated Suggestions:", suggestions);
+    }, [suggestions]);
+  } catch (error) {
+    console.error("Error fetching suggestions:", error);
+    // Handle errors or provide user feedback here
+  }
+};
+
 
 
   const [checkboxOptions, setCheckboxOptions] = useState([
@@ -297,135 +325,29 @@ const handleSearch = useCallback(async (value) => {
                       ))}
                     </StyledTreatmentContainer>
                   <ul className="banner-ul">
-                      <li>
+                        <li>
                         <img src={imgCombined} className="vec-1" alt="" />
-                 <Downshift
-  inputValue={address}
-  onInputValueChange={(inputValue) => {
-    console.log("Input Value:", inputValue);
-    handleAddressChange(inputValue);
-  }}
-  itemToString={(item) => (item ? item.label : "")}
-   onSelect={(selectedItem) => {
-    setAddress(selectedItem.place_name); // Update the input value
-  }}
-  onStateChange={(state) => {
-    console.log("Downshift State:", state);
-  }}
->
-  {({
-    getInputProps,
-    getItemProps,
-    getMenuProps,
-    isOpen,
-    highlightedIndex,
-  }) => (
-    <div>
-      <Input
-  {...getInputProps({
-    placeholder: "Enter a location...",
-    style: {
-      width: "80%",
-            maxWidth: "450px",
-            height: "50px",
-            marginLeft: "4rem",
-    },
-  })}
-/>
-      {isOpen && (
-        <div {...getMenuProps()}>
-          {suggestions.map((suggestion, index) => (
-            <div
-              {...getItemProps({
-                key: suggestion.place_name,
-                index,
-                item: suggestion,
-                style: {
-                  backgroundColor:
-                    highlightedIndex === index ? "#f0f0f0" : "white",
-                },
-                onClick: () => {
-                  // Handle the click event here
-                  setAddress(suggestion.place_name); // Update the input value with the full suggestion
-                },
-              })}
-            >
-              {suggestion.place_name}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )}
-</Downshift>
-
+                        <AutoComplete
+                          style={{ width: "70vw", maxWidth: "300px", height: "50px", marginLeft: '4rem' }}
+                          value={address}
+                          onSelect={(value) => setAddress(value)}
+                          onSearch={handleAddressChange}
+                          placeholder="Enter a location..."
+                          options={suggestions.map((suggestion) => ({
+                            label: suggestion.place_name,
+                            value: suggestion.place_name,
+                          }))}
+                        />
                       </li>
                       <li>
                         <img src={imgVector} className="vec-1" alt="" />
-<Downshift
-  inputValue={searchTerm}
-  onInputValueChange={(inputValue) => {
-    console.log("Input Value:", inputValue);
-    setSearchTerm(inputValue);
-     if (!inputValue) {
-      // Handle the case when inputValue is empty (backspace pressed)
-      setSearchTerm(""); // Clear the search term
-    }
-    // Call handleSearch here
-    handleSearch(inputValue);
-  }}
-  itemToString={(item) => (item ? item.value : "")}
-  onSelect={(selectedItem) => {
-    setSearchTerm(selectedItem.value); // Update the input value
-  }}
-  onStateChange={(state) => {
-    console.log("Downshift State:", state);
-  }}
->
-  {({
-    getInputProps,
-    getItemProps,
-    getMenuProps,
-    isOpen,
-    highlightedIndex,
-  }) => (
-    <div>
-      <Input
-  {...getInputProps({
-    placeholder: "Search medical conditions",
-    style: {
-     width: "80%",
-            maxWidth: "450px",
-            height: "50px",
-            marginLeft: "4rem",
-            
-    },
-  })}
-/>
-      {isOpen && (
-        <div {...getMenuProps()}>
-          {options.map((option, index) => (
-            <div
-              {...getItemProps({
-                key: option.value,
-                index,
-                item: option,
-                 style: {
-                
-      backgroundColor: highlightedIndex === index ? "#f0f0f0" : "white",
-      zIndex: 9999, // Add the desired z-index value here
-    },
-              })}
-            >
-              {option.value}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )}
-</Downshift>
-
+                        <AutoComplete
+                          style={{ width: "70vw", maxWidth: "450px", height: "50px" }}
+                          options={options}
+                          onSelect={(value) => setSearchTerm(value)}
+                          onSearch={handleSearch}
+                          placeholder="Medical condition (optional)"
+                        />
                       </li>
 
                       <li>
