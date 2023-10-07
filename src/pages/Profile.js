@@ -246,6 +246,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
     loggedIn={loggedIn}
     currentUserID={currentUserID}
     profileId={profileId}
+    isVerified={isProfileVerified}
   >
     {renderFieldValue("name", profileData.find((field) => field.fieldName.toLowerCase() === "name")?.fieldValue || "", false)}
   </ProfileFieldCard>

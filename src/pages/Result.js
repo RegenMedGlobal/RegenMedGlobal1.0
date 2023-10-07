@@ -7,6 +7,9 @@ import styled from 'styled-components';
 import { getDistance } from 'geolib';
 import test from '../assets/rec-1.png'
 import rec from '../assets/rec-3.png'
+import isVerified from "../functions/isVerified";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 const apiKey = TOMTOM_API_KEY; // Use the TomTom API key
 
@@ -61,9 +64,27 @@ const StyledLayout = styled(Layout)`
   }
 `;
 
+const styles = {
+  claimedInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: '1rem', // Apply a smaller font size
+  },
+  checkmarkIcon: {
+    color: 'var(--main-color)',
+    marginRight: '8px', // Adjust the margin as needed
+    fontSize: '1rem', // Apply a smaller font size
+  },
+  claimedText: {
+    color: 'var(--main-color)',
+    fontSize: '1rem', // Apply a smaller font size
+  },
+};
+
 const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius }) => {
   const { id, name, city, specialty, placeId, address } = result;
   const [distance, setDistance] = useState('');
+   const [isProfileVerified, setIsProfileVerified] = useState(false);
 
   useEffect(() => {
     const fetchDistance = async () => {
@@ -105,6 +126,18 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius
       );
     });
   };
+
+    useEffect(() => {
+    // Call the isVerified function with the profileId as a parameter
+    isVerified(id)
+      .then((result) => {
+        console.log("verified from result")
+        setIsProfileVerified(result);
+      })
+      .catch((error) => {
+        console.error('Error verifying profile:', error);
+      });
+  }, []);
 
   const getLocationCoordinates = async (location) => {
     try {
@@ -163,9 +196,17 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius
       <img className='test-img' src={test} />
       </div>
       <div className='flex-right-cus'>
-        <Link style={{ textDecoration: 'none' }}>
-          <h4>{name}</h4>
-        </Link>
+<Link style={{ textDecoration: 'none' }}>
+  <div className="claimed-info">
+    <h4>{name}</h4>
+    {isProfileVerified && <span>
+      <FontAwesomeIcon icon={faCheckCircle} className="checkmark-icon" style={styles.checkmarkIcon} />
+      <span style={styles.claimedText}>Claimed</span>
+    </span>}
+  </div>
+</Link>
+
+
         <p className='add-css'><img className='test-img-1' src={rec} /> {address}</p>
         <p className='add-css-1'>{specialty}</p>
       </div>
