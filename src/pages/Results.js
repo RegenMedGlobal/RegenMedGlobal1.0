@@ -113,46 +113,36 @@ const Results = () => {
     radius: "",
   });
 
-  //const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [address, setAddress] = useState(state?.location ?? "");
-  const [addressss, setAddressss] = useState(state?.location ?? "");
   const [userLocation, setUserLocation] = useState(null);
   const [filterCoordinates, setFilterCoordinates] = useState(null);
   const [percent, setPercent] = useState(0);
   const [conditions, setConditions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
 
     // Define a debounced version of fetchConditions
-  const debouncedFetchConditions = useCallback(
-    debounce(async (term) => {
-      const conditionsData = await getConditions(term);
-      setConditions(conditionsData);
-    }, 300), // Adjust the debounce delay (in milliseconds) as needed
-    []
-  );
-
-    useEffect(() => {
-    // Call the debounced function when filterTerm changes
-    debouncedFetchConditions(filterTerm);
-  }, [filterTerm, debouncedFetchConditions]);
-
-
-  useEffect(() => {
-    console.log('filter term:', filterTerm)
-  const fetchConditions = async () => {
-    const conditionsData = await getConditions(filterTerm);
+useEffect(() => {
+  // Define a debounced version of fetchConditions
+  const debouncedFetchConditions = debounce(async (term) => {
+    const conditionsData = await getConditions(term);
     setConditions(conditionsData);
+  }, 300); // Adjust the debounce delay (in milliseconds) as needed
+
+  const fetchConditions = async () => {
+    if (filterTerm.trim().length >= 3) {
+      debouncedFetchConditions(filterTerm);
+    }
   };
 
+  // Call the debounced function when filterTerm changes
   fetchConditions();
-}, []);
+}, [filterTerm]);
+
 
 const handleSearch = useCallback((value) => {
   setFilterTerm(value);
   console.log("Condition Search Term:", value);
 }, []);
-
 
 
   const handleAddressChange = async (value) => {
@@ -193,17 +183,6 @@ const handleSearch = useCallback((value) => {
     console.log("Sort: ", sortOrder)
   }
 
-  //modify sakib
-  const handleCheckChange = (e) => {
-    const value = e.target.value;
-    const checked = e.target.checked;
-
-    const updatedOptions = checkboxOptions.map((option) =>
-      option.value === value ? { ...option, checked } : option
-    );
-
-    setCheckboxOptions(updatedOptions);
-  };
 
   const handleChangePage = useCallback((page, pageSize) => {
     setPage(page);
@@ -441,14 +420,10 @@ const getFilteredConditions = (value) => {
     };
     console.log("userLocation", userLocation);
 
-    // if (userLocation === null) {
-    //   setSortOrder("asc"); // Set sortOrder to 'asc' if userLocation is null
-    // } else {
-      // updateSortedResults();
-    // }
+
     updateSortedResults();
   }, [results, sortOrder, userLocation, page]);
-  console.log("window", window.innerWidth);
+//  console.log("window", window.innerWidth);
 
   return (
     <Layout className="results">
