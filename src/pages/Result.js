@@ -145,6 +145,7 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius
     console.log('Result:', result); // Log the result object
     console.log('initial search: ', initialSearch)
     console.log('result address: ', resultAddress)
+
     
     navigate(`/profile/${id}`, {
       state: {
@@ -169,9 +170,9 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius
         <p className='add-css-1'>{specialty}</p>
       </div>
      
-      {/* {distance && (
+       {distance && (
         <p>{`Distance: ${distance} miles`}</p>
-      )} */}
+      )} 
       {placeId && (
         <p>
           <a href={`https://www.google.com/maps/place/?q=place_id:${placeId}`} target="_blank" rel="noopener noreferrer">
