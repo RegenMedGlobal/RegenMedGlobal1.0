@@ -1,0 +1,44 @@
+/* Autosuggest container */
+.autosuggest-container {
+  width: 100%; /* Ensure it spans the full width of its container */
+}
+
+/* Input field */
+.autosuggest-input {
+  width: 100%; /* Ensure it spans the full width of the container */
+  max-width: 450px; /* Adjust as needed */
+  height: 50px;
+  margin-left: 4rem;
+}
+
+/* Suggestions container */
+.autosuggest-suggestions-container {
+  position: relative;
+  width: 100%; /* Ensure it spans the full width of the container */
+  max-width: 450px; /* Adjust as needed */
+}
+
+
+
+/* Center-align the text in react-autosuggest suggestions */
+.react-autosuggest__suggestions-container {
+  background-color: white; /* Set white background color */
+  list-style: none; /* Remove bullet points */
+  text-align: center; /* Center-align the text */
+}
+
+/* Center-align the individual suggestion items */
+.react-autosuggest__suggestion {
+  text-align: center; /* Center-align the text */
+}
+
+/* Individual suggestion item */
+.custom-suggestion {
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* Highlighted suggestion */
+.custom-suggestion:hover {
+  background-color: #f0f0f0; /* Change background color on hover (optional) */
+}
