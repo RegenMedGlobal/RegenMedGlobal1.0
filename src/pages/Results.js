@@ -23,6 +23,7 @@ import { getConditions } from  "../functions/getConditions";
 import debounce from 'lodash.debounce';
 
 
+
 const StyledForm = styled(Form)`
   width: 40%;
   margin: 0 auto;
@@ -119,24 +120,22 @@ const Results = () => {
   const [filterCoordinates, setFilterCoordinates] = useState(null);
   const [percent, setPercent] = useState(0);
   const [conditions, setConditions] = useState([]);
+ 
 
-    // Define a debounced version of fetchConditions
+const debouncedFetchConditions = debounce(async (term) => {
+  const conditionsData = await getConditions(term);
+  setConditions(conditionsData);
+}, 300);
+
 useEffect(() => {
-  // Define a debounced version of fetchConditions
-  const debouncedFetchConditions = debounce(async (term) => {
-    const conditionsData = await getConditions(term);
-    setConditions(conditionsData);
-  }, 300); // Adjust the debounce delay (in milliseconds) as needed
-
   const fetchConditions = async () => {
     if (filterTerm.trim().length >= 3) {
       debouncedFetchConditions(filterTerm);
     }
   };
-
-  // Call the debounced function when filterTerm changes
   fetchConditions();
-}, [filterTerm]);
+}, [filterTerm, debouncedFetchConditions]);
+
 
 
 const handleSearch = useCallback((value) => {
@@ -145,33 +144,36 @@ const handleSearch = useCallback((value) => {
 }, []);
 
 
-  const handleAddressChange = async (value) => {
-    setAddress(value);
+const debouncedHandleAddressChange = debounce(async (value) => {
+  setAddress(value);
 
-    try {
-      const response = await axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          value
-        )}.json?access_token=${MAPBOX_TOKEN}`
-      );
+  try {
+    const response = await axios.get(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        value
+      )}.json?access_token=${MAPBOX_TOKEN}`
+    );
 
-      console.log('API response:', response.data);
+    console.log('API response:', response.data);
 
+    // Filter suggestions for US cities
+    const usCities = response.data.features.filter(
+      (suggestion) =>
+        suggestion.context &&
+        suggestion.context.find(
+          (context) => context.id.startsWith("country") && context.short_code === "us"
+        )
+    );
 
-      // Filter suggestions for US cities
-      const usCities = response.data.features.filter(
-        (suggestion) =>
-          suggestion.context &&
-          suggestion.context.find(
-            (context) => context.id.startsWith("country") && context.short_code === "us"
-          )
-      );
+    setSuggestions(usCities);
+  } catch (error) {
+    console.error("Error fetching suggestions:", error);
+  }
+}, 300); // Adjust the debounce delay as needed
 
-      setSuggestions(usCities);
-    } catch (error) {
-      console.error("Error fetching suggestions:", error);
-    }
-  };
+const handleAddressChange = (value) => {
+  debouncedHandleAddressChange(value);
+};
 
   const handleRadiusChange = (value) => {
     setRadius(value);
@@ -184,10 +186,10 @@ const handleSearch = useCallback((value) => {
   }
 
 
-  const handleChangePage = useCallback((page, pageSize) => {
-    setPage(page);
-    // setPageSize(pageSize);
-  }, []);
+const handleChangePage = (page) => {
+  setPage(page);
+};
+
 
   const handleProfileClick = (result) => {
     console.log("Clicked result:", result);
@@ -210,20 +212,13 @@ const handleSearch = useCallback((value) => {
       }
     };
 
-    const handleLocationError = (error) => {
-      console.log("Error retrieving user location:", error);
-      setUserLocation(null); // Set userLocation to null in case of error or denial
-      setSortOrder("asc")
-    };
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        fetchUserLocation,
-        handleLocationError
+        fetchUserLocation
       );
     } else {
       console.log("Geolocation is not supported by this browser.");
-      setUserLocation(null); // Set userLocation to null if geolocation is not supported
       setSortOrder("asc")
     }
   }, []);
@@ -352,21 +347,7 @@ const getFilteredConditions = (value) => {
     }
   }, [results]);
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation({ latitude, longitude });
-        },
-        (error) => {
-          console.log("Error retrieving user location:", error);
-        }
-      );
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
-  }, []);
+
 
   useEffect(() => {
     console.log("Current sorted results:", sortedResults);
@@ -418,11 +399,9 @@ const getFilteredConditions = (value) => {
       const slicedResults = sorted.slice(startIndex, endIndex);
       setCurrentResults(slicedResults);
     };
-    console.log("userLocation", userLocation);
-
 
     updateSortedResults();
-  }, [results, sortOrder, userLocation, page]);
+  }, [results, sortOrder, page]);
 //  console.log("window", window.innerWidth);
 
   return (
@@ -475,28 +454,6 @@ const getFilteredConditions = (value) => {
 
             <div className="mar-test"></div>
 
-            {/* <StyledForm>
-
-           
-
-            <h4 className="search-top">Distance</h4>
-            <Form.Item
-              style={{ width: "100%" }}
-            >
-              <Select
-                value={radius}
-                onChange={handleRadiusChange}
-                style={{ width: "100%" }}>
-                <Option value={25}>25 miles</Option>
-                <Option value={50}>50 miles</Option>
-                <Option value={100}>100 miles</Option>
-                <Option value={500}>500 miles</Option>
-              </Select>
-            </Form.Item>
-          </StyledForm> */}
-
-
-
 
           </div>
           <div className="div-2">
@@ -507,9 +464,6 @@ const getFilteredConditions = (value) => {
               address={address}
             />}
           </div>
-
-
-
 
 
         </section>
