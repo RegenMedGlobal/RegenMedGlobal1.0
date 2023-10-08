@@ -82,32 +82,56 @@ const styles = {
 };
 
 const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius }) => {
+  console.log('Result component rendered');
+
   const { id, name, city, specialty, placeId, address } = result;
   const [distance, setDistance] = useState('');
    const [isProfileVerified, setIsProfileVerified] = useState(false);
 
+    // Define the getOrSetCoordinatesInStorage function
+  const getOrSetCoordinatesInStorage = async (location) => {
+    const storageKey = `coordinates_${location}`;
+    const cachedCoordinates = localStorage.getItem(storageKey);
+
+    if (cachedCoordinates) {
+      // If coordinates are cached, parse and return them
+      return JSON.parse(cachedCoordinates);
+    }
+
+    // If not cached, fetch coordinates and store them in local storage
+    const coordinates = await getLocationCoordinates(location);
+    if (coordinates) {
+      localStorage.setItem(storageKey, JSON.stringify(coordinates));
+    }
+
+    return coordinates;
+  };
+
+
   useEffect(() => {
     const fetchDistance = async () => {
-      if (!resultAddress) {
-        // Handle the case when the address is not available
-        setDistance('');
-        return;
-      }
+  if (!resultAddress) {
+    // Handle the case when the address is not available
+    setDistance('');
+    return;
+  }
 
-      // Calculate the distance between the result address and the result city
-      const resultLocation = await getLocationCoordinates(city);
-      const addressLocation = await getLocationCoordinates(resultAddress);
-      if (!resultLocation || !addressLocation) {
-        // Handle the case when the coordinates are not available
-        setDistance('');
-        return;
-      }
-      const distanceInMeters = getDistance(resultLocation, addressLocation);
-      const distanceInMiles = distanceInMeters * 0.000621371; // Conversion factor for meters to miles
+  const resultCoordinates = await getOrSetCoordinatesInStorage(city);
+  const addressCoordinates = await getOrSetCoordinatesInStorage(resultAddress);
 
-      // Set the distance state
-      setDistance(distanceInMiles.toFixed(2));
-    };
+  if (!resultCoordinates || !addressCoordinates) {
+    // Handle the case when the coordinates are not available
+    setDistance('');
+    return;
+  }
+
+  const distanceInMeters = getDistance(resultCoordinates, addressCoordinates);
+  const distanceInMiles = distanceInMeters * 0.000621371; // Conversion factor for meters to miles
+
+  // Set the distance state
+  setDistance(distanceInMiles.toFixed(2));
+};
+
 
     fetchDistance();
   }, []);
@@ -131,7 +155,7 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius
     // Call the isVerified function with the profileId as a parameter
     isVerified(id)
       .then((result) => {
-        console.log("verified from result")
+     //   console.log("verified from result")
         setIsProfileVerified(result);
       })
       .catch((error) => {
