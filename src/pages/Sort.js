@@ -5,7 +5,7 @@ import { Select } from 'antd';
 
 const { Option } = Select;
 
-const Sort = ({ sortOrder, onSortOrderChange, radius, handleRadiusChange }) => {
+const Sort = ({ sortOrder, resultsLength, onSortOrderChange, radius, handleRadiusChange }) => {
   // COMMENTED : NOT IN USE
   // const { state } = useLocation();
   // COMMENTED : NOT IN USE
@@ -23,7 +23,7 @@ const Sort = ({ sortOrder, onSortOrderChange, radius, handleRadiusChange }) => {
 
     <div className="filter">
       <div className="filter-left">
-        <p className="span-clr"><span>{localStorage.getItem("lengthFilter")}</span> results found</p>
+        <p className="span-clr"><span>{resultsLength}</span> results found</p>
       </div>
       <div className="filter-right">
         <div className='parent-sel-1 distance-filter'>
