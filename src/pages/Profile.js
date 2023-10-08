@@ -5,6 +5,7 @@ import getProfile from "../functions/getProfile";
 import isVerified from "../functions/isVerified";
 import updateData from "./updateData";
 import { Typography, Button } from 'antd';
+import ReactGA from 'react-ga';
 import ProfileFieldCard from "../components/ProfileFieldCard";
 import DoctorContact from "./DoctorContact";
 import { terms } from "../config";
@@ -29,6 +30,20 @@ const Profile = () => {
   const [selectedConditions, setSelectedConditions] = useState([]);
   const [profileData, setProfileData] = useState([]);
   const [isProfileVerified, setIsProfileVerified] = useState(false);
+
+useEffect(() => {
+  const profileIdFromUrl = location.pathname.split('/profile/')[1];
+  setProfileId(profileIdFromUrl);
+  
+  // Track the page view with a unique identifier (e.g., the profile ID)
+  ReactGA.pageview(`/profile/${profileIdFromUrl}`);
+
+  // Set a custom page title with the profile's name or any other relevant information
+  ReactGA.ga('set', 'title', `Profile - ${profileIdFromUrl}`);
+  ReactGA.ga('send', 'pageview');
+
+}, [location.pathname, profileIdFromUrl]);
+
 
   // Add console.log statements to check values
   console.log("loggedIn:", loggedIn);
