@@ -23,7 +23,7 @@ const Sort = ({ sortOrder, resultsLength, onSortOrderChange, radius, handleRadiu
 
     <div className="filter">
       <div className="filter-left">
-        <p className="span-clr"><span>{resultsLength}</span> results found</p>
+       {resultsLength && <p className="span-clr"><span>{resultsLength}</span> results found</p>}
       </div>
       <div className="filter-right">
         <div className='parent-sel-1 distance-filter'>
