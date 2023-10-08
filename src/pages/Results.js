@@ -15,7 +15,7 @@ import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Result from "./Result";
 import ResultsMap from "./ResultsMap";
-import Sort from "./Sort";
+import Sort from "../components/Sort";
 import getData from "../functions/getData";
 import {  MAPBOX_TOKEN } from "../config";
 import geocodeCity from "../functions/geoCodeCity";
@@ -248,18 +248,19 @@ const handleChangePage = (page) => {
     setFilterTerm(searchTerm);
   }, []);
 
-  const updateResults = (filteredResults) => {
-    if (filteredResults.length === 0) {
-      setResults([]);
-      setCurrentResults([]);
-      setSortedResults([]);
-    } else {
-      setResults(filteredResults);
-      setCurrentResults(filteredResults);
-      setSortedResults(filteredResults);
-      setPage(1);
-    }
-  };
+const updateResults = (filteredResults) => {
+  if (filteredResults.length === 0) {
+    setResults([]);
+    setCurrentResults([]);
+    setSortedResults([]);
+  } else {
+    setResults(filteredResults);
+    setCurrentResults(filteredResults);
+    setSortedResults(filteredResults);
+    setPage(1);
+  }
+};
+
 
  // Replace the getFilteredOptions function with this simplified version
 const getFilteredConditions = (value) => {
@@ -484,7 +485,7 @@ const getFilteredConditions = (value) => {
               <h2>No Results Found</h2></>
             ) : (
               <div>
-                 <Sort sortOrder={sortOrder} onSortOrderChange={onSortOrderChange} radius={radius} handleRadiusChange={handleRadiusChange} setRadius={setRadius} />
+                 <Sort sortOrder={sortOrder} resultsLength={results.length} onSortOrderChange={onSortOrderChange} radius={radius} handleRadiusChange={handleRadiusChange} setRadius={setRadius} />
                 {currentResults.map((result, index) => (
                   <Result
                     result={result}
