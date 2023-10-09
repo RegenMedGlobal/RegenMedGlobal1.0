@@ -78,6 +78,7 @@ const StyledParagraph = styled.p`
     font-size: 26px; /* Decrease the font size for smaller screens */
     line-height: 34px;
     margin-bottom: 2px;
+    text-align: center;
   }
 `
 const StyledTreatmentSection = styled.p`

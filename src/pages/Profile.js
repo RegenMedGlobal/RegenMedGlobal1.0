@@ -370,6 +370,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
                 loggedIn={loggedIn}
                 currentUserID={currentUserID}
                 profileId={profileId}
+                labelName="Choose conditions specialized at your clinic"
               />
             </Card>
             

@@ -176,7 +176,8 @@ const Navbar = () => {
             aria-label="Toggle navigation"
             onClick={handleDrawerToggle} // Toggle mobile menu
           >
-            <span className="navbar-toggler-icon"></span>
+            {mobileOpen ?  <span className={`navbar-cross-icon`}>X</span> : <span className="navbar-toggler-icon"></span> }
+            
           </button>
              <div className={`collapse navbar-collapse${mobileOpen ? ' show' : ''}`} id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
