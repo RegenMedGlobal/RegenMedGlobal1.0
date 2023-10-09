@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Input, Button, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -58,6 +58,7 @@ const StyledForm = styled.form`
 `;
 
 const ResetPassword = () => {
+  const navigate = useNavigate();
   const [resetRequested, setResetRequested] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const location = useLocation();
@@ -74,19 +75,39 @@ const ResetPassword = () => {
   });
 
 
-  const claimEmail = async (formData) => {
-    try {
-      const response = await axios.post(EDGE_URL + '/sendgrid-emailer', formData);
-      const responseData = response.data;
-      if (responseData.status) {
-        setResetRequested(true);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      // Handle any errors that may occur during the API request
-      setErrorMessage('An error occurred. Please try again later.');
-    }
+const claimEmail = async (e) => {
+  e.preventDefault();
+
+  const formData = watch(); // Get all form data
+
+  const data = {
+    email: formData.email, // Access email from form data
   };
+
+  console.log("Form Data:", formData); // Log the form data
+
+  // Make the POST request to the API
+  try {
+    console.log("Sending POST request with data:", data); // Log the data being sent
+    const response = await axios.post(EDGE_URL + "/sendgrid-emailer", data);
+    console.log("Response:", response); // Log the response
+    const responseData = response.data;
+    console.log("Response Data:", responseData); // Log the response data
+    if (responseData.status) {
+      console.log("Redirecting");
+      navigate("/CodeValidator/" + responseData.id + "?new=true");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    // Handle any errors that may occur during the API request
+    setErrorMessage("An error occurred. Please try again later.");
+  }
+};
+
+
+
+
+
  return (
     <Container>
       <StyledTitle>Reset Password</StyledTitle>
@@ -110,6 +131,7 @@ const ResetPassword = () => {
             <Input
               type="text"
               placeholder="Email"
+              name='email'
               prefix={<UserOutlined />}
               {...field}
             />
@@ -118,7 +140,7 @@ const ResetPassword = () => {
         {errors.email && <p className="error-message">{errors.email.message}</p>}
       </div>
 
-      <Button className="btn-login" type="primary" onClick={handleSubmit(claimEmail)}>
+      <Button className="btn-login" type="primary" onClick={claimEmail}>
         Reset Password
       </Button>
 
