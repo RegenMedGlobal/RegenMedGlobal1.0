@@ -171,6 +171,7 @@ const ProfileFieldCard = ({
   loggedIn,
   currentUserID,
   profileId,
+  labelName,
   //customClass,
 }) => {
 
@@ -363,8 +364,8 @@ console.log('filteredConditions', filteredConditions)
       <>
         <Label>
           <LabelText>
-            {fieldName === "description"
-              ? "About Us:"
+            {labelName
+              ? labelName+":"
               : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"}
           </LabelText>
         </Label>

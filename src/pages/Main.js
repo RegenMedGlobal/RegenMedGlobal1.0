@@ -16,7 +16,7 @@ import Contact from "./Contact";
 import Services from "./Services";
 import { getConditions } from  "../functions/getConditions";
 import Downshift from "downshift";
-import Autosuggest from 'react-autosuggest';
+// import Autosuggest from 'react-autosuggest';
 import './Autosuggest.css'; // Import your custom CSS for styling
 
 

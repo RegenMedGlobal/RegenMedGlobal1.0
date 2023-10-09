@@ -1744,13 +1744,15 @@ ul.banner-ul .ant-select-selection-search-input {
 
 ul.banner-ul .ant-select {
     width: 100% !important;
-    height: auto !important;
+    /* height: auto !important; */
+    height: 75px !important;
     margin: 0 !important;
     max-width: 100% !important;
 }
 
 ul.banner-ul .ant-select-selector {
-    height: auto !important;
+    /* height: auto !important; */
+    height: 75px !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
