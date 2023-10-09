@@ -42,7 +42,7 @@ useEffect(() => {
   ReactGA.ga('set', 'title', `Profile - ${profileIdFromUrl}`);
   ReactGA.ga('send', 'pageview');
 
-}, [location.pathname, profileIdFromUrl]);
+}, []);
 
 
   // Add console.log statements to check values
