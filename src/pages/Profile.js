@@ -20,6 +20,7 @@ const Profile = () => {
   const [profileId, setProfileId] = useState(``);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [profileName, setProfileName] = useState(null)
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state || {};
@@ -30,19 +31,6 @@ const Profile = () => {
   const [selectedConditions, setSelectedConditions] = useState([]);
   const [profileData, setProfileData] = useState([]);
   const [isProfileVerified, setIsProfileVerified] = useState(false);
-
-useEffect(() => {
-  const profileIdFromUrl = location.pathname.split('/profile/')[1];
-  setProfileId(profileIdFromUrl);
-  
-  // Track the page view with a unique identifier (e.g., the profile ID)
-  ReactGA.pageview(`/profile/${profileIdFromUrl}`);
-
-  // Set a custom page title with the profile's name or any other relevant information
-  ReactGA.ga('set', 'title', `Profile - ${profileIdFromUrl}`);
-  ReactGA.ga('send', 'pageview');
-
-}, []);
 
 
   // Add console.log statements to check values
@@ -69,6 +57,7 @@ useEffect(() => {
   getProfile(id)
     .then((response) => {
       console.log('Fetched profile data:', response); // Debugging log
+      setProfileName(response.name)
       // Initialize the editMode property for each field
       const profileDataWithEditModes = Object.keys(response).map((fieldName) => ({
         fieldName,
@@ -98,6 +87,20 @@ useEffect(() => {
         console.error('Error verifying profile:', error);
       });
   }, [profileId]);
+
+
+  useEffect(() => {
+  const profileIdFromUrl = location.pathname.split('/profile/')[1];
+  setProfileId(profileIdFromUrl);
+  
+  // Track the page view with a unique identifier (e.g., the profile ID)
+  ReactGA.pageview(`/profile/${profileIdFromUrl}`);
+
+  // Set a custom page title with the profile's name or any other relevant information
+  ReactGA.ga('set', 'title', `Profile - ${profileName}`);
+  ReactGA.ga('send', 'pageview');
+
+}, []);
 
 
   useEffect(() => {
