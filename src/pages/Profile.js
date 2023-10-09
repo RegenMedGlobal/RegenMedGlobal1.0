@@ -261,7 +261,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
     loggedIn={loggedIn}
     currentUserID={currentUserID}
     profileId={profileId}
-    isVerified={isProfileVerified}
+    labelName="Clinic Name"
   >
     {renderFieldValue("name", profileData.find((field) => field.fieldName.toLowerCase() === "name")?.fieldValue || "", false)}
   </ProfileFieldCard>
@@ -301,6 +301,27 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
       </ProfileFieldCard>
 
       <ProfileFieldCard
+    fieldName="address"
+    fieldValue={`
+      ${profileData.find((field) => field.fieldName === "address")?.fieldValue || ""}
+      ${profileData.find((field) => field.fieldName === "city")?.fieldValue || ""}
+      ${profileData.find((field) => field.fieldName === "state")?.fieldValue || ""}
+      ${profileData.find((field) => field.fieldName === "country")?.fieldValue || ""}
+      ${profileData.find((field) => field.fieldName === "zipCode")?.fieldValue || ""}
+    `}
+    editMode={profileData.find((field) => field.fieldName.toLowerCase() === "address")?.editMode || false}
+    onEditField={handleEditField}
+    onSaveField={handleSaveField}
+    onCloseField={handleCloseField}
+    onInputChange={handleInputChange}
+    loggedIn={loggedIn}
+    currentUserID={currentUserID}
+    profileId={profileId}
+  >
+{renderFieldValue("address", profileData.find((field) => field.fieldName.toLowerCase() === "address")?.fieldValue || "", false)}
+    </ProfileFieldCard>
+
+      <ProfileFieldCard
         fieldName="website"
         fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "website")?.fieldValue || ""}
         editMode={profileData.find((field) => field.fieldName.toLowerCase() === "website")?.editMode || false}
@@ -332,25 +353,10 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
                 loggedIn={loggedIn}
                 currentUserID={currentUserID}
                 profileId={profileId}
+                labelName="About Us"
               />
             </Card>
 
-        
-            {/* <ConditionsContainer> */}
-              <Card>
-              <ProfileFieldCard
-                fieldName="conditions"
-                fieldValue={profileData.find((field) => field.fieldName === "conditions")?.fieldValue || ""}
-                editMode={profileData.find((field) => field.fieldName.toLowerCase() === "conditions")?.editMode || false}
-                onEditField={handleEditField}
-                onSaveField={handleSaveField}
-                 onCloseField={handleCloseField}
-                onInputChange={handleInputChange}
-                loggedIn={loggedIn}
-                currentUserID={currentUserID}
-                profileId={profileId}
-              />
-            </Card>
             <Card>
               <ProfileFieldCard
                 fieldName="treatments"
@@ -365,29 +371,28 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
                 profileId={profileId}
               />
             </Card>
+        
+            {/* <ConditionsContainer> */}
+              <Card>
+              <ProfileFieldCard
+                fieldName="conditions"
+                fieldValue={profileData.find((field) => field.fieldName === "conditions")?.fieldValue || ""}
+                editMode={profileData.find((field) => field.fieldName.toLowerCase() === "conditions")?.editMode || false}
+                onEditField={handleEditField}
+                onSaveField={handleSaveField}
+                 onCloseField={handleCloseField}
+                onInputChange={handleInputChange}
+                loggedIn={loggedIn}
+                currentUserID={currentUserID}
+                profileId={profileId}
+                labelName="Choose conditions specialized at your clinic"
+              />
+            </Card>
+            
             {/* </ConditionsContainer> */}
          
 
-<Card>
-  <ProfileFieldCard
-    fieldName="address"
-    fieldValue={`
-      ${profileData.find((field) => field.fieldName === "address")?.fieldValue || ""}
-      ${profileData.find((field) => field.fieldName === "city")?.fieldValue || ""}
-      ${profileData.find((field) => field.fieldName === "state")?.fieldValue || ""}
-      ${profileData.find((field) => field.fieldName === "country")?.fieldValue || ""}
-      ${profileData.find((field) => field.fieldName === "zipCode")?.fieldValue || ""}
-    `}
-    editMode={profileData.find((field) => field.fieldName.toLowerCase() === "address")?.editMode || false}
-    onEditField={handleEditField}
-    onSaveField={handleSaveField}
-    onCloseField={handleCloseField}
-    onInputChange={handleInputChange}
-    loggedIn={loggedIn}
-    currentUserID={currentUserID}
-    profileId={profileId}
-  />
-</Card>
+
 
           </CardContainer>
        <DoctorContact />

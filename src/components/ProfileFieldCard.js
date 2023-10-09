@@ -171,6 +171,7 @@ const ProfileFieldCard = ({
   loggedIn,
   currentUserID,
   profileId,
+  labelName,
   //customClass,
 }) => {
 
@@ -295,6 +296,16 @@ console.log('filteredConditions', filteredConditions)
     <CardContainer>
       {editMode ? (
         <>
+          <Label>
+          <LabelText>
+            {labelName
+              ? labelName+":"
+              : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"}
+          </LabelText>
+        </Label>
+        <LabelBar />
+
+
             {(fieldName === "treatments" || fieldName === "conditions") ? (
     <div>
       {fieldName === "treatments" && (
@@ -333,9 +344,10 @@ console.log('filteredConditions', filteredConditions)
               onChange={(event) => onInputChange(fieldName, event)}
             />
           )}
-
-          <Button onClick={() => onSaveField(fieldName)}>Save</Button>
-          <Button onClick={() => onCloseField(fieldName)}>Close</Button>
+          <div className="button-wrapper">
+            <Button onClick={() => onSaveField(fieldName)}>Save</Button>
+            <Button onClick={() => onCloseField(fieldName)}>Close</Button>
+          </div>
         </>
       ) : (
         <>
@@ -363,8 +375,8 @@ console.log('filteredConditions', filteredConditions)
       <>
         <Label>
           <LabelText>
-            {fieldName === "description"
-              ? "About Us:"
+            {labelName
+              ? labelName+":"
               : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"}
           </LabelText>
         </Label>

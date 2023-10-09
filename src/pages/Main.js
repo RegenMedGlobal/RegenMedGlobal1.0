@@ -16,7 +16,7 @@ import Contact from "./Contact";
 import Services from "./Services";
 import { getConditions } from  "../functions/getConditions";
 import Downshift from "downshift";
-import Autosuggest from 'react-autosuggest';
+// import Autosuggest from 'react-autosuggest';
 import './Autosuggest.css'; // Import your custom CSS for styling
 
 
@@ -78,6 +78,7 @@ const StyledParagraph = styled.p`
     font-size: 26px; /* Decrease the font size for smaller screens */
     line-height: 34px;
     margin-bottom: 2px;
+    text-align: center;
   }
 `
 const StyledTreatmentSection = styled.p`

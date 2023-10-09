@@ -145,8 +145,8 @@ export const ReturnLink = styled(Typography)`
   transition: font-size 0.3s;
 
   &:hover {
-    font-size: 1.3rem;
-    color: ${mainColor};
+    text-decoration: underline;
+    color: ${mainColor} !important;
   }
 `;
 
