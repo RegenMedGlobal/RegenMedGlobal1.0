@@ -46,7 +46,7 @@ body {
 .search-top {
   color: #140437;
   font-family: 'Poppins', sans-serif;
-  font-size: 28px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -94,8 +94,8 @@ body {
   font-weight: 400;
   line-height: normal;
   height: 36px;
-  padding: 0 30px;
-  min-width: 133px;
+  padding: 0 12px;
+  min-width: 70px;
   margin: 0 15px 15px 0 !important;
 }
 /* .mar-0-top button.test-button:nth-child(1), */
@@ -125,7 +125,7 @@ body {
   width: 100px;
 }
 .test-img-1 {
-  width: 30px;
+  width: 20px;
   object-fit: cover;
   position: absolute;
   left: 0;
@@ -134,7 +134,7 @@ body {
 .flex-right-cus a h4 {
   color: #592CB8;
   font-family: 'Poppins', sans-serif;
-  font-size: 24px;
+  font-size: 18px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -152,12 +152,12 @@ body {
 .add-css {
   color: #000;
   font-family: 'Poppins', sans-serif;
-  font-size: 20px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 300;
   line-height: normal;
   position: relative;
-  padding: 0 0 0 60px;
+  padding: 0 0 0 30px;
 }
 
 .add-css-1 {
@@ -179,6 +179,7 @@ body {
   margin: 0 0 30px 0 !important;
   flex-direction: initial !important;
   align-items: center;
+  justify-content: space-between;
 }
 .flex-right-cus {
   width: fit-content;
@@ -221,7 +222,7 @@ body {
 p.span-clr {
   color: #000;
   font-family: 'Poppins', sans-serif;
-  font-size: 25px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -247,7 +248,7 @@ p.span-clr span {
   color: #000;
   text-align: right;
   font-family: 'Poppins', sans-serif;
-  font-size: 25px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
@@ -256,7 +257,7 @@ p.span-clr span {
 .filter .ant-select-selector span {
   color: #592CB8;
   font-family: 'Poppins', sans-serif;
-  font-size: 25px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
@@ -929,10 +930,10 @@ margin-left: 0;
   top: 4px;
 }
 .parent-sel-1.distance-filter span.fil-1 {
-  font-size: 24px;
+  font-size: 20px;
 }
 .filter .parent-sel-1.distance-filter .ant-select-selector span{
-    font-size: 24px;
+    font-size: 20px;
 }
 .parent-sel-1.distance-filter .mor-sele.select-no {
   width: 160px;
@@ -1930,11 +1931,23 @@ nav.navbar.navbar-expand-lg.bg-body-tertiary div#navbarSupportedContent {
 }
 nav.navbar.navbar-expand-lg.bg-body-tertiary ul.navbar-nav.me-auto.mb-2.mb-lg-0 li a {
   margin: 0 0 10px 0px !important;
-  text-align: left !important;
+  text-align: center !important;
 }
-nav.navbar.navbar-expand-lg.bg-body-tertiary ul.right-nav li {
+/* nav.navbar.navbar-expand-lg.bg-body-tertiary ul.right-nav li {
   margin: 0 40px 20px 0px !important;
+} */
+
+
+nav.navbar.navbar-expand-lg.bg-body-tertiary form.d-flex ul.right-nav li {
+  margin: 0 0 15px 0 !important;
 }
+
+form.d-flex {
+  width: 100% !important;
+  justify-content: center;
+}
+
+
 nav.navbar.navbar-expand-lg.bg-body-tertiary {
   min-height: auto !important;
   padding: 10px 10px !important;
@@ -2273,10 +2286,21 @@ p.span-clr {
 
 }
 .form-all.register-form .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select {
-  height: 46px;
+  /* height: 46px;
   padding: 0 15px;
   text-align: left;
   line-height: 46px;
+   */
+
+  height: 50px;
+  line-height: 50px !important;
+  padding: 0 15px!important;
+  background: #fff;
+  border-radius: 4px;
+  width: 100%;
+  width: 100%;
+  border: 1px solid #ccc;
+  text-align: left;
 }
 .form-all.register-form .label-contact {
   color: #000;
@@ -2405,4 +2429,15 @@ p.claim-p {
 
 .button-wrapper button {
   margin-left: 10px;
+}
+
+@media(max-width: 991px){
+  .form-all.register-form {
+      padding: 30px 0;
+  }
+  .form-all.register-form .brEyZU {
+      padding: 20px;
+      width: 90%;
+      margin: 0 auto;
+  }
 }
