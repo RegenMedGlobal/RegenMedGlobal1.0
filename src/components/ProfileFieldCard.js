@@ -314,7 +314,7 @@ console.log('filteredConditions', filteredConditions)
     <div>
       {fieldName === "treatments" && (
         <div>
-          <p>Choose your treatment type(s):</p>
+          <p>Types offered at your clinic:</p>
           {renderTreatmentButtons()}
           {/* <Input
             type="text"

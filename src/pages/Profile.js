@@ -381,8 +381,9 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
 
 
           </CardContainer>
+       
        <DoctorContact />
-          <MapContainer>
+       <MapContainer>
             <Map address={profileData.find((field) => field.fieldName === "address")?.fieldValue} />
           </MapContainer>
         </Content>

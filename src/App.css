@@ -2458,3 +2458,7 @@ button.ant-btn.css-dev-only-do-not-override-1jr9qlj.ant-btn-default.sc-iJUBwy.bG
 input.ant-input.css-dev-only-do-not-override-1jr9qlj:focus {
   outline: 2px solid #4514f5;
 }
+
+.hidden-visibility {
+  visibility: hidden !important;
+}

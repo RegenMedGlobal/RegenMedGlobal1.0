@@ -1,9 +1,11 @@
-
+import React, { useContext } from "react";
+import { AuthContext } from "../AuthContext";
 
 const DoctorContact = () => {
+  const { loggedIn, currentUser } = useContext(AuthContext);
   return (
    <>
-    <div className="get-in-touch">
+    <div className={`get-in-touch  ${loggedIn ? 'hidden-visibility' : ''} `}>
 
           <div className="get-flex">
             <div className="row">
