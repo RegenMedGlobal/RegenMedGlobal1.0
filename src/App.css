@@ -505,7 +505,6 @@ font-family: 'Poppins', sans-serif;
     line-height: normal;
     text-align: left;
 }
-.get-flex {}
 
 .get-flex .row {
     margin: 0;
@@ -516,12 +515,12 @@ font-family: 'Poppins', sans-serif;
     background: #F6F6F6;
     border: none !important;
     box-shadow: none;
-    padding: 25px;
+    padding: 0px;
     border-radius: 22px;
 }
 
 .get-in-touch {
-    padding: 0 30px;
+    padding: 0px;
     margin: 0 0 30px 0;
 }
 
@@ -1984,6 +1983,12 @@ button.doc-login {
 
 
 @media(max-width: 767px){
+
+  .get-in-touch {
+    padding: 0 0px;
+  }
+
+
   .filter-right .parent-sel-1 {
     margin: 0 0 0 0px;
 }
@@ -1999,7 +2004,7 @@ button.doc-login {
   width: 100%;
 }
   .get-flex {
-    padding: 25px 15px;
+    padding: 0px;
 }
   .outer-div {
     padding-left: 0;
@@ -2431,6 +2436,14 @@ p.claim-p {
   margin-left: 10px;
 }
 
+.sc-dNSnMM.cMDaAZ {
+  position: relative;
+}
+button.ant-btn.css-dev-only-do-not-override-1jr9qlj.ant-btn-default.sc-iJUBwy.bGyHFX {
+  position: absolute;
+  top: 0;
+}
+
 @media(max-width: 991px){
   .form-all.register-form {
       padding: 30px 0;
@@ -2440,4 +2453,8 @@ p.claim-p {
       width: 90%;
       margin: 0 auto;
   }
+}
+
+input.ant-input.css-dev-only-do-not-override-1jr9qlj:focus {
+  outline: 2px solid #4514f5;
 }

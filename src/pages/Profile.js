@@ -255,6 +255,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
          
     <StyledContactSection>
         <ContactHeader>How to reach us</ContactHeader>
+        <hr />
       <ProfileFieldCard
         fieldName="email"
         fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "email")?.fieldValue || ""}
@@ -370,7 +371,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
                 loggedIn={loggedIn}
                 currentUserID={currentUserID}
                 profileId={profileId}
-                labelName="Choose conditions specialized at your clinic"
+                labelName="Conditions/Specialties"
               />
             </Card>
             
