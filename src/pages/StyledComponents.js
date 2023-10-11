@@ -16,6 +16,9 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 5%;
+  @media (max-width: 767px) {
+    margin-top: 20%
+  }
 
   .link {
     text-decoration: none;

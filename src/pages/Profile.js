@@ -254,6 +254,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
           
          
     <StyledContactSection>
+      <hr/>
         <ContactHeader>How to reach us</ContactHeader>
         <hr />
       <ProfileFieldCard
@@ -321,6 +322,10 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
       >
         {renderFieldValue("website", profileData.find((field) => field.fieldName.toLowerCase() === "website")?.fieldValue || "", false)}
       </ProfileFieldCard>
+
+      
+
+      
     </StyledContactSection>
  
 </Sidebar>
@@ -355,6 +360,8 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
                 loggedIn={loggedIn}
                 currentUserID={currentUserID}
                 profileId={profileId}
+                labelName="Treatment Type(s)"
+                labelNameOnEdit="Choose Treatment Type(s) offered at your clinic"
               />
             </Card>
         
@@ -372,6 +379,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
                 currentUserID={currentUserID}
                 profileId={profileId}
                 labelName="Conditions/Specialties"
+                labelNameOnEdit="Choose Conditions specialized at your clinic"
               />
             </Card>
             

@@ -2206,7 +2206,7 @@ p.span-clr {
 
 
 
-.form-all.register-form .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input {
+.form-all.register-form .MuiInputBase-input.MuiOutlinedInput-input {
   height: 50px;
   line-height: 50px !important;
   padding: 0 15px!important;
@@ -2227,7 +2227,7 @@ p.span-clr {
   width: 100% !important;
   line-height: 20px !important;
 }
-.form-all.register-form .css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
+.form-all.register-form .MuiFormControl-root.MuiTextField-root {
   width: 100% !important;
   height: 46px;
   line-height: 50px !important;
@@ -2250,7 +2250,7 @@ p.span-clr {
 .form-all.register-form .sc-cuTEes.MDteb {
   background: transparent;
 }
-.form-all.register-form .css-1d3z3hw-MuiOutlinedInput-notchedOutline {
+.form-all.register-form .MuiOutlinedInput-notchedOutline {
   border: none;
 }
 .form-all.register-form .ant-select-selector {
@@ -2290,7 +2290,7 @@ p.span-clr {
   font-family: 'Poppins', sans-serif;
 
 }
-.form-all.register-form .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select {
+.form-all.register-form .MuiSelect-select {
   /* height: 46px;
   padding: 0 15px;
   text-align: left;
@@ -2312,10 +2312,8 @@ p.span-clr {
   font-weight: bold !important;
   font-size: 16px !important;
 }
-.form-all.register-form .css-wb57ya-MuiFormControl-root-MuiTextField-root {
-  width: 100% !important;
-}
-.form-all.register-form .css-1wc848c-MuiFormHelperText-root.Mui-error{
+
+.form-all.register-form .MuiFormHelperText-root.Mui-error{
   margin: 0 0 5px 0 !important;
   font-size: 12px !important;
 }
@@ -2348,49 +2346,7 @@ p.span-clr {
   background: linear-gradient(180deg, #0019FB 0%, #E409E8 100%);
   color: #fff;
 }
-/* .form-all.register-form .sc-cuTEes.MDteb {
-    background: transparent;
-    box-shadow: none;
-    padding: 0;
-}
 
-.form-all.register-form .MuiFormControl-root {
-    width: 100% !important;
-}
-
-.form-all.register-form .ant-select {
-    width: 100% !important;
-}
-
-.form-all.register-form .ant-select-selector {
-    background: transparent !important;
-    border: none !important;
-    color: #fff !important;
-}
-
-.form-all.register-form span.ant-select-selection-placeholder {
-    color: #fff !important;
-    display: block !important;
-    text-align: left;
-}
-
-.form-all.register-form .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input {
-    color: #fff;
-    border: none !important;
-}
-
-.form-all.register-form .css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
-    color: #fff;
-}
-
-.form-all.register-form .css-1jy569b-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
-    color: #fff;
-}
-
-.form-all.register-form .css-1d3z3hw-MuiOutlinedInput-notchedOutline {
-    border: none !important;
-    color: #fff !important;
-} */
 .form-custom .cIQeBa {
   background-color: #F6F6F6;
 }
@@ -2455,10 +2411,33 @@ button.ant-btn.css-dev-only-do-not-override-1jr9qlj.ant-btn-default.sc-iJUBwy.bG
   }
 }
 
-input.ant-input.css-dev-only-do-not-override-1jr9qlj:focus {
+input.ant-input:focus {
   outline: 2px solid #4514f5;
 }
 
 .hidden-visibility {
   visibility: hidden !important;
 }
+
+.type-button.ant-btn {
+  font-size: 14px;
+  height: 40px;
+  padding: 8px 30px;
+  border-radius: 6px;
+  margin: 0 7px 0 0;
+}
+
+@media(max-width: 767px){
+
+  .type-button.ant-btn {
+    height: 32px;
+    padding: 4px 15px;
+    margin: 0 5px 0 0;
+  }
+
+  .flexmen button{ 
+    margin: 0 15px 10px 0;
+  }
+
+}
+
