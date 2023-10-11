@@ -176,6 +176,7 @@ const ProfileFieldCard = ({
   currentUserID,
   profileId,
   labelName,
+  labelNameOnEdit,
   //customClass,
 }) => {
 
@@ -302,9 +303,17 @@ console.log('filteredConditions', filteredConditions)
         <>
           <Label>
           <LabelText>
-            {labelName
+            {editMode ? (
+              labelNameOnEdit
+              ? labelNameOnEdit+":"
+              : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"
+            ): (
+              labelName
               ? labelName+":"
-              : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"}
+              : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"
+            )}
+
+           
           </LabelText>
         </Label>
         <LabelBar />
@@ -314,7 +323,7 @@ console.log('filteredConditions', filteredConditions)
     <div>
       {fieldName === "treatments" && (
         <div>
-          <p>Types offered at your clinic:</p>
+          {/* <p>Types offered at your clinic:</p> */}
           {renderTreatmentButtons()}
           {/* <Input
             type="text"
@@ -342,9 +351,9 @@ console.log('filteredConditions', filteredConditions)
       )}
     </div>
           ) : (
-            (fieldName === "description" && editMode) ? (
-              <textarea className="area-text input-get" value={fieldValue || ""}
-              onChange={(event) => onInputChange(fieldName, event)} >{fieldValue || ""}</textarea>
+            ((fieldName === "description" || fieldName === "address") && editMode) ? (
+              <textarea className="area-text input-get" value={fieldValue.trim() || ""}
+              onChange={(event) => onInputChange(fieldName, event)} >{fieldValue.trim() || ""}</textarea>
             ) :
             <Input
               type="text"

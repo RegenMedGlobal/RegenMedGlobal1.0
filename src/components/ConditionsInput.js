@@ -64,7 +64,7 @@ const handleLocalInputChange = (newValue) => {
 
   return (
     <StyledControllerContainer>
-      <label className="label-contact">Conditions/Specialties</label>
+      <label className="label-contact">Choose Conditions Specialized at your clinic</label>
       {/* <p className="sublabel">Select up to five</p> */}
       <Controller
         name="conditions"

@@ -38,7 +38,7 @@ const TreatmentInput = ({ control, errors, field, handleTreatmentSelection }) =>
     <div className="row">
       <div className="col-lg-12">
         <div className="mar-15">
-          <label className="label-contact">Treatment Type(s) offered</label>
+          <label className="label-contact">Choose Treatment Type(s) offered at your clinic</label>
           <StyledControllerContainer>
             <Controller
               name="treatments"
