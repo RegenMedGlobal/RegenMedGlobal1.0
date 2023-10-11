@@ -16,14 +16,20 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  position: relative;
+  text-align: left;
 
-  margin-bottom: 16px;
+  margin-bottom: 0px;
 
   @media (max-width: 855px) {
     font-size: 14px; /* Adjust font size for smaller screens */
     height: 0%;
     width: 90%;
     margin: 0 auto;
+  }
+
+  @media (max-width: 767px) {
+    padding: 16px 0;
   }
 `;
 
@@ -64,7 +70,7 @@ const NameValue = styled.div`
 
 const Label = styled.div`
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 20px;
   margin-bottom: 4px;
   text-align: left;
   margin-top: 0;
@@ -83,17 +89,17 @@ const LabelText = styled.span`
   margin-bottom: 4px; /* Adjust the spacing between the label and the bar */
   font-weight: bold; /* Apply font-weight to the label text */
 
-  &:after {
-    content: ''; /* Create a pseudo-element for the bar */
-    position: absolute; /* Position it absolutely within the span */
-    bottom: 0; /* Position it at the bottom of the span */
-    left: 0; /* Start from the left edge of the span */
-    width: 100%; /* Span the entire width of the span */
-    height: .25rem; /* Set the height of the bar */
-    background-color: var(--main-color);
-  }
+ 
 `;
-
+// &:after {
+//   content: ''; /* Create a pseudo-element for the bar */
+//   position: absolute; /* Position it absolutely within the span */
+//   bottom: 0; /* Position it at the bottom of the span */
+//   left: 0; /* Start from the left edge of the span */
+//   width: 100%; /* Span the entire width of the span */
+//   height: .25rem; /* Set the height of the bar */
+//   background-color: var(--main-color);
+// }
 
 const WebsiteLabel = styled.div`
   font-weight: bold;
@@ -106,12 +112,14 @@ const EditButton = styled(Button)`
   background-color: transparent;
   color: purple;
   font-weight: bold;
-  margin-top: 12px;
+  margin-top: 10px;
   font-size: 12px;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
   align-self: flex-end; /* Align the edit button to the right */
+  position: absolute;
+  top: 0;
 
   &:hover {
     background-color: transparent;
@@ -130,16 +138,12 @@ const IconContainer = styled.div`
 `;
 
 const LabelBar = styled.div`
-  width: auto; /* Allow the bar to adjust its width based on content */
-  height: .25rem; /* Set the height of the bar */
-  background-color: var(--main-color);
-  margin-top: 4px; /* Adjust the spacing between the label and the bar */
-  display: inline-block; /* Display as inline-block to match the text width */
+  
 `;
 
 const StyledValue = styled.div`
-  font-size: 1.2rem;
-  font-weight: bold; /* Increase font weight */
+  font-size: 15px;
+  font-weight: 400; /* Increase font weight */
 `;
 const StyledValueWithIcon = styled.div`
   display: flex;
@@ -310,7 +314,7 @@ console.log('filteredConditions', filteredConditions)
     <div>
       {fieldName === "treatments" && (
         <div>
-          <p>Choose your treatment type(s):</p>
+          <p>Types offered at your clinic:</p>
           {renderTreatmentButtons()}
           {/* <Input
             type="text"
@@ -338,6 +342,10 @@ console.log('filteredConditions', filteredConditions)
       )}
     </div>
           ) : (
+            (fieldName === "description" && editMode) ? (
+              <textarea className="area-text input-get" value={fieldValue || ""}
+              onChange={(event) => onInputChange(fieldName, event)} >{fieldValue || ""}</textarea>
+            ) :
             <Input
               type="text"
               value={fieldValue || ""}

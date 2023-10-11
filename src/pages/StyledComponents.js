@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Typography } from 'antd';
 
 const mainColor = "#4811ab";
-const sidebarBackgroundColor = "#ffffff";
+const sidebarBackgroundColor = "#f2f2f2";
 const sidebarWidth = "300px";
 const sidebarHeight = "80%"; // Adjust the height as needed
 
@@ -50,12 +50,16 @@ export const Sidebar = styled.div`
     margin-top: 2rem;
     height: 30%; /* Adjusted height for mobile */
   }
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
 `;
 
 // StyledContactSection styles
 export const StyledContactSection = styled.div`
-  padding: 20px;
-  margin-bottom: 16px;
+  padding: 18px 0;
+  margin-bottom: 14px;
   border-radius: 8px;
   flex: 1;
   overflow-wrap: break-word; /* Add this to allow the text to wrap */
@@ -96,14 +100,10 @@ export const Content = styled.div`
   
   @media (min-width: 850px) {
     height: 70%;
- 
-
   }
 
-  @media (max-width: 850px) {
-    height: 70%;
-   
-
+  @media (max-width: 767px) {
+    padding: 16px 0px;
   }
 `;
 
@@ -163,7 +163,7 @@ export const CardContainer = styled.div`
 
 
 export const ContactHeader = styled.h2`
-  font-size: 1.5rem;
+  font-size: 20px;
   color: #333;
   margin-bottom: 1rem;
   text-align: center;
