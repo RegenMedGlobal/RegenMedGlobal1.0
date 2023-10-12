@@ -19,6 +19,7 @@ import Footer from './components/Footer'
 import "@fontsource/poppins";
 import CodeValidator from './pages/CodeValidator'
 import Articles from './pages/articles/Articles'
+import SubmitArticle from './pages/articles/SubmitArticle'
 import ReactGA from 'react-ga';
 
 // Initialize Google Analytics with your Measurement ID
@@ -81,6 +82,7 @@ function App() {
           <Route path='/profile/:userId' element={<Profile />} />
           <Route path='/claim' element={<Claim />} />
           <Route path='/articles' element={<Articles />} />
+         <Route path='/submitarticle' element={<SubmitArticle />} />
           <Route path='/ResetPassword' element={<ResetPassword />} />
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
         </Routes>
