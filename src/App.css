@@ -2441,3 +2441,10 @@ input.ant-input:focus {
 
 }
 
+.select-box-edit .ant-select-selection-item {
+  height: 40px !important;
+}
+
+#react-select-2-listbox  {
+  z-index: 999999999;
+}

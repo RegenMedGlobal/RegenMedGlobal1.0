@@ -5,7 +5,9 @@ import { EditOutlined, MailOutlined, PhoneOutlined, CheckCircleOutlined  } from 
 import styled from "styled-components";
 import { getConditions } from "../functions/getConditions";
 import debounce from 'lodash/debounce';
+import { Select } from "antd";
 import CreatableSelect from 'react-select/creatable'; 
+import SelectConditions from "./Condiitons/SelectConditions";
 
 const CardContainer = styled.div`
   background-color: transparent;
@@ -297,6 +299,8 @@ const shouldDisplayLabel = (fieldName, editMode) => {
 };
 console.log('filteredConditions', filteredConditions)
 
+  const selectedConditionsArr = fieldValue.split(',').map((value) => {return {label: value, value: value}});
+  
   return (
     <CardContainer>
       {editMode ? (
@@ -320,7 +324,7 @@ console.log('filteredConditions', filteredConditions)
 
 
             {(fieldName === "treatments" || fieldName === "conditions") ? (
-    <div>
+    <>
       {fieldName === "treatments" && (
         <div>
           {/* <p>Types offered at your clinic:</p> */}
@@ -333,23 +337,12 @@ console.log('filteredConditions', filteredConditions)
         </div>
       )}
       {fieldName === "conditions" && editMode && (
-      <div>
-        <CreatableSelect
-          isMulti
-          value={selectedConditions}
-          onChange={(selectedConditions) => setSelectedConditions(selectedConditions)}
-          options={filteredConditions.map(condition => ({ value: condition, label: condition }))}
-          onCreateOption={handleCreateOption}
-        />
-        <Input
-      type="text"
-      value={fieldValue || ""}
-      onChange={(event) => onInputChange(fieldName, event)}
-    />
+      <div className="select-box-edit" style={{"width": "100%"}}>
+         <SelectConditions selectedOptions={selectedConditionsArr} options={filteredConditions.map(condition => ({ value: condition, label: condition }))} />
+         {console.log("km",selectedConditionsArr)}
       </div>
-         
       )}
-    </div>
+    </>
           ) : (
             ((fieldName === "description" || fieldName === "address") && editMode) ? (
               <textarea className="area-text input-get" value={fieldValue.trim() || ""}
