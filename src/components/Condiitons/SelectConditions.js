@@ -1,4 +1,4 @@
-import { debounce } from "lodash";
+import { cond, debounce } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { getConditions } from "../../functions/getConditions";
@@ -10,6 +10,7 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
   const [conditions, setConditions] = useState([]);
   const conditionRef = useRef(null);
   const [filterTerm, setFilterTerm] = useState("");
+  const [conditionsArr, setConditionsArr] = useState([]);
   const {
     watch,
     control,
@@ -17,6 +18,7 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
     handleSubmit,
     formState: { errors },
     getValues,
+    getFieldState,
     reset,
   } = useForm({
     defaultValues: {
@@ -25,6 +27,8 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
       conditionsSuggestions: [], // Set initial value as an empty array
     },
   });
+
+  console.log(options, selectedOptions);
 
   useEffect(() => {
     // Define a debounced version of fetchConditions
@@ -51,6 +55,7 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
     if (!conditionsLoweredCased.includes(selectedOption.toLowerCase())) {
       setValue("conditions", watch("conditions").concat(selectedOption));
     }
+    console.log('batman is here too with event', selectedOption);
     setValue("conditionsSuggestions", []);
     //setShowConditionsDropdown(false);
   };
@@ -60,9 +65,22 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
     setFilterTerm(newValue);
   };
 
+  useEffect(() => {
+    const toLift = conditionsArr.map((condition) => {
+      if(condition.value) {
+        return condition.value;
+      } else {
+        return condition;
+      }
+    });
+    onInputChange("conditions", toLift.join(","))
+  }, [conditionsArr])
+
   return (
     <>
-    
+      <div className="row">
+        <div className="col-lg-12">
+          <div className="mar-15-0 sero-rad">
             <ConditionsInput
               control={control}
               showConditionsDropdown={showConditionsDropdown}
@@ -76,25 +94,25 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
               handleInputChange={handleInputChange} // Pass the handleInputChange function
               //setShowConditionsDropdown={setShowConditionsDropdown} // Pass setShowConditionsDropdown as a prop
             />
-          
+          </div>
+        </div>
+      </div>
 
+      <div className="row">
+        <div className="col-lg-12">
+          <div className="mar-15 zer-radi">
             <Controller
               name="conditions"
               control={control}
               render={({ field }) => {
-                // const { value } = field;
-                // console.log('btaman', selectedOptionsArr);
-                // // if(value[0]) {
-                //     selectedOptionsArr.push(value[0])
-                //     field.value = selectedOptionsArr;
-                // // }
+                setConditionsArr(field.value);
                 return (
                   <div>
                     <Select
                       mode="multiple"
                       open={false}
                       style={{
-                        width: "100%",
+                        width: "25rem",
                         marginTop: "1rem",
                       }}
                       placeholder="Conditions/Diseases treated"
@@ -105,7 +123,9 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
                 );
               }}
             />
-          
+          </div>
+        </div>
+      </div>
     </>
   );
 };
