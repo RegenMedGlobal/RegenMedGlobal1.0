@@ -338,8 +338,8 @@ console.log('filteredConditions', filteredConditions)
       )}
       {fieldName === "conditions" && editMode && (
       <div className="select-box-edit" style={{"width": "100%"}}>
-         <SelectConditions selectedOptions={selectedConditionsArr} options={filteredConditions.map(condition => ({ value: condition, label: condition }))} />
-         {console.log("km",selectedConditionsArr)}
+         <SelectConditions onInputChange={onInputChange} selectedOptions={selectedConditionsArr} options={filteredConditions.map(condition => ({ value: condition, label: condition }))} />
+         
       </div>
       )}
     </>

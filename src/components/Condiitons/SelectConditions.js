@@ -5,7 +5,7 @@ import { getConditions } from "../../functions/getConditions";
 import ConditionsInput from "../ConditionsInput";
 import { Select } from "antd";
 
-const SelectConditions = ({ selectedOptions, options }) => {
+const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
   const [showConditionsDropdown, setShowConditionsDropdown] = useState(false);
   const [conditions, setConditions] = useState([]);
   const conditionRef = useRef(null);
@@ -25,8 +25,6 @@ const SelectConditions = ({ selectedOptions, options }) => {
       conditionsSuggestions: [], // Set initial value as an empty array
     },
   });
-
-  console.log(options, selectedOptions);
 
   useEffect(() => {
     // Define a debounced version of fetchConditions

@@ -60,7 +60,6 @@ const ConditionsInput = ({
   };
 
   function handleSelectChange(selectedOptions, actionMeta) {
-    console.log('batman', selectedOptions, this);
     
       if (actionMeta.action === "select-option") {
         const {value} = this;

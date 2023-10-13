@@ -2447,4 +2447,13 @@ input.ant-input:focus {
 
 #react-select-2-listbox  {
   z-index: 999999999;
+  position: relative !important;
+}
+
+.select-box-edit .ant-select-selector{
+  border: none !important;
+  border-radius: 0px !important;
+  padding: 7px !important;
+  height: auto !important;
+  z-index: 0 !important;
 }
