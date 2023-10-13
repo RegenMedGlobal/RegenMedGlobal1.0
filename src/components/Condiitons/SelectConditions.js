@@ -112,7 +112,7 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
                       mode="multiple"
                       open={false}
                       style={{
-                        width: "25rem",
+                        width: "100%",
                         marginTop: "1rem",
                       }}
                       placeholder="Conditions/Diseases treated"
