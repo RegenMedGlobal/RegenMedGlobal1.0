@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Suspense } from "react";
+import React, { useState, useEffect, useCallback, Suspense, useMemo} from "react";
 import {
   Layout,
   Pagination,
@@ -360,50 +360,47 @@ const getFilteredConditions = (value) => {
     setCurrentResults(slicedResults);
   }, [sortedResults, page]);
 
-  useEffect(() => {
-    const sortResults = () => {
-      let sorted = [...results];
 
-      if (sortOrder === "distance") {
-        console.log("Sorting by distance...");
-        sorted = results.map((result) => {
-          const distance = getDistance(
-            {
-              latitude: filterCoordinates.latitude,
-              longitude: filterCoordinates.longitude,
-            },
-            { latitude: result.latitude, longitude: result.longitude }
-          );
-          return { ...result, distance };
-        });
-        sorted.sort((a, b) => a.distance - b.distance);
-      } else if (sortOrder === "asc") {
-        console.log("Sorting in ascending order...");
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-      } else if (sortOrder === "desc") {
-        console.log("Sorting in descending order...");
-        sorted.sort((a, b) => b.name.localeCompare(a.name));
-      }
+useEffect(() => {
+  const sortResults = () => {
+    let sorted = [...results];
 
-      return sorted;
-    };
+    if (sortOrder === "distance") {
+      console.log("Sorting by distance...");
+      sorted = results.map((result) => {
+        const distance = getDistance(
+          {
+            latitude: filterCoordinates.latitude,
+            longitude: filterCoordinates.longitude,
+          },
+          { latitude: result.latitude, longitude: result.longitude }
+        );
+        return { ...result, distance };
+      });
+      sorted.sort((a, b) => a.distance - b.distance);
+    } else if (sortOrder === "asc") {
+      console.log("Sorting in ascending order...");
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortOrder === "desc") {
+      console.log("Sorting in descending order...");
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
+    }
 
-    const updateSortedResults = () => {
-      const sorted = sortResults();
+    return sorted;
+  };
 
-      // Update sortedResults state
-      setSortedResults(sorted);
+  const sortedResults = sortResults();
 
-      // Update currentResults based on sortedResults
-      const startIndex = (page - 1) * PAGE_SIZE;
-      const endIndex = startIndex + PAGE_SIZE;
-      const slicedResults = sorted.slice(startIndex, endIndex);
-      setCurrentResults(slicedResults);
-    };
+  // Update currentResults based on sortedResults
+  const startIndex = (page - 1) * PAGE_SIZE;
+  const endIndex = startIndex + PAGE_SIZE;
+  const slicedResults = sortedResults.slice(startIndex, endIndex);
+  setCurrentResults(slicedResults);
 
-    updateSortedResults();
-  }, [results, sortOrder, page]);
-//  console.log("window", window.innerWidth);
+  // Update sortedResults state
+  setSortedResults(sortedResults);
+}, [results, sortOrder, page, setCurrentResults, setSortedResults, filterCoordinates]);
+
 
   return (
     <Layout className="results">
@@ -461,8 +458,6 @@ const getFilteredConditions = (value) => {
             {window.innerWidth > 500 && <ResultsMap
               style={{ width: "20%" }}
               results={results}
-              coordinates={filterCoordinates}
-              address={address}
             />}
           </div>
 
@@ -510,8 +505,6 @@ const getFilteredConditions = (value) => {
             {window.innerWidth < 500 && <ResultsMap
               style={{ width: "20%" }}
               results={results}
-              coordinates={filterCoordinates}
-              address={address}
             />}
 
           </Suspense>
