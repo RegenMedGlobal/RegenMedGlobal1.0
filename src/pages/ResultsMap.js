@@ -28,6 +28,7 @@ const ResultsMap = ({ results }) => {
   }, []);
 
   useEffect(() => {
+    console.log("Map Changes")
     const fetchCoordinates = async () => {
       const coordinatesPromises = results.map(async (result) => {
         const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
@@ -50,6 +51,7 @@ const ResultsMap = ({ results }) => {
       });
 
       const coordinatesData = await Promise.all(coordinatesPromises);
+      
       const filteredCoordinates = coordinatesData.filter(
         (coordinates) => coordinates !== null
       );
@@ -82,8 +84,9 @@ const ResultsMap = ({ results }) => {
       }
 
       if (map) {
-        map.on('load', () => {
+        // map.on('load', () => {
           console.log('Map Loaded');
+          console.log("Filtered", filteredCoordinates)
           filteredCoordinates.forEach((coordinates) => {
             const marker = new mapboxgl.Marker()
               .setLngLat([coordinates.lng, coordinates.lat])
@@ -92,7 +95,7 @@ const ResultsMap = ({ results }) => {
             
             // Optionally add marker click event handling here
           });
-        });
+        // });
       }
     };
 
