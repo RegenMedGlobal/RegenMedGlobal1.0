@@ -30,6 +30,7 @@ const ResultsMap = ({ results }) => {
   useEffect(() => {
     const fetchCoordinates = async () => {
       const coordinatesPromises = results.map(async (result) => {
+        console.log('result address:', result.address)
         const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
           result.address
         )}.json?access_token=${MAPBOX_TOKEN}`;
