@@ -145,6 +145,7 @@ const handleCloseField = async (fieldName) => {
   };
 
 const handleSaveField = async (fieldName) => {
+  console.log("batman is here", fieldName, profileData);
   try {
     //console.log('Updating profile data...');
     await updateData(profileId, fieldName, profileData.find((field) => field.fieldName === fieldName)?.fieldValue || '');
@@ -169,10 +170,9 @@ const handleSaveField = async (fieldName) => {
 
 const handleInputChange = (fieldName, event) => {
   console.log(`event: `, event);
-  const updatedValue = fieldName === 'treatments' ? event : event.target.value;
+  const updatedValue = fieldName === 'treatments' || fieldName === 'conditions' ? event : event.target.value;
   console.log('Field Name:', fieldName);
   console.log('Updated Value:', updatedValue);
-
   setProfileData((prevData) => prevData.map((field) => {
     if (field.fieldName === fieldName) {
       return {

@@ -298,8 +298,6 @@ const shouldDisplayLabel = (fieldName, editMode) => {
   return true;
 };
 console.log('filteredConditions', filteredConditions)
-
-  const selectedConditionsArr = fieldValue.split(',').map((value) => {return {label: value, value: value}});
   
   return (
     <CardContainer>
@@ -338,8 +336,8 @@ console.log('filteredConditions', filteredConditions)
       )}
       {fieldName === "conditions" && editMode && (
       <div className="select-box-edit" style={{"width": "100%"}}>
-         <SelectConditions selectedOptions={selectedConditionsArr} options={filteredConditions.map(condition => ({ value: condition, label: condition }))} />
-         {console.log("km",selectedConditionsArr)}
+         <SelectConditions onInputChange={onInputChange} selectedOptions={fieldValue.split(',').map((value) => {return {label: value, value: value}})} options={filteredConditions.map(condition => ({ value: condition, label: condition }))} />
+         
       </div>
       )}
     </>
