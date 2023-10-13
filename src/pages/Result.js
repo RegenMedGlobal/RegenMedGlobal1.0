@@ -81,7 +81,7 @@ const styles = {
   },
 };
 
-const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius }) => {
+const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreatments, resultRadius,  }) => {
   console.log('Result component rendered');
 
   const { id, name, city, specialty, placeId, address } = result;
@@ -202,6 +202,7 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius
     console.log('Result:', result); // Log the result object
     console.log('initial search: ', initialSearch)
     console.log('result address: ', resultAddress)
+    console.log('initial treatments:', initialTreatments)
 
     
     navigate(`/profile/${id}`, {
@@ -210,6 +211,7 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius
         initialSearch: initialSearch,
         resultAddress: resultAddress,
         resultRadius: resultRadius,
+        initialTreatments: initialTreatments,
         fromProfile: true
       }
     });

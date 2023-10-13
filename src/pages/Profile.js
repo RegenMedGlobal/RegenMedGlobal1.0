@@ -32,6 +32,8 @@ const Profile = () => {
   const [profileData, setProfileData] = useState([]);
   const [isProfileVerified, setIsProfileVerified] = useState(false);
 
+  console.log('state from profile:', state)
+
 
   // Add console.log statements to check values
   console.log("loggedIn:", loggedIn);
@@ -212,6 +214,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
         searchTerm: state.initialSearch,
         location: state.resultAddress,
         radius: resultRadius,
+        checkedOptions: state.initialTreatments
       },
     });
   };
@@ -245,7 +248,7 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
           Welcome back, {currentUser.name}!
         </Typography>
       )}
-      {!loggedIn && fromProfile && (
+      {fromProfile && (
         <ReturnLink variant="body2" className="link" onClick={handleReturnToResults}>
           Return to Results
         </ReturnLink>

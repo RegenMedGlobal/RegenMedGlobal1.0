@@ -90,10 +90,13 @@ const PAGE_SIZE = 5;
 
 const Results = () => {
 
+
+
   const [sortOrder, setSortOrder] = useState("distance");
   const { state } = useLocation();
   const [radius, setRadius] = useState(25);
   const [results, setResults] = useState([]);
+  console.log('state in results:', state)
   const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(-1);
   const [currentResults, setCurrentResults] = useState([]);
   const [sortedResults, setSortedResults] = useState([]);
@@ -105,6 +108,7 @@ const Results = () => {
       { label: "Prolotherapy", value: "Prolotherapy", checked: false },
     ]
   );
+    
   const [page, setPage] = useState(1);
   const [filterTerm, setFilterTerm] = useState(state?.searchTerm ?? "");
   const [storedValues, setStoredValues] = useState({
@@ -487,6 +491,7 @@ useEffect(() => {
                     key={result.id}
                     resultAddress={address}
                     initialSearch={filterTerm}
+                    initialTreatments={checkboxOptions}
                     resultRadius={radius}
                     onProfileClick={handleProfileClick}
                     isSelected={selectedMarkerIndex === index}
