@@ -82,80 +82,49 @@ const styles = {
 };
 
 const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreatments, resultRadius,  }) => {
-  console.log('Result component rendered');
+  console.log('Result component rendered. Address: ', resultAddress);
+
 
   const { id, name, city, specialty, placeId, address } = result;
   const [distance, setDistance] = useState('');
-   const [isProfileVerified, setIsProfileVerified] = useState(false);
+  const [isProfileVerified, setIsProfileVerified] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  console.log('Result city: ', city);
 
-    // Define the getOrSetCoordinatesInStorage function
-  const getOrSetCoordinatesInStorage = async (location) => {
-    const storageKey = `coordinates_${location}`;
-    const cachedCoordinates = localStorage.getItem(storageKey);
-
-    if (cachedCoordinates) {
-      // If coordinates are cached, parse and return them
-      return JSON.parse(cachedCoordinates);
-    }
-
-    // If not cached, fetch coordinates and store them in local storage
-    const coordinates = await getLocationCoordinates(location);
-    if (coordinates) {
-      localStorage.setItem(storageKey, JSON.stringify(coordinates));
-    }
-
-    return coordinates;
-  };
-
-
-  useEffect(() => {
-    const fetchDistance = async () => {
-  if (!resultAddress) {
-    // Handle the case when the address is not available
+const fetchDistance = async () => {
+  if (!resultAddress || !userLocation) {
     setDistance('');
     return;
   }
 
-  const resultCoordinates = await getOrSetCoordinatesInStorage(city);
-  const addressCoordinates = await getOrSetCoordinatesInStorage(resultAddress);
+  try {
+    const userCoordinates = userLocation;
+    const addressCoordinates = await getLocationCoordinates(resultAddress);
 
-  if (!resultCoordinates || !addressCoordinates) {
-    // Handle the case when the coordinates are not available
+    if (!addressCoordinates) {
+      setDistance('');
+      return;
+    }
+
+    const distanceInMeters = getDistance(userCoordinates, addressCoordinates);
+    const distanceInMiles = distanceInMeters * 0.000621371;
+
+    setDistance(distanceInMiles.toFixed(2));
+  } catch (error) {
+    console.error('Error fetching distance:', error);
     setDistance('');
-    return;
   }
-
-  const distanceInMeters = getDistance(resultCoordinates, addressCoordinates);
-  const distanceInMiles = distanceInMeters * 0.000621371; // Conversion factor for meters to miles
-
-  // Set the distance state
-  setDistance(distanceInMiles.toFixed(2));
 };
 
 
+  useEffect(() => {
     fetchDistance();
-  }, []);
+  }, [resultAddress, userLocation]);
 
-  const getUserLocation = () => {
-    return new Promise((resolve) => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          resolve({ latitude, longitude });
-        },
-        (error) => {
-          console.log(error);
-          resolve(null); // Resolve with null in case of error or denial
-        }
-      );
-    });
-  };
-
-    useEffect(() => {
+  useEffect(() => {
     // Call the isVerified function with the profileId as a parameter
     isVerified(id)
       .then((result) => {
-     //   console.log("verified from result")
         setIsProfileVerified(result);
       })
       .catch((error) => {
@@ -163,20 +132,41 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
       });
   }, []);
 
+    useEffect(() => {
+    // Define a function to retrieve the user's location
+    const fetchUserLocation = async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        }, (error) => {
+          console.error('Error retrieving user location:', error);
+        });
+      } else {
+        console.log("Geolocation is not supported by this browser.");
+      }
+    };
+
+    // Call the function to fetch user location when the component mounts
+    fetchUserLocation();
+  }, []);
+
   const getLocationCoordinates = async (location) => {
     try {
       const url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(location)}.json?key=${apiKey}`;
       console.log('URL:', url);
-  
+
       const response = await fetch(url);
       console.log('Response:', response);
-  
+
       if (response.ok) {
-        console.log('Response Type:', response.type); // Add this line
-        console.log('Response Headers:', response.headers); // Add this line
+        console.log('Response Type:', response.type);
+        console.log('Response Headers:', response.headers);
         const data = await response.json();
         console.log('Data:', data);
-  
+
         if (data && data.results && data.results.length > 0) {
           const { position } = data.results[0];
           console.log('Coordinates:', position);
@@ -193,16 +183,16 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
       return null;
     }
   };
-  
+
   
   const navigate = useNavigate();
  
 
   const handleProfileClick = (result) => {
-    console.log('Result:', result); // Log the result object
+  //  console.log('Result:', result); // Log the result object
     console.log('initial search: ', initialSearch)
     console.log('result address: ', resultAddress)
-    console.log('initial treatments:', initialTreatments)
+   // console.log('initial treatments:', initialTreatments)
 
     
     navigate(`/profile/${id}`, {
