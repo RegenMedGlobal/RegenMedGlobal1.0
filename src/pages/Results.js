@@ -124,6 +124,20 @@ const Results = () => {
   const [filterCoordinates, setFilterCoordinates] = useState(null);
   const [percent, setPercent] = useState(0);
   const [conditions, setConditions] = useState([]);
+
+  
+  // Save search parameters when the user leaves the results page
+  useEffect(() => {
+    window.onpopstate = (event) => {
+      if (event.state) {
+        // Restore the search parameters from the state
+        const { filterTerm, address, radius, checkboxOptions } = event.state;
+        // Now you can use these values as needed
+        console.log('Restored search parameters:', filterTerm, address, radius, checkboxOptions);
+        // Implement logic to update the UI with these parameters
+      }
+    };
+  }, []);
  
 
 const debouncedFetchConditions = debounce(async (term) => {
@@ -158,22 +172,22 @@ const debouncedHandleAddressChange = debounce(async (value) => {
       )}.json?access_token=${MAPBOX_TOKEN}`
     );
 
-    console.log('API response:', response.data);
-
     // Filter suggestions for US cities
-    const usCities = response.data.features.filter(
-      (suggestion) =>
+    const usCities = response.data.features.filter((suggestion) => {
+      // Check if the place type is a city
+      return suggestion.place_type.includes("place") &&
         suggestion.context &&
         suggestion.context.find(
           (context) => context.id.startsWith("country") && context.short_code === "us"
-        )
-    );
+        );
+    });
 
     setSuggestions(usCities);
   } catch (error) {
     console.error("Error fetching suggestions:", error);
   }
-}, 300); // Adjust the debounce delay as needed
+}); // Adjust the debounce delay as needed
+
 
 const handleAddressChange = (value) => {
   debouncedHandleAddressChange(value);

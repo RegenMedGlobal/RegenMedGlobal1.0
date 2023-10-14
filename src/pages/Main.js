@@ -249,13 +249,14 @@ const handleAddressChange = async (value) => {
     );
 
     // Filter suggestions for US cities
-    const usCities = response.data.features.filter(
-      (suggestion) =>
+    const usCities = response.data.features.filter((suggestion) => {
+      // Check if the place type is a city
+      return suggestion.place_type.includes("place") &&
         suggestion.context &&
         suggestion.context.find(
           (context) => context.id.startsWith("country") && context.short_code === "us"
-        )
-    );
+        );
+    });
 
     // Update suggestions using the state updater function
     setSuggestions(usCities);
