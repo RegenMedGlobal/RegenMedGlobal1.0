@@ -4,7 +4,7 @@ import imgPro4 from "../assets/pro-4.png";
 
 const Contact = () => {
   return (
-    <div className="contact-custom" style={{ marginTop: "3rem" }}>
+    <div className="contact-custom" >
       {/* Add a margin-top style here */}
       <div className="container">
         <div className="row">
