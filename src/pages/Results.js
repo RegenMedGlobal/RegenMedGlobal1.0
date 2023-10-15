@@ -127,17 +127,24 @@ const Results = () => {
 
   
   // Save search parameters when the user leaves the results page
-  useEffect(() => {
-    window.onpopstate = (event) => {
-      if (event.state) {
-        // Restore the search parameters from the state
-        const { filterTerm, address, radius, checkboxOptions } = event.state;
-        // Now you can use these values as needed
-        console.log('Restored search parameters:', filterTerm, address, radius, checkboxOptions);
-        // Implement logic to update the UI with these parameters
-      }
+// Save search parameters when the user leaves the results page
+useEffect(() => {
+  window.onbeforeunload = () => {
+    // Save individual search parameters
+    const searchParams = {
+      filterTerm,
+      address,
+      radius,
+      checkboxOptions,
     };
-  }, []);
+    localStorage.setItem("searchParameters", JSON.stringify(searchParams));
+  };
+
+  return () => {
+    window.onbeforeunload = null; // Cleanup the event handler
+  };
+}, [filterTerm, address, radius, checkboxOptions]);
+
  
 
 const debouncedFetchConditions = debounce(async (term) => {
@@ -419,6 +426,8 @@ useEffect(() => {
   setSortedResults(sortedResults);
 }, [results, sortOrder, page, setCurrentResults, setSortedResults, filterCoordinates]);
 
+console.log(`current results: ${currentResults}`)
+
 
   return (
     <Layout className="results">
@@ -503,7 +512,7 @@ useEffect(() => {
                   <Result
                     result={result}
                     key={result.id}
-                    resultAddress={address}
+                     resultAddress={`${result.address}, ${result.city}, ${result.state}, ${result.country}`}
                     initialSearch={filterTerm}
                     initialTreatments={checkboxOptions}
                     resultRadius={radius}
