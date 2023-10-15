@@ -208,16 +208,17 @@ const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
 };
 
 
-  const handleReturnToResults = () => {
-    navigate("/results", {
-      state: {
-        searchTerm: state.initialSearch,
-        location: state.resultAddress,
-        radius: resultRadius,
-        checkedOptions: state.initialTreatments
-      },
-    });
-  };
+const handleReturnToResults = () => {
+  navigate("/results", {
+    state: {
+      searchTerm: state.initialSearch,
+      location: `${state.city}, ${state.state}, ${state.country}`,
+      radius: resultRadius,
+      checkedOptions: state.initialTreatments
+    },
+  });
+};
+
 
   if (loading) {
     return (

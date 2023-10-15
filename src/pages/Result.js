@@ -200,6 +200,9 @@ const fetchDistance = async () => {
         ...result,
         initialSearch: initialSearch,
         resultAddress: resultAddress,
+        resultCity: city,
+        resultState, state,
+        resultCountry, country,
         resultRadius: resultRadius,
         initialTreatments: initialTreatments,
         fromProfile: true
