@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { TOMTOM_API_KEY} from '../config';
+import { HERE_API_KEY} from '../config';
 import styled from 'styled-components';
 import { getDistance } from 'geolib';
 import test from '../assets/rec-1.png'
@@ -10,9 +10,9 @@ import rec from '../assets/rec-3.png'
 import isVerified from "../functions/isVerified";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
-const apiKey = TOMTOM_API_KEY; // Use the TomTom API key
-
+const apiKey = HERE_API_KEY; 
 const mainColor = '#4811ab'; // Define the main color variable
 
 const StyledLayout = styled(Layout)`
@@ -154,36 +154,35 @@ const fetchDistance = async () => {
   }, []);
 
   const getLocationCoordinates = async (location) => {
-    try {
-      const url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(location)}.json?key=${apiKey}`;
-      console.log('URL:', url);
+  try {
+    const url = `https://geocode.search.hereapi.com/v1/geocode?apiKey=${apiKey}&q=${encodeURIComponent(location)}`;
+    console.log('URL:', url);
 
-      const response = await fetch(url);
-      console.log('Response:', response);
+    const response = await fetch(url);
+    console.log('Response:', response);
 
-      if (response.ok) {
-        console.log('Response Type:', response.type);
-        console.log('Response Headers:', response.headers);
-        const data = await response.json();
-        console.log('Data:', data);
+    if (response.ok) {
+      console.log('Response Type:', response.type);
+      console.log('Response Headers:', response.headers);
+      const data = await response.json();
+      console.log('Data:', data);
 
-        if (data && data.results && data.results.length > 0) {
-          const { position } = data.results[0];
-          console.log('Coordinates:', position);
-          return position;
-        } else {
-          throw new Error('No results found for the location.');
-        }
+      if (data && data.items && data.items.length > 0) {
+        const { position } = data.items[0];
+        console.log('Coordinates:', position);
+        return position;
       } else {
-        throw new Error('Failed to fetch data from the API.');
+        throw new Error('No results found for the location.');
       }
-    } catch (error) {
-      console.log('Error retrieving location coordinates:', error);
-      // Handle the error, such as showing a message to the user or setting a specific state variable to indicate the error.
-      return null;
+    } else {
+      throw new Error('Failed to fetch data from the API.');
     }
-  };
-
+  } catch (error) {
+    console.log('Error retrieving location coordinates:', error);
+    // Handle the error, such as showing a message to the user or setting a specific state variable to indicate the error.
+    return null;
+  }
+};
   
   const navigate = useNavigate();
  
