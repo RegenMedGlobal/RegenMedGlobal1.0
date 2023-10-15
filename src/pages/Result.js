@@ -85,7 +85,7 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
   console.log('Result component rendered. Address: ', resultAddress);
 
 
-  const { id, name, city, specialty, placeId, address } = result;
+  const { id, name, city, country, resultState, specialty, placeId, address } = result;
   const [distance, setDistance] = useState('');
   const [isProfileVerified, setIsProfileVerified] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
@@ -201,8 +201,8 @@ const fetchDistance = async () => {
         initialSearch: initialSearch,
         resultAddress: resultAddress,
         resultCity: city,
-        resultState, state,
-        resultCountry, country,
+        resultState: resultState,
+        resultCountry: country,
         resultRadius: resultRadius,
         initialTreatments: initialTreatments,
         fromProfile: true
