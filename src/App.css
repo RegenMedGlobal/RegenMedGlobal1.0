@@ -2256,10 +2256,11 @@ p.span-clr {
 .form-all.register-form .ant-select-selector {
   width: 100% !important;
   text-align: left;
-  height: 50px !important;
+  min-height: 50px !important;
+  display: block !important;
+  height: auto !important;
   margin: 0 !important;
-  height: 46px;
-  line-height: 50px !important;
+  /* line-height: 50px !important; */
   padding: 0 0px!important;
   border-radius: 12px !important;
   background: #FFF;
@@ -2456,4 +2457,9 @@ input.ant-input:focus {
   padding: 7px !important;
   height: auto !important;
   z-index: 0 !important;
+}
+
+.error-message {
+  color: #d32f2f !important;
+  font-size: 12px !important;
 }

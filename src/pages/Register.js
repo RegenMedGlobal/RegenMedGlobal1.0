@@ -515,6 +515,7 @@ const Register = () => {
                                 )}
                               />
                             </StyledControllerContainer>
+                              {!isValidEmail && email.length > 0 ? <p className="error-message">Valid email is required!</p> : <></> }
 
                           </div>
                         </div>
@@ -564,7 +565,7 @@ const Register = () => {
                                       />
                                     )}
                                   />
-                                  <p style={{ marginTop: "5px" }}>Password Strength: {getPasswordStrength()}</p>
+                                  <p style={{ marginTop: "20px" }}>Password Strength: {getPasswordStrength()}</p>
                                 </StyledControllerContainer>
 
                               </div>

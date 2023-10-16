@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Suspense } from "react";
+import React, { useState, useEffect, useCallback, Suspense, useMemo} from "react";
 import {
   Layout,
   Pagination,
@@ -15,12 +15,13 @@ import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Result from "./Result";
 import ResultsMap from "./ResultsMap";
-import Sort from "./Sort";
+import Sort from "../components/Sort";
 import getData from "../functions/getData";
 import {  MAPBOX_TOKEN } from "../config";
 import geocodeCity from "../functions/geoCodeCity";
 import { getConditions } from  "../functions/getConditions";
 import debounce from 'lodash.debounce';
+
 
 
 const StyledForm = styled(Form)`
@@ -89,10 +90,13 @@ const PAGE_SIZE = 5;
 
 const Results = () => {
 
+
+
   const [sortOrder, setSortOrder] = useState("distance");
   const { state } = useLocation();
   const [radius, setRadius] = useState(25);
   const [results, setResults] = useState([]);
+  console.log('state in results:', state)
   const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(-1);
   const [currentResults, setCurrentResults] = useState([]);
   const [sortedResults, setSortedResults] = useState([]);
@@ -104,6 +108,7 @@ const Results = () => {
       { label: "Prolotherapy", value: "Prolotherapy", checked: false },
     ]
   );
+    
   const [page, setPage] = useState(1);
   const [filterTerm, setFilterTerm] = useState(state?.searchTerm ?? "");
   const [storedValues, setStoredValues] = useState({
@@ -120,23 +125,42 @@ const Results = () => {
   const [percent, setPercent] = useState(0);
   const [conditions, setConditions] = useState([]);
 
-    // Define a debounced version of fetchConditions
+  
+  // Save search parameters when the user leaves the results page
+// Save search parameters when the user leaves the results page
 useEffect(() => {
-  // Define a debounced version of fetchConditions
-  const debouncedFetchConditions = debounce(async (term) => {
-    const conditionsData = await getConditions(term);
-    setConditions(conditionsData);
-  }, 300); // Adjust the debounce delay (in milliseconds) as needed
+  window.onbeforeunload = () => {
+    // Save individual search parameters
+    const searchParams = {
+      filterTerm,
+      address,
+      radius,
+      checkboxOptions,
+    };
+    localStorage.setItem("searchParameters", JSON.stringify(searchParams));
+  };
 
+  return () => {
+    window.onbeforeunload = null; // Cleanup the event handler
+  };
+}, [filterTerm, address, radius, checkboxOptions]);
+
+ 
+
+const debouncedFetchConditions = debounce(async (term) => {
+  const conditionsData = await getConditions(term);
+  setConditions(conditionsData);
+}, 300);
+
+useEffect(() => {
   const fetchConditions = async () => {
     if (filterTerm.trim().length >= 3) {
       debouncedFetchConditions(filterTerm);
     }
   };
-
-  // Call the debounced function when filterTerm changes
   fetchConditions();
-}, [filterTerm]);
+}, [filterTerm, debouncedFetchConditions]);
+
 
 
 const handleSearch = useCallback((value) => {
@@ -145,33 +169,36 @@ const handleSearch = useCallback((value) => {
 }, []);
 
 
-  const handleAddressChange = async (value) => {
-    setAddress(value);
+const debouncedHandleAddressChange = debounce(async (value) => {
+  setAddress(value);
 
-    try {
-      const response = await axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          value
-        )}.json?access_token=${MAPBOX_TOKEN}`
-      );
+  try {
+    const response = await axios.get(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        value
+      )}.json?access_token=${MAPBOX_TOKEN}`
+    );
 
-      console.log('API response:', response.data);
+    // Filter suggestions for US cities
+    const usCities = response.data.features.filter((suggestion) => {
+      // Check if the place type is a city
+      return suggestion.place_type.includes("place") &&
+        suggestion.context &&
+        suggestion.context.find(
+          (context) => context.id.startsWith("country") && context.short_code === "us"
+        );
+    });
+
+    setSuggestions(usCities);
+  } catch (error) {
+    console.error("Error fetching suggestions:", error);
+  }
+}); // Adjust the debounce delay as needed
 
 
-      // Filter suggestions for US cities
-      const usCities = response.data.features.filter(
-        (suggestion) =>
-          suggestion.context &&
-          suggestion.context.find(
-            (context) => context.id.startsWith("country") && context.short_code === "us"
-          )
-      );
-
-      setSuggestions(usCities);
-    } catch (error) {
-      console.error("Error fetching suggestions:", error);
-    }
-  };
+const handleAddressChange = (value) => {
+  debouncedHandleAddressChange(value);
+};
 
   const handleRadiusChange = (value) => {
     setRadius(value);
@@ -184,10 +211,10 @@ const handleSearch = useCallback((value) => {
   }
 
 
-  const handleChangePage = useCallback((page, pageSize) => {
-    setPage(page);
-    // setPageSize(pageSize);
-  }, []);
+const handleChangePage = (page) => {
+  setPage(page);
+};
+
 
   const handleProfileClick = (result) => {
     console.log("Clicked result:", result);
@@ -210,20 +237,13 @@ const handleSearch = useCallback((value) => {
       }
     };
 
-    const handleLocationError = (error) => {
-      console.log("Error retrieving user location:", error);
-      setUserLocation(null); // Set userLocation to null in case of error or denial
-      setSortOrder("asc")
-    };
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        fetchUserLocation,
-        handleLocationError
+        fetchUserLocation
       );
     } else {
       console.log("Geolocation is not supported by this browser.");
-      setUserLocation(null); // Set userLocation to null if geolocation is not supported
       setSortOrder("asc")
     }
   }, []);
@@ -253,18 +273,19 @@ const handleSearch = useCallback((value) => {
     setFilterTerm(searchTerm);
   }, []);
 
-  const updateResults = (filteredResults) => {
-    if (filteredResults.length === 0) {
-      setResults([]);
-      setCurrentResults([]);
-      setSortedResults([]);
-    } else {
-      setResults(filteredResults);
-      setCurrentResults(filteredResults);
-      setSortedResults(filteredResults);
-      setPage(1);
-    }
-  };
+const updateResults = (filteredResults) => {
+  if (filteredResults.length === 0) {
+    setResults([]);
+    setCurrentResults([]);
+    setSortedResults([]);
+  } else {
+    setResults(filteredResults);
+    setCurrentResults(filteredResults);
+    setSortedResults(filteredResults);
+    setPage(1);
+  }
+};
+
 
  // Replace the getFilteredOptions function with this simplified version
 const getFilteredConditions = (value) => {
@@ -352,21 +373,7 @@ const getFilteredConditions = (value) => {
     }
   }, [results]);
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation({ latitude, longitude });
-        },
-        (error) => {
-          console.log("Error retrieving user location:", error);
-        }
-      );
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
-  }, []);
+
 
   useEffect(() => {
     console.log("Current sorted results:", sortedResults);
@@ -378,52 +385,50 @@ const getFilteredConditions = (value) => {
     setCurrentResults(slicedResults);
   }, [sortedResults, page]);
 
-  useEffect(() => {
-    const sortResults = () => {
-      let sorted = [...results];
 
-      if (sortOrder === "distance") {
-        console.log("Sorting by distance...");
-        sorted = results.map((result) => {
-          const distance = getDistance(
-            {
-              latitude: filterCoordinates.latitude,
-              longitude: filterCoordinates.longitude,
-            },
-            { latitude: result.latitude, longitude: result.longitude }
-          );
-          return { ...result, distance };
-        });
-        sorted.sort((a, b) => a.distance - b.distance);
-      } else if (sortOrder === "asc") {
-        console.log("Sorting in ascending order...");
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-      } else if (sortOrder === "desc") {
-        console.log("Sorting in descending order...");
-        sorted.sort((a, b) => b.name.localeCompare(a.name));
-      }
+useEffect(() => {
+const sortResults = () => {
+  let sorted = [...results];
 
-      return sorted;
-    };
+  if (sortOrder === "distance") {
+    console.log("Sorting by distance...");
+    sorted = results.map((result) => {
+      const distance = getDistance(
+        {
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+        },
+        { latitude: result.latitude, longitude: result.longitude }
+      );
+      return { ...result, distance };
+    });
+    sorted.sort((a, b) => a.distance - b.distance);
+  } else if (sortOrder === "asc") {
+    console.log("Sorting in ascending order...");
+    sorted.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortOrder === "desc") {
+    console.log("Sorting in descending order...");
+    sorted.sort((a, b) => b.name.localeCompare(a.name));
+  }
 
-    const updateSortedResults = () => {
-      const sorted = sortResults();
-
-      // Update sortedResults state
-      setSortedResults(sorted);
-
-      // Update currentResults based on sortedResults
-      const startIndex = (page - 1) * PAGE_SIZE;
-      const endIndex = startIndex + PAGE_SIZE;
-      const slicedResults = sorted.slice(startIndex, endIndex);
-      setCurrentResults(slicedResults);
-    };
-    console.log("userLocation", userLocation);
+  return sorted;
+};
 
 
-    updateSortedResults();
-  }, [results, sortOrder, userLocation, page]);
-//  console.log("window", window.innerWidth);
+  const sortedResults = sortResults();
+
+  // Update currentResults based on sortedResults
+  const startIndex = (page - 1) * PAGE_SIZE;
+  const endIndex = startIndex + PAGE_SIZE;
+  const slicedResults = sortedResults.slice(startIndex, endIndex);
+  setCurrentResults(slicedResults);
+
+  // Update sortedResults state
+  setSortedResults(sortedResults);
+}, [results, sortOrder, page, setCurrentResults, setSortedResults, filterCoordinates]);
+
+console.log(`current results: ${currentResults}`)
+
 
   return (
     <Layout className="results">
@@ -475,41 +480,14 @@ const getFilteredConditions = (value) => {
 
             <div className="mar-test"></div>
 
-            {/* <StyledForm>
-
-           
-
-            <h4 className="search-top">Distance</h4>
-            <Form.Item
-              style={{ width: "100%" }}
-            >
-              <Select
-                value={radius}
-                onChange={handleRadiusChange}
-                style={{ width: "100%" }}>
-                <Option value={25}>25 miles</Option>
-                <Option value={50}>50 miles</Option>
-                <Option value={100}>100 miles</Option>
-                <Option value={500}>500 miles</Option>
-              </Select>
-            </Form.Item>
-          </StyledForm> */}
-
-
-
 
           </div>
           <div className="div-2">
             {window.innerWidth > 500 && <ResultsMap
               style={{ width: "20%" }}
               results={results}
-              coordinates={filterCoordinates}
-              address={address}
             />}
           </div>
-
-
-
 
 
         </section>
@@ -530,13 +508,14 @@ const getFilteredConditions = (value) => {
               <h2>No Results Found</h2></>
             ) : (
               <div>
-                 <Sort sortOrder={sortOrder} onSortOrderChange={onSortOrderChange} radius={radius} handleRadiusChange={handleRadiusChange} setRadius={setRadius} />
+                 <Sort sortOrder={sortOrder} resultsLength={results.length} onSortOrderChange={onSortOrderChange} radius={radius} handleRadiusChange={handleRadiusChange} setRadius={setRadius} />
                 {currentResults.map((result, index) => (
                   <Result
                     result={result}
                     key={result.id}
-                    resultAddress={address}
+                     resultAddress={`${result.address}, ${result.city}, ${result.state}, ${result.country}`}
                     initialSearch={filterTerm}
+                    initialTreatments={checkboxOptions}
                     resultRadius={radius}
                     onProfileClick={handleProfileClick}
                     isSelected={selectedMarkerIndex === index}
@@ -555,8 +534,6 @@ const getFilteredConditions = (value) => {
             {window.innerWidth < 500 && <ResultsMap
               style={{ width: "20%" }}
               results={results}
-              coordinates={filterCoordinates}
-              address={address}
             />}
 
           </Suspense>

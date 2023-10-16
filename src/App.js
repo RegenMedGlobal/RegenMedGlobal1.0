@@ -18,8 +18,21 @@ import Home from './pages/Home'
 import Footer from './components/Footer'
 import "@fontsource/poppins";
 import CodeValidator from './pages/CodeValidator'
+import Articles from './pages/articles/Articles'
+import SubmitArticle from './pages/articles/SubmitArticle'
+import ReactGA from 'react-ga';
+
+// Initialize Google Analytics with your Measurement ID
+ReactGA.initialize('G-E1K3NF9839');
+
 
 function App() {
+
+   useEffect(() => {
+    // Track a page view when the component mounts
+    ReactGA.pageview(window.location.pathname + window.location.search);
+  }, []);
+
 
   const routeLocation = useLocation();
   const [className, setClassName] = useState("");
@@ -68,6 +81,8 @@ function App() {
           <Route path='/Register' element={<Register />} />
           <Route path='/profile/:userId' element={<Profile />} />
           <Route path='/claim' element={<Claim />} />
+          <Route path='/articles' element={<Articles />} />
+         <Route path='/submitarticle' element={<SubmitArticle />} />
           <Route path='/ResetPassword' element={<ResetPassword />} />
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
         </Routes>

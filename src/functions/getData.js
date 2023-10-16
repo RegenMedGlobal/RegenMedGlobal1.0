@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_API_KEY, tom, SCHEMA_NAME } from '../config.js';
+import { SUPABASE_URL, SUPABASE_API_KEY, SCHEMA_NAME } from '../config.js';
 import axios from 'axios'
-import geolib from 'geolib';
+import localforage from 'localforage';
+
 const supabaseUrl = SUPABASE_URL;
 const supabaseKey = SUPABASE_API_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey, {db: {schema: SCHEMA_NAME} });
@@ -53,83 +54,65 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return distanceMiles;
 };
 
-
 const getData = async (filterTerm, checkboxOptions, city, state, country, maxDistance = 25, setPercent) => {
   console.log('Executing getData...');
   console.log('Filter term from getData:', filterTerm);
   console.log('Checkbox options:', checkboxOptions);
 
-
   try {
     // Initialize an empty array to store the results
-   let combinedResults = [];
+    let combinedResults = [];
 
-// Query 1: Search by checkboxOptions
-const selectedOptions = checkboxOptions.filter(option => option.checked);
-if (selectedOptions.length > 0) {
- // console.log('selected options', selectedOptions)
-  // Build a text search query with ILIKE filter for each selected checkbox option
-    const optionSearchText = selectedOptions.map(option => `'%${option.value}%'`).join(' & ');
- // console.log('Checkbox Options Query Text:', optionSearchText); // Debugging log
+    // Query 1: Search by checkboxOptions
+    const selectedOptions = checkboxOptions.filter(option => option.checked);
+    if (selectedOptions.length > 0) {
+      // Build a text search query with ILIKE filter for each selected checkbox option
+      const optionSearchText = selectedOptions.map(option => `'%${option.value}%'`).join(' & ');
 
-  const { data: checkboxResults, error: checkboxError } = await supabase
-      .from(maindataTable)
-    .select()
-    .textSearch('treatments', optionSearchText)
-    .limit(150);
+      const { data: checkboxResults, error: checkboxError } = await supabase
+        .from(maindataTable)
+        .select()
+        .textSearch('treatments', optionSearchText)
+        .limit(2000);
 
-//  console.log('Checkbox Options Query Result:', checkboxResults); // Debugging log
+      console.log('Checkbox Options Query Result:', checkboxResults); // Debugging log
 
-  if (checkboxError) {
-    console.error('Error executing checkboxOptions query:', checkboxError);
-    return { error: 'Internal Server Error' };
-  }
+      if (checkboxError) {
+        console.error('Error executing checkboxOptions query:', checkboxError);
+        return { error: 'Internal Server Error' };
+      }
 
- // console.log('checkbox results', checkboxResults)
+      console.log('checkbox results', checkboxResults)
 
-  combinedResults = [...combinedResults, ...checkboxResults];
-}
-
-
-
-    // Query 2: Search by filterTerm (if present)
-   // Query 2: Search by filterTerm (if present)
-if (filterTerm && filterTerm.trim() !== '') {
-  const searchWords = filterTerm.split(/\s+/).filter(word => word.length > 0);
-
- // console.log('search words:', searchWords)
-
-  // Initialize an array to store results for each word search
-  const wordSearchResults = [];
-
-  // Perform a text search for each word and collect the results
-  for (const word of searchWords) {
- //   console.log('word: ', word)
-    const wordSearchText = `'%${word}%'`;
- //   console.log('Word Search Text:', wordSearchText); // Debugging log
-    const { data: wordFilterResults, error: wordFilterError } = await supabase
-      .from(maindataTable)
-      .select()
-      .textSearch('conditions', wordSearchText)
-      .limit(150);
-
-    if (wordFilterError) {
-      console.error('Error executing filterTerm query:', wordFilterError);
-      return { error: 'Internal Server Error' };
+      combinedResults = [...combinedResults, ...checkboxResults];
     }
 
-    wordSearchResults.push(...wordFilterResults);
+    // Query 2: Search by filterTerm (if present)
+    if (filterTerm && filterTerm.trim() !== '') {
+      const searchWords = filterTerm.split(/\s+/).filter(word => word.length > 0);
+      const wordSearchPromises = searchWords.map(async word => {
+        const wordSearchText = `'%${word}%'`;
+        const { data: wordFilterResults, error: wordFilterError } = await supabase
+          .from(maindataTable)
+          .select()
+          .textSearch('conditions', wordSearchText)
+          .limit(200);
 
-    console.log('word filtered results:', wordFilterResults)
-  }
+        if (wordFilterError) {
+          console.error('Error executing filterTerm query:', wordFilterError);
+          return [];
+        }
 
-  // Combine the results from all word searches
-  combinedResults = [...combinedResults, ...wordSearchResults];
-}
+        return wordFilterResults;
+      });
 
- //  console.log('combined results:', combinedResults)
+      const wordSearchResults = await Promise.all(wordSearchPromises);
+      const flattenedResults = wordSearchResults.flat();
 
-    
+      combinedResults = [...combinedResults, ...flattenedResults];
+    }
+
+    console.log('combined results:', combinedResults);
 
     // Geocode the provided city, state, country
     const cityLocation = await geocodeCity(city, state, country);
@@ -146,63 +129,45 @@ if (filterTerm && filterTerm.trim() !== '') {
     console.log('City latitude:', cityLatitude);
     console.log('City longitude:', cityLongitude);
 
-     // console.log('combined results:', combinedResults)
-
     // Filter the data
     const filteredData = combinedResults.filter(item => {
-     // console.log('item', item)
       const conditions = item.conditions || '';
       const treatments = item.treatments || '';
 
-    //  console.log('item: ', item, 'treatments: ', item.treatments)
-
-    //  console.log('treatments', treatments)
-  
-
       // Check if the conditions include the filter term
       const filterWords = filterTerm
-     ? filterTerm.split(/\s+/).map(word => word.toLowerCase())
-     : [];
-   
+        ? filterTerm.split(/\s+/).map(word => word.toLowerCase())
+        : [];
+
       const conditionsMatch = filterWords.length === 0 // No filter term
-      ? true // Return true if no filter term provided
-     : conditions.toLowerCase().split(/\s+/).some(conditionWord => {
-      return filterWords.some(filterWord => conditionWord.includes(filterWord));
-      });
-
-
-    //  console.log(`filterterm: ${filterTerm}, Item: ${item.conditions}, Conditions Match: ${conditionsMatch}`);
-
-
+        ? false // Return true if no filter term provided
+        : conditions.toLowerCase().split(/\s+/).some(conditionWord => {
+          return filterWords.some(filterWord => conditionWord.includes(filterWord));
+        });
 
       // Check if any of the checkbox options are selected and included in the treatments
       const optionsMatch = selectedOptions.every(option =>
         treatments.toLowerCase().includes(option.value.toLowerCase())
       );
 
-     // console.log('options match: ', optionsMatch, 'item: ', item.treatments);
-
-    // console.log('combined results:', combinedResults)
-
       const latitude = parseFloat(item.latitude);
       const longitude = parseFloat(item.longitude);
 
       if (!isNaN(latitude) && !isNaN(longitude)) {
-     const distanceInMiles = calculateDistance(
-    latitude,
-    longitude,
-    parseFloat(cityLatitude),
-    parseFloat(cityLongitude)
-  );
+        const distanceInMiles = calculateDistance(
+          latitude,
+          longitude,
+          parseFloat(cityLatitude),
+          parseFloat(cityLongitude)
+        );
 
         // Debugging log to see which items pass the filtering conditions
-     //  console.log('Item filtered:', item, conditionsMatch, optionsMatch, distanceInMiles);
+        // console.log('Item filtered:', item, optionsMatch, distanceInMiles);
 
         // Use a ternary expression to conditionally include conditionsMatch
-     //  console.log('filterterm: ',filterTerm)
-    return filterTerm
-      ? conditionsMatch && optionsMatch && distanceInMiles <= maxDistance
-      : optionsMatch && distanceInMiles <= maxDistance;
+        return filterTerm
+          ? conditionsMatch && optionsMatch && distanceInMiles <= maxDistance
+          : optionsMatch && distanceInMiles <= maxDistance;
       }
 
       // Progress tracking for each filtered item
@@ -214,19 +179,29 @@ if (filterTerm && filterTerm.trim() !== '') {
       return false;
     });
 
-    console.log('Filtered Rows:', filteredData);
-    localStorage.setItem('lengthFilter', filteredData ? filteredData.length : 0);
+    // Deduplicate the filtered data based on a unique identifier (e.g., 'id')
+    const uniqueResults = [];
+    const uniqueIds = new Set();
+
+    for (const result of filteredData) {
+      if (!uniqueIds.has(result.id)) {
+        uniqueResults.push(result);
+        uniqueIds.add(result.id);
+      }
+    }
+
+    console.log('Filtered and Deduplicated Results:', uniqueResults);
+
+    // Store or use the uniqueResults as needed
 
     setPercent(100); // Set loading progress to 100% when data is fetched
 
-    return { data: filteredData };
+    return { data: uniqueResults };
   } catch (error) {
     console.error('Error executing query:', error);
     setPercent(0); // Set loading progress to 0
     return { error: 'Internal Server Error' };
   }
 };
-
-
 
 export default getData;

@@ -79,7 +79,7 @@ const TreatmentInput = ({ control, errors, field, handleTreatmentSelection }) =>
                 </div>
               )}
             />
-            {errors.treatments && <p>{errors.treatments.message}</p>}
+            {errors.treatments && <p class="error-message">{errors.treatments.message}</p>}
           </StyledControllerContainer>
         </div>
       </div>

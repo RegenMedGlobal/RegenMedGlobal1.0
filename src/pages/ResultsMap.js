@@ -10,7 +10,7 @@ const ResultsMap = ({ results }) => {
   const [center, setCenter] = useState([0, 0]); // Default center at [0, 0]
 
   useEffect(() => {
-    mapboxgl.accessToken =  MAPBOX_TOKEN; // Replace with your Mapbox access token
+    mapboxgl.accessToken = MAPBOX_TOKEN; // Replace with your Mapbox access token
 
     const mapInstance = new mapboxgl.Map({
       container: 'map',
@@ -27,90 +27,120 @@ const ResultsMap = ({ results }) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("Map Changes")
-    const fetchCoordinates = async () => {
-      const coordinatesPromises = results.map(async (result) => {
-        const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          result.address
-        )}.json?access_token=${MAPBOX_TOKEN}`; // Replace with your Mapbox access token
+// ... (other imports and component code) ...
 
-        try {
-          const response = await fetch(geocodeUrl);
-          const data = await response.json();
+        useEffect(() => {
+          console.log("Map Changes")
+          const fetchCoordinates = async () => {
+            const coordinatesPromises = results.map(async (result) => {
+              const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+                result.address
+              )}.json?access_token=${MAPBOX_TOKEN}`;
 
-          if (data.features.length > 0) {
-            const [lng, lat] = data.features[0].center;
-            return { ...result, lat, lng };
-          }
-        } catch (error) {
-          console.error('Error geocoding address:', error);
-        }
+              try {
+                const response = await fetch(geocodeUrl);
+                const data = await response.json();
 
-        return null;
-      });
+                if (data.features.length > 0) {
+                  const [lng, lat] = data.features[0].center;
+                  return { ...result, lat, lng };
+                }
+              } catch (error) {
+                console.error('Error geocoding address:', error);
+              }
 
-      const coordinatesData = await Promise.all(coordinatesPromises);
-      
-      const filteredCoordinates = coordinatesData.filter(
-        (coordinates) => coordinates !== null
-      );
+              return null;
+            });
 
-      if (filteredCoordinates.length > 0) {
-        const avgLat = filteredCoordinates.reduce(
-          (sum, coord) => sum + coord.lat,
-          0
-        ) / filteredCoordinates.length;
-        const avgLng = filteredCoordinates.reduce(
-          (sum, coord) => sum + coord.lng,
-          0
-        ) / filteredCoordinates.length;
-        setCenter([avgLng, avgLat]);
+            const coordinatesData = await Promise.all(coordinatesPromises);
 
-        // Calculate the bounds of marker coordinates
-        const bounds = new mapboxgl.LngLatBounds();
-        filteredCoordinates.forEach((coord) => {
-          bounds.extend([coord.lng, coord.lat]);
-        });
+            const filteredCoordinates = coordinatesData.filter(
+              (coordinates) => coordinates !== null
+            );
 
-        // Fit the map to the bounds with an immediate transition
-        if (map) {
-          map.fitBounds(bounds, {
-            padding: 20, // Optional padding around the bounds
-            duration: 0, // Set the duration to 0 for an immediate transition
-          });
-          console.log('Map bounds set:', bounds);
-        }
-      }
+            if (filteredCoordinates.length > 0) {
+              const avgLat = filteredCoordinates.reduce(
+                (sum, coord) => sum + coord.lat,
+                0
+              ) / filteredCoordinates.length;
+              const avgLng = filteredCoordinates.reduce(
+                (sum, coord) => sum + coord.lng,
+                0
+              ) / filteredCoordinates.length;
+              setCenter([avgLng, avgLat]);
 
-      if (map) {
-        // map.on('load', () => {
-          console.log('Map Loaded');
-          console.log("Filtered", filteredCoordinates)
-          filteredCoordinates.forEach((coordinates) => {
-            const marker = new mapboxgl.Marker()
-              .setLngLat([coordinates.lng, coordinates.lat])
-              .addTo(map);
-            console.log('Marker added:', marker);
-            
-            // Optionally add marker click event handling here
-          });
-        // });
-      }
-    };
+              // Calculate the bounds of marker coordinates
+              const bounds = new mapboxgl.LngLatBounds();
+              filteredCoordinates.forEach((coord) => {
+                bounds.extend([coord.lng, coord.lat]);
+              });
 
-    fetchCoordinates();
-  }, [map, results]);
+              // Fit the map to the bounds with an immediate transition
+              if (map) {
+                map.fitBounds(bounds, {
+                  padding: 20, // Optional padding around the bounds
+                  duration: 0, // Set the duration to 0 for an immediate transition
+                });
+                console.log('Map bounds set:', bounds);
+              }
 
-  return <div id="map" style={{ height: '400px', width: '100%' }} />;
-};
+              // map.on('load', () => {
+              console.log('Map Loaded');
+              console.log("Filtered", filteredCoordinates);
 
-ResultsMap.propTypes = {
-  results: PropTypes.arrayOf(
-    PropTypes.shape({
-      address: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-};
+              filteredCoordinates.forEach((coordinates) => {
+                const marker = new mapboxgl.Marker()
+                  .setLngLat([coordinates.lng, coordinates.lat])
+                  .addTo(map);
+                console.log('Marker added:', marker);
 
-export default ResultsMap;
+                // Create a popup for the marker
+                const popup = new mapboxgl.Popup({
+                  closeButton: false, // Optionally, you can include a close button
+                  closeOnClick: false, // Prevent closing when clicking on the map
+                  anchor: 'bottom', // Set the anchor position to the bottom
+                })
+                  .setHTML(
+                    `<div class="popup-container">
+      <h3 class="popup-title">${coordinates.name}</h3>
+      ${coordinates.phone ? `<p class="popup-phone">Phone: ${coordinates.phone}</p>` : ''}
+      ${coordinates.email ? `<p class="popup-email">Email: ${coordinates.email}</p>` : ''}
+      <p class="popup-address">${coordinates.address}</p>
+    </div>`
+                  );
+
+                // Attach the popup to the marker
+                marker.setPopup(popup);
+
+                // Show the popup when hovering over the marker
+                marker.getElement().addEventListener('mouseenter', () => {
+                  marker.getPopup().addTo(map);
+                });
+
+                // Hide the popup when the mouse leaves the marker
+                marker.getElement().addEventListener('mouseleave', () => {
+                  marker.getPopup().remove();
+                });
+              });
+              // });
+            }
+          };
+
+          fetchCoordinates();
+        }, [map, results]);
+
+        // ... (other component code) ...
+
+
+        return <div id="map" style={{ height: '400px', width: '100%' }} />;
+      };
+
+      ResultsMap.propTypes = {
+        results: PropTypes.arrayOf(
+          PropTypes.shape({
+            address: PropTypes.string.isRequired,
+          })
+        ).isRequired,
+      };
+
+      export default ResultsMap;

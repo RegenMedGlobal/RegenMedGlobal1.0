@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { TOMTOM_API_KEY} from '../config';
+import { HERE_API_KEY} from '../config';
 import styled from 'styled-components';
 import { getDistance } from 'geolib';
 import test from '../assets/rec-1.png'
 import rec from '../assets/rec-3.png'
+import isVerified from "../functions/isVerified";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
-const apiKey = TOMTOM_API_KEY; // Use the TomTom API key
-
+const apiKey = HERE_API_KEY; 
 const mainColor = '#4811ab'; // Define the main color variable
 
 const StyledLayout = styled(Layout)`
@@ -61,90 +64,134 @@ const StyledLayout = styled(Layout)`
   }
 `;
 
-const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius }) => {
-  const { id, name, city, specialty, placeId, address } = result;
+const styles = {
+  claimedInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: '1rem', // Apply a smaller font size
+  },
+  checkmarkIcon: {
+    color: 'var(--main-color)',
+    marginRight: '8px', // Adjust the margin as needed
+    fontSize: '1rem', // Apply a smaller font size
+  },
+  claimedText: {
+    color: 'var(--main-color)',
+    fontSize: '1rem', // Apply a smaller font size
+  },
+};
+
+const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreatments, resultRadius,  }) => {
+  console.log('Result component rendered. Address: ', resultAddress);
+
+
+  const { id, name, city, country, resultState, specialty, placeId, address } = result;
   const [distance, setDistance] = useState('');
+  const [isProfileVerified, setIsProfileVerified] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  console.log('Result city: ', city);
+
+const fetchDistance = async () => {
+  if (!resultAddress || !userLocation) {
+    setDistance('');
+    return;
+  }
+
+  try {
+    const userCoordinates = userLocation;
+    const addressCoordinates = await getLocationCoordinates(resultAddress);
+
+    if (!addressCoordinates) {
+      setDistance('');
+      return;
+    }
+
+    const distanceInMeters = getDistance(userCoordinates, addressCoordinates);
+    const distanceInMiles = distanceInMeters * 0.000621371;
+
+    setDistance(distanceInMiles.toFixed(2));
+  } catch (error) {
+    console.error('Error fetching distance:', error);
+    setDistance('');
+  }
+};
+
 
   useEffect(() => {
-    const fetchDistance = async () => {
-      if (!resultAddress) {
-        // Handle the case when the address is not available
-        setDistance('');
-        return;
-      }
-
-      // Calculate the distance between the result address and the result city
-      const resultLocation = await getLocationCoordinates(city);
-      const addressLocation = await getLocationCoordinates(resultAddress);
-      if (!resultLocation || !addressLocation) {
-        // Handle the case when the coordinates are not available
-        setDistance('');
-        return;
-      }
-      const distanceInMeters = getDistance(resultLocation, addressLocation);
-      const distanceInMiles = distanceInMeters * 0.000621371; // Conversion factor for meters to miles
-
-      // Set the distance state
-      setDistance(distanceInMiles.toFixed(2));
-    };
-
     fetchDistance();
+  }, [resultAddress, userLocation]);
+
+  useEffect(() => {
+    // Call the isVerified function with the profileId as a parameter
+    isVerified(id)
+      .then((result) => {
+        setIsProfileVerified(result);
+      })
+      .catch((error) => {
+        console.error('Error verifying profile:', error);
+      });
   }, []);
 
-  const getUserLocation = () => {
-    return new Promise((resolve) => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          resolve({ latitude, longitude });
-        },
-        (error) => {
-          console.log(error);
-          resolve(null); // Resolve with null in case of error or denial
-        }
-      );
-    });
-  };
+    useEffect(() => {
+    // Define a function to retrieve the user's location
+    const fetchUserLocation = async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        }, (error) => {
+          console.error('Error retrieving user location:', error);
+        });
+      } else {
+        console.log("Geolocation is not supported by this browser.");
+      }
+    };
+
+    // Call the function to fetch user location when the component mounts
+    fetchUserLocation();
+  }, []);
 
   const getLocationCoordinates = async (location) => {
-    try {
-      const url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(location)}.json?key=${apiKey}`;
-      console.log('URL:', url);
-  
-      const response = await fetch(url);
-      console.log('Response:', response);
-  
-      if (response.ok) {
-        console.log('Response Type:', response.type); // Add this line
-        console.log('Response Headers:', response.headers); // Add this line
-        const data = await response.json();
-        console.log('Data:', data);
-  
-        if (data && data.results && data.results.length > 0) {
-          const { position } = data.results[0];
-          console.log('Coordinates:', position);
-          return position;
-        } else {
-          throw new Error('No results found for the location.');
-        }
+  try {
+    const url = `https://geocode.search.hereapi.com/v1/geocode?apiKey=${apiKey}&q=${encodeURIComponent(location)}`;
+    console.log('URL:', url);
+
+    const response = await fetch(url);
+    console.log('Response:', response);
+
+    if (response.ok) {
+      console.log('Response Type:', response.type);
+      console.log('Response Headers:', response.headers);
+      const data = await response.json();
+      console.log('Data:', data);
+
+      if (data && data.items && data.items.length > 0) {
+        const { position } = data.items[0];
+        console.log('Coordinates:', position);
+        return position;
       } else {
-        throw new Error('Failed to fetch data from the API.');
+        throw new Error('No results found for the location.');
       }
-    } catch (error) {
-      console.log('Error retrieving location coordinates:', error);
-      // Handle the error, such as showing a message to the user or setting a specific state variable to indicate the error.
-      return null;
+    } else {
+      throw new Error('Failed to fetch data from the API.');
     }
-  };
-  
+  } catch (error) {
+    console.log('Error retrieving location coordinates:', error);
+    // Handle the error, such as showing a message to the user or setting a specific state variable to indicate the error.
+    return null;
+  }
+};
   
   const navigate = useNavigate();
  
 
   const handleProfileClick = (result) => {
-    console.log('Result:', result); // Log the result object
+  //  console.log('Result:', result); // Log the result object
     console.log('initial search: ', initialSearch)
     console.log('result address: ', resultAddress)
+   // console.log('initial treatments:', initialTreatments)
 
     
     navigate(`/profile/${id}`, {
@@ -152,7 +199,11 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius
         ...result,
         initialSearch: initialSearch,
         resultAddress: resultAddress,
+        resultCity: city,
+        resultState: resultState,
+        resultCountry: country,
         resultRadius: resultRadius,
+        initialTreatments: initialTreatments,
         fromProfile: true
       }
     });
@@ -163,9 +214,17 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, resultRadius
       <img className='test-img' src={test} />
       </div>
       <div className='flex-right-cus'>
-        <Link style={{ textDecoration: 'none' }}>
-          <h4>{name}</h4>
-        </Link>
+<Link style={{ textDecoration: 'none' }}>
+  <div className="claimed-info">
+    <h4>{name}</h4>
+    {isProfileVerified && <span>
+      <FontAwesomeIcon icon={faCheckCircle} className="checkmark-icon" style={styles.checkmarkIcon} />
+      <span style={styles.claimedText}>Claimed</span>
+    </span>}
+  </div>
+</Link>
+
+
         <p className='add-css'><img className='test-img-1' src={rec} /> {address}</p>
         <p className='add-css-1'>{specialty}</p>
       </div>
