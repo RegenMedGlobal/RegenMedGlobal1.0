@@ -132,26 +132,44 @@ const fetchDistance = async () => {
       });
   }, []);
 
-    useEffect(() => {
-    // Define a function to retrieve the user's location
-    const fetchUserLocation = async () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
+useEffect(() => {
+  // Define a function to retrieve the user's location
+  const fetchUserLocation = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
           setUserLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-        }, (error) => {
+        },
+        (error) => {
           console.error('Error retrieving user location:', error);
-        });
-      } else {
-        console.log("Geolocation is not supported by this browser.");
-      }
-    };
+          // If geolocation fails, attempt to get coordinates from resultAddress
+          fetchCoordinatesFromAddress(resultAddress);
+        }
+      );
+    } else {
+      console.log('Geolocation is not supported by this browser.');
+      // If geolocation is not supported, attempt to get coordinates from resultAddress
+      fetchCoordinatesFromAddress(resultAddress);
+    }
+  };
 
-    // Call the function to fetch user location when the component mounts
-    fetchUserLocation();
-  }, []);
+  // Call the function to fetch user location when the component mounts
+  fetchUserLocation();
+}, []);
+
+const fetchCoordinatesFromAddress = async (address) => {
+  const coordinates = await getLocationCoordinates(address);
+  if (coordinates) {
+    setUserLocation(coordinates);
+  } else {
+    console.error('Failed to retrieve coordinates from the address:', address);
+    // Handle the error, such as showing a message to the user or setting a specific state variable to indicate the error.
+  }
+};
+
 
   const getLocationCoordinates = async (location) => {
   try {
