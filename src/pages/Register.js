@@ -143,7 +143,7 @@ const Register = () => {
       conditionsSuggestions: [], // Set initial value as an empty array
     },
   });
- // console.log("Control", control)
+  console.log("Control", control)
   const [errorMessage, setErrorMessage] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Add state for button disabled
 
@@ -162,31 +162,21 @@ const Register = () => {
     borderRadius: "4px",
   };
 
-const setFocusToFirstError = () => {
-  if (Object.keys(errors).length > 0) {
-    // Loop through all input fields and find the first one with an error
-    const fields = ["clinicName", "email", "password", /* Add more field names here */];
+  // useEffect(() => {
+  //   const fetchConditions = async () => {
+  //     const conditionsData = await getConditions();
+  //     setConditions(conditionsData);
+  //   };
 
-    for (const field of fields) {
-      if (errors[field]) {
-        setFocus(field);
-        break; // Exit the loop once you've set focus
-      }
-    }
-  }
-};
-
-useEffect(() => {
-  setFocusToFirstError();
-}, []);
-
+  //   fetchConditions();
+  // }, []);
 
   const handleInputChange = (newValue) => {
     console.log('Input Value in Register:', newValue);
     setFilterTerm(newValue);
   };
 
-  //console.log('filter term:', filterTerm)
+  console.log('filter term:', filterTerm)
 
 
   useEffect(() => {
