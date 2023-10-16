@@ -388,30 +388,36 @@ const getFilteredConditions = (value) => {
 
 useEffect(() => {
 const sortResults = () => {
-  let sorted = [...results];
+   let sorted = [...results];
 
-  if (sortOrder === "distance") {
-    console.log("Sorting by distance...");
-    sorted = results.map((result) => {
-      const distance = getDistance(
-        {
-          latitude: userLocation.latitude,
-          longitude: userLocation.longitude,
-        },
-        { latitude: result.latitude, longitude: result.longitude }
-      );
-      return { ...result, distance };
-    });
-    sorted.sort((a, b) => a.distance - b.distance);
-  } else if (sortOrder === "asc") {
-    console.log("Sorting in ascending order...");
-    sorted.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortOrder === "desc") {
-    console.log("Sorting in descending order...");
-    sorted.sort((a, b) => b.name.localeCompare(a.name));
-  }
+    if (sortOrder === "distance") {
+      console.log("Sorting by distance...");
 
-  return sorted;
+      if (!userLocation) {
+        // Sort by a default property (e.g., name) if userLocation is not available
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+      } else {
+        sorted = results.map((result) => {
+          const distance = getDistance(
+            {
+              latitude: userLocation.latitude,
+              longitude: userLocation.longitude,
+            },
+            { latitude: result.latitude, longitude: result.longitude }
+          );
+          return { ...result, distance };
+        });
+        sorted.sort((a, b) => a.distance - b.distance);
+      }
+    } else if (sortOrder === "asc") {
+      console.log("Sorting in ascending order...");
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortOrder === "desc") {
+      console.log("Sorting in descending order...");
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
+    }
+
+    return sorted;
 };
 
 
