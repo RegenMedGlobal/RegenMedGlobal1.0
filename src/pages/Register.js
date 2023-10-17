@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from "react-hook-form";
 import styled from "styled-components";
@@ -22,6 +22,11 @@ import TreatmentInput from "../components/TreatmentInput";
 import debounce from 'lodash/debounce';
 
 
+const StyledErrorMessage = styled.div`
+   color: red;
+   font-weight: bold;
+   font-size: 1.2rem;
+`
 
 
 const Container = styled.div`
@@ -135,7 +140,6 @@ const Register = () => {
     formState: { errors },
     getValues,
     reset,
-    setFocus
   } = useForm({
     defaultValues: {
       treatments: [], // Set initial value as an empty array
@@ -143,7 +147,9 @@ const Register = () => {
       conditionsSuggestions: [], // Set initial value as an empty array
     },
   });
-  console.log("Control", control)
+
+ const topErrorRef = useRef(null);
+  
   const [errorMessage, setErrorMessage] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Add state for button disabled
 
@@ -162,14 +168,7 @@ const Register = () => {
     borderRadius: "4px",
   };
 
-  // useEffect(() => {
-  //   const fetchConditions = async () => {
-  //     const conditionsData = await getConditions();
-  //     setConditions(conditionsData);
-  //   };
 
-  //   fetchConditions();
-  // }, []);
 
   const handleInputChange = (newValue) => {
     console.log('Input Value in Register:', newValue);
@@ -291,6 +290,7 @@ const Register = () => {
   }
 
   const onSubmit = async (data, event) => {
+    console.log("onSubmit function called");
     console.log("Value of conditions:", data.conditions);
 
     console.log('data', data)
@@ -324,7 +324,11 @@ const Register = () => {
         JSON.stringify(requestDataWithoutConditionsSelect)
       );
 
-    //  const response = await insertNewUser(requestDataWithoutConditionsSelect);
+
+    console.log('errors:', errors)
+
+      const response = await insertNewUser(requestDataWithoutConditionsSelect);
+      response.write('response:', response)
 
       // Check the response for success or failure
       if (response.message === "Data inserted successfully") {
@@ -337,21 +341,22 @@ const Register = () => {
         toast.error("Registration Failed. Please try again.");
       }
     } catch (catchError) {
-      // Insert the error into the error_log table
-      insertErrorLog(catchError, data.email)
-      console.error("Error inserting data:", catchError);
+    // Handle the specific error types here
+    if (catchError.name === "EmailExistingError") {
+      setErrorMessage("Email already in use. Please choose a different email address.");
+    } else if (catchError.name === "LocationError") {
+      setErrorMessage("Invalid location. Please provide a valid city, state, and country.");
+      // You can also access the error message from the catchError object if needed:
+      const errorMessage = catchError.message;
+      console.error("LocationError: " + errorMessage);
+    } else {
+      setErrorMessage("Registration Failed. Please try again.");
+    }
+    // Focus on the top error message
 
-      // Check for specific error types and display corresponding error messages
-      if (catchError.name === "EmailExistingError") {
-        toast.error("Email already in use. Please choose a different email address.");
-      } else if (catchError.name === "LocationError") {
-        toast.error("Invalid location. Please provide a valid city, state, and country.");
-      } else {
-        toast.error("Registration Failed. Please try again.");
-      }
-    } finally {
-      // Re-enable the button after the form submission is complete
-      setIsButtonDisabled(false);
+  } finally {
+    // Re-enable the button after the form submission is complete
+    setIsButtonDisabled(false);
     }
   };
 
@@ -443,8 +448,9 @@ const Register = () => {
                   <FormContainer>
 
 
-                    {errorMessage && <p>{errorMessage}</p>}
-                     <form ref={handleSubmit(onSubmit)}>
+    
+
+                    <form onSubmit={(e) => handleSubmit(onSubmit)(e)}>
 
                       <div className="row">
                         <div className="col-lg-12">
@@ -953,7 +959,7 @@ const Register = () => {
                             </div>
                           </div>
 
-
+                         {errorMessage && <StyledErrorMessage>{errorMessage}</StyledErrorMessage>}
                           <div className="row">
                             <div className="col-lg-12">
                               <div className="mar-no">
