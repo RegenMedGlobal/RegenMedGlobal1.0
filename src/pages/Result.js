@@ -82,7 +82,7 @@ const styles = {
 };
 
 const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreatments, resultRadius,  }) => {
-  console.log('Result component rendered. Address: ', resultAddress);
+  console.log('Result component rendered. : ', result);
 
 
   const { id, name, city, country, resultState, specialty, placeId, address } = result;
@@ -146,13 +146,28 @@ useEffect(() => {
         (error) => {
           console.error('Error retrieving user location:', error);
           // If geolocation fails, attempt to get coordinates from resultAddress
+<<<<<<< Updated upstream
           fetchCoordinatesFromAddress(resultAddress);
+=======
+          setUserLocation({
+        latitude: result.latitude,
+        longitude: result.longitude,
+      });
+>>>>>>> Stashed changes
         }
       );
     } else {
       console.log('Geolocation is not supported by this browser.');
       // If geolocation is not supported, attempt to get coordinates from resultAddress
+<<<<<<< Updated upstream
       fetchCoordinatesFromAddress(resultAddress);
+=======
+       // If geolocation is not supported, use coordinates from result.latitude and result.longitude
+      setUserLocation({
+        latitude: result.latitude,
+        longitude: result.longitude,
+      });
+>>>>>>> Stashed changes
     }
   };
 
@@ -160,6 +175,7 @@ useEffect(() => {
   fetchUserLocation();
 }, []);
 
+<<<<<<< Updated upstream
 const fetchCoordinatesFromAddress = async (address) => {
   const coordinates = await getLocationCoordinates(address);
   if (coordinates) {
@@ -169,6 +185,8 @@ const fetchCoordinatesFromAddress = async (address) => {
     // Handle the error, such as showing a message to the user or setting a specific state variable to indicate the error.
   }
 };
+=======
+>>>>>>> Stashed changes
 
 
   const getLocationCoordinates = async (location) => {
