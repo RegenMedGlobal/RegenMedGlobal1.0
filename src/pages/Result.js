@@ -97,6 +97,7 @@ const fetchDistance = async () => {
     return;
   }
 
+
   try {
     const userCoordinates = userLocation;
     const addressCoordinates = await getLocationCoordinates(resultAddress);
@@ -145,29 +146,21 @@ useEffect(() => {
         },
         (error) => {
           console.error('Error retrieving user location:', error);
-          // If geolocation fails, attempt to get coordinates from resultAddress
-<<<<<<< Updated upstream
-          fetchCoordinatesFromAddress(resultAddress);
-=======
+          // If geolocation fails,  get coordinates from resultAddress
           setUserLocation({
         latitude: result.latitude,
         longitude: result.longitude,
       });
->>>>>>> Stashed changes
         }
       );
     } else {
       console.log('Geolocation is not supported by this browser.');
       // If geolocation is not supported, attempt to get coordinates from resultAddress
-<<<<<<< Updated upstream
-      fetchCoordinatesFromAddress(resultAddress);
-=======
        // If geolocation is not supported, use coordinates from result.latitude and result.longitude
       setUserLocation({
         latitude: result.latitude,
         longitude: result.longitude,
       });
->>>>>>> Stashed changes
     }
   };
 
@@ -175,18 +168,6 @@ useEffect(() => {
   fetchUserLocation();
 }, []);
 
-<<<<<<< Updated upstream
-const fetchCoordinatesFromAddress = async (address) => {
-  const coordinates = await getLocationCoordinates(address);
-  if (coordinates) {
-    setUserLocation(coordinates);
-  } else {
-    console.error('Failed to retrieve coordinates from the address:', address);
-    // Handle the error, such as showing a message to the user or setting a specific state variable to indicate the error.
-  }
-};
-=======
->>>>>>> Stashed changes
 
 
   const getLocationCoordinates = async (location) => {
