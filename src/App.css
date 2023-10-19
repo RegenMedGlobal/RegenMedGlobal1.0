@@ -1373,7 +1373,7 @@ margin-left: 0;
 }
 .contact-custom {
   background: #140437;
-  padding: 60px 0 150px 0;
+  padding: 100px 0 150px 0;
   position: relative;
   z-index: 9;
 }
@@ -2171,9 +2171,6 @@ p.span-clr {
   .right-contact {
       padding: 0;
   }
-  .contact-custom {
-      padding: 60px 0 60px 0;
-  }
   .our-services {
       padding: 60px 0 60px 0;
   }
@@ -2462,4 +2459,12 @@ input.ant-input:focus {
 .error-message {
   color: #d32f2f !important;
   font-size: 12px !important;
+}
+
+.custom-control-wrapper {
+  width: 100%;
+}
+.custom-control {
+  display: block;
+  width: 100%;
 }

@@ -58,7 +58,7 @@ useEffect(() => {
 
   getProfile(id)
     .then((response) => {
-      console.log('Fetched profile data:', response); // Debugging log
+      console.log('Fetched profile data-:', response); // Debugging log
       setProfileName(response.name)
       // Initialize the editMode property for each field
       const profileDataWithEditModes = Object.keys(response).map((fieldName) => ({
@@ -117,6 +117,10 @@ useEffect(() => {
     setConditionSuggestionsFromTerms();
   }, []);
 
+const setAddress = (city, state, country, zipCode) => {
+  console.log({city, state, country, zipCode})
+}
+
 const handleEditField = (fieldName) => {
   console.log(`Editing field: ${fieldName}`);
   setProfileData((prevData) =>
@@ -150,6 +154,16 @@ const handleSaveField = async (fieldName) => {
   console.log("batman is here", fieldName, profileData);
   try {
     //console.log('Updating profile data...');
+
+    if(fieldName == "address") {
+      await updateData(profileId, "city", profileData.find((field) => field.fieldName === "city")?.fieldValue || '');
+      await updateData(profileId, "state", profileData.find((field) => field.fieldName === "state")?.fieldValue || '');
+      await updateData(profileId, "country", profileData.find((field) => field.fieldName === "country")?.fieldValue || '');
+      await updateData(profileId, "zipCode", profileData.find((field) => field.fieldName === "zipCode")?.fieldValue || '');
+
+    }
+
+
     await updateData(profileId, fieldName, profileData.find((field) => field.fieldName === fieldName)?.fieldValue || '');
     //console.log('Profile data updated successfully.');
   } catch (error) {
@@ -326,6 +340,9 @@ const handleReturnToResults = () => {
     loggedIn={loggedIn}
     currentUserID={currentUserID}
     profileId={profileId}
+
+    profileData={profileData}
+    setAddress={setAddress}
   >
 {renderFieldValue("address", profileData.find((field) => field.fieldName.toLowerCase() === "address")?.fieldValue || "", false)}
     </ProfileFieldCard>
