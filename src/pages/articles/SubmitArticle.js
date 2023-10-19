@@ -2,6 +2,10 @@ import { useState } from 'react';
 import addArticleToSupabase from './functions/addArticle'; // Adjust the import path
 import styled from 'styled-components';
 
+
+import { createClient } from '@supabase/supabase-js';
+
+
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -13,35 +17,12 @@ const StyledContainer = styled.div`
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 7%;
-
-  textarea {
-    width: 60%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 10px;
-  }
-
-  button {
-    background-color: #0077cc;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-
-    &:hover {
-      background-color: #005299;
-    }
-  }
 `;
 
 const ErrorMessage = styled.p`
   color: red;
   margin: 10px 0;
 `;
-
 
 const Header = styled.h2`
   font-size: 24px;
@@ -87,50 +68,57 @@ const PasswordForm = ({ onSignIn }) => {
 };
 
 const SubmitArticle = () => {
-  const [article, setArticle] = useState('');
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [error, setError] = useState(null); // New state for error handling
 
-  const handleArticleChange = (event) => {
-    setArticle(event.target.value);
+  const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
+ const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
+
+ const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
   };
 
-  const handleSubmit = async () => {
-    if (article.trim() === '') {
-      console.log('Article is empty.');
+  const handleFileUpload = async () => {
+    if (!selectedFile) {
+      setError('Please select a file to upload.');
       return;
     }
 
-    const articleData = {
-      article_text: article,
-      // You can add more fields like title, author, timestamp here
-    };
+    try {
+      const { data, error } = await supabase.storage.from('articles').upload(selectedFile.name, selectedFile);
 
-    console.log('Article data:', articleData);
+      if (error) {
+        console.error('Error uploading file:', error.message);
+        return;
+      }
 
-    const result = await addArticleToSupabase(articleData);
-
-    if (result.success) {
-      console.log('Article added successfully:', result.message);
-      setArticle('');
-      setSubmitSuccess(true);
-    } else {
-      console.log('Error adding article:', result.message);
+      console.log('File uploaded successfully:', data);
+      setUploadSuccess(true);
+    } catch (error) {
+      console.error('Error handling file upload:', error);
+      setError('An error occurred while uploading the file. Please try again.');
     }
   };
 
-  return (
+return (
     <StyledContainer>
       {isSignedIn ? (
         <>
-          <Header>Add Article</Header>
-          <textarea
-            value={article}
-            onChange={handleArticleChange}
-            placeholder="Enter your article..."
+          <Header>Upload Article</Header>
+          <input
+            type="file"
+            accept=".doc,.docx"  // Accept DOC and DOCX files
+            onChange={handleFileChange}
           />
-          <button onClick={handleSubmit}>Add Article</button>
-          {submitSuccess && <SuccessMessage>Article successfully submitted!</SuccessMessage>}
+          <button onClick={handleFileUpload}>Upload Article</button>
+          {uploadSuccess && (
+            <SuccessMessage>Article successfully uploaded to Supabase!</SuccessMessage>
+          )}
+          {error && <ErrorMessage>{error}</ErrorMessage>}
         </>
       ) : (
         <PasswordForm onSignIn={() => setIsSignedIn(true)} />
