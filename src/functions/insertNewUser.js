@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_API_KEY, EMAILJS_API_KEY, EMAILJS_SERVICE_ID, MAILCHIMP_API_KEY, SCHEMA_NAME } from '../config.js';
+import { SUPABASE_URL, SUPABASE_API_KEY, EMAILJS_API_KEY, SCHEMA_NAME } from '../config.js';
 import axios from 'axios';
 
 const supabaseUrl = SUPABASE_URL;
@@ -11,7 +11,7 @@ import emailjs from 'emailjs-com';
 
 // import { Mandrill } from 'mandrill-api';
 
-// const mandrill = new Mandrill(MAILCHIMP_API_KEY);
+
 
 // Initialize EmailJS with your User ID
 emailjs.init(EMAILJS_API_KEY);
@@ -55,55 +55,6 @@ const geocodeCity = async (city, state, country) => {
   }
 };
 
-//  // Send a welcome email to the newly registered user
-//  const sendWelcomeEmail = async (userData) => {
-//   // Prepare the welcome email content
-//   const emailContent = `
-//     Dear ${userData.clinicName},
-
-//     Welcome to our platform! Thank you for registering with us.
-
-//     Here are the details you provided:
-//     ${Object.entries(userData)
-//       .filter(([key]) => !['password', 'confirmPassword', 'latitude', 'longitude', 'conditionsSuggestions', 'confirmEmail'].includes(key))
-//       .map(([key, value]) => {
-//         if (key === 'clinicName') {
-//           return `Doctor/Clinic Name: ${value}`;
-//         }
-//         if (key === 'website') {
-//           return value ? `Website: ${value}` : '';
-//         }
-//         return `${key}: ${value}`;
-//       })
-//       .filter((line) => line !== '')
-//       .join('\n')}
-
-//     If you have any questions or need assistance, feel free to contact us.
-
-//     Best regards,
-//     Your Platform Team
-//   `;
-
-//   const message = {
-//     html: emailContent,
-//     subject: 'Welcome to Our Platform!',
-//     from_email: 'ben@regenmedgloba.com',
-//     from_name: 'Your Platform Team',
-//     to: [{ email: userData.email, name: userData.clinicName }],
-//     important: true,
-//     track_opens: true,
-//     track_clicks: true,
-//   };
-
-//   // Send the email using Mandrill API
-//   try {
-//     const result = await mandrill.messages.send({ message });
-//     console.log('Email sent successfully:', result);
-//   } catch (error) {
-//     console.error('Error sending email:', error);
-//     throw new Error('Failed to send welcome email');
-//   }
-// };
 
 export const resetPassword = async(data, id) => {
   try {

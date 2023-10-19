@@ -82,7 +82,7 @@ const styles = {
 };
 
 const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreatments, resultRadius,  }) => {
-  console.log('Result component rendered. Address: ', resultAddress);
+  console.log('Result component rendered. : ', result);
 
 
   const { id, name, city, country, resultState, specialty, placeId, address } = result;
@@ -96,6 +96,7 @@ const fetchDistance = async () => {
     setDistance('');
     return;
   }
+
 
   try {
     const userCoordinates = userLocation;
@@ -132,26 +133,42 @@ const fetchDistance = async () => {
       });
   }, []);
 
-    useEffect(() => {
-    // Define a function to retrieve the user's location
-    const fetchUserLocation = async () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
+useEffect(() => {
+  // Define a function to retrieve the user's location
+  const fetchUserLocation = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
           setUserLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-        }, (error) => {
+        },
+        (error) => {
           console.error('Error retrieving user location:', error);
-        });
-      } else {
-        console.log("Geolocation is not supported by this browser.");
-      }
-    };
+          // If geolocation fails,  get coordinates from resultAddress
+          setUserLocation({
+        latitude: result.latitude,
+        longitude: result.longitude,
+      });
+        }
+      );
+    } else {
+      console.log('Geolocation is not supported by this browser.');
+      // If geolocation is not supported, attempt to get coordinates from resultAddress
+       // If geolocation is not supported, use coordinates from result.latitude and result.longitude
+      setUserLocation({
+        latitude: result.latitude,
+        longitude: result.longitude,
+      });
+    }
+  };
 
-    // Call the function to fetch user location when the component mounts
-    fetchUserLocation();
-  }, []);
+  // Call the function to fetch user location when the component mounts
+  fetchUserLocation();
+}, []);
+
+
 
   const getLocationCoordinates = async (location) => {
   try {

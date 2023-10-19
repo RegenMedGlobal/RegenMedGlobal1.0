@@ -1,17 +1,15 @@
 export const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
 export const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
 export const SCHEMA_NAME = "public";
-
-
-
+export const HERE_APP_ID = 'kLeEsu9HMvL3pmKh2BrY';
+export const HERE_API_KEY = 'kE8FGA1pUGnxn3IdbU2ukhWZjxFWIWd38p2lAy8d1jw';
 export const EDGE_URL = "https://sxjdyfdpdhepsgzhzhak.supabase.co/functions/v1"
-
-export const GOOGLE_MAPS_API_KEY = 'AIzaSyBsY7TWsifdD_oYfwhEKBqVdLzfBaSeu6A';
+export const GOOGLE_MAPS_API_KEY = 'AIzaSyBsY7TWsifdD_oYfwhEKBqVdLzfBaSeuA';
 export const EMAILJS_SERVICE_ID = 'service_2r0se76';
 export const EMAILJS_API_KEY = 'qVS-rHwiDSnK_KcU9';
 export const MAILCHIMP_API_KEY = '62187fe32cbe5dee78bde2adf5715dfb-us11';
 export const MAILGUN_DOMAIN = 'sandbox47ce8785c831477abdac4337e652ee45.mailgun.org';
-export const HERE_API_KEY = 'gC8HgENnEmix00louuAFWGM1mjOg6Kb8'
+export const TOMTOM_API_KEY = 'gC8HgENnEmix00louuAFWGM1mjOg6Kb8'
 export const MAPBOX_TOKEN = 'pk.eyJ1IjoiYmVuaGF2aXMiLCJhIjoiY2xsNXJscXg5MGI2bjNqcXAzcDN0NTE3YyJ9.LDwyHdaWOPkORyIeYFNO0Q'
 export const states = [
     'Alabama',
