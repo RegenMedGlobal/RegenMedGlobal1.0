@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import addArticleToSupabase from './functions/addArticle'; // Adjust the import path
+import { Upload, Button, Input, message } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-
-
 import { createClient } from '@supabase/supabase-js';
 
 
@@ -19,6 +18,13 @@ const StyledContainer = styled.div`
   margin-top: 7%;
 `;
 
+const StyledInput = styled.input`
+width: 12rem;
+margin: 0 auto;
+margin-top: 2%;
+margin-bottom: 2%;
+`
+
 const ErrorMessage = styled.p`
   color: red;
   margin: 10px 0;
@@ -26,13 +32,28 @@ const ErrorMessage = styled.p`
 
 const Header = styled.h2`
   font-size: 24px;
-  margin-bottom: 10px;
+  margin-bottom: 3%;
 `;
 
 const SuccessMessage = styled.p`
   color: green;
   margin: 10px 0;
 `;
+
+const UploadButton = styled.button`
+  background-color: #007BFF; // Change to your preferred background color
+  color: #fff; // Change to your preferred text color
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3; // Change to the hover color you prefer
+  }
+`;
+
 
 const PasswordForm = ({ onSignIn }) => {
   const [password, setPassword] = useState('');
@@ -55,7 +76,7 @@ const PasswordForm = ({ onSignIn }) => {
   return (
     <div>
       <Header>Sign In</Header>
-      <input
+      <StyledInput
         type="password"
         value={password}
         onChange={handlePasswordChange}
@@ -70,6 +91,7 @@ const PasswordForm = ({ onSignIn }) => {
 const SubmitArticle = () => {
    const [selectedFile, setSelectedFile] = useState(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+   const [authorName, setAuthorName] = useState(''); // Stat
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [error, setError] = useState(null); // New state for error handling
 
@@ -78,53 +100,72 @@ const SubmitArticle = () => {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
- const handleFileChange = (event) => {
+ const handleAuthorNameChange = (event) => {
+    setAuthorName(event.target.value); // Update authorName state with the entered name
+  };
+
+
+const handleFileChange = (event) => {
+  if (event.target.files && event.target.files[0]) {
     setSelectedFile(event.target.files[0]);
+  }
+};
+
+
+
+const handleFileUpload = async () => {
+  if (!selectedFile || !authorName) {
+    setError('Please select a file and provide the author name.');
+    return;
+  }
+
+  const randomNumber = Math.floor(Math.random() * 1000); // Generate a random number
+  const fileName = `${authorName}_${randomNumber}_${selectedFile.name}`; // Combine author name, random number, and original filename
+
+  const metadata = {
+    author: authorName,
+    // Other metadata fields
   };
 
-  const handleFileUpload = async () => {
-    if (!selectedFile) {
-      setError('Please select a file to upload.');
-      return;
-    }
+  const { data, error } = await supabase.storage
+    .from('articles')
+    .upload(fileName, selectedFile, { metadata });
 
-    try {
-      const { data, error } = await supabase.storage.from('articles').upload(selectedFile.name, selectedFile);
+  if (error) {
+    console.error('Error uploading file:', error.message);
+    return;
+  }
 
-      if (error) {
-        console.error('Error uploading file:', error.message);
-        return;
-      }
+  console.log('File uploaded successfully:', data);
+  setUploadSuccess(true);
+};
 
-      console.log('File uploaded successfully:', data);
-      setUploadSuccess(true);
-    } catch (error) {
-      console.error('Error handling file upload:', error);
-      setError('An error occurred while uploading the file. Please try again.');
-    }
-  };
 
 return (
-    <StyledContainer>
-      {isSignedIn ? (
-        <>
-          <Header>Upload Article</Header>
-          <input
-            type="file"
-            accept=".doc,.docx"  // Accept DOC and DOCX files
-            onChange={handleFileChange}
-          />
-          <button onClick={handleFileUpload}>Upload Article</button>
-          {uploadSuccess && (
-            <SuccessMessage>Article successfully uploaded to Supabase!</SuccessMessage>
-          )}
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-        </>
-      ) : (
-        <PasswordForm onSignIn={() => setIsSignedIn(true)} />
-      )}
-    </StyledContainer>
-  );
+  <StyledContainer>
+    {isSignedIn ? (
+      <>
+        <Header>Upload Article</Header>
+        <input
+          type="file"
+          accept=".doc,.docx" // Accept DOC and DOCX files
+          onChange={handleFileChange}
+        />
+        <StyledInput
+          value={authorName}
+          onChange={handleAuthorNameChange}
+          placeholder="Author's Name"
+        />
+       <UploadButton onClick={handleFileUpload}>Upload Article</UploadButton>
+
+        {uploadSuccess && <SuccessMessage>Article successfully uploaded to Supabase!</SuccessMessage>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+      </>
+    ) : (
+      <PasswordForm onSignIn={() => setIsSignedIn(true)} />
+    )}
+  </StyledContainer>
+);
 };
 
 export default SubmitArticle;
