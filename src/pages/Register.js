@@ -125,6 +125,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   const conditionRef = React.useRef(null);
+    const firstErrorFieldRef = useRef(null);
   const [showConditionsDropdown, setShowConditionsDropdown] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -140,6 +141,7 @@ const Register = () => {
     formState: { errors },
     getValues,
     reset,
+    setFocus
   } = useForm({
     defaultValues: {
       treatments: [], // Set initial value as an empty array
@@ -148,7 +150,8 @@ const Register = () => {
     },
   });
 
- const topErrorRef = useRef(null);
+
+const passwordRef = useRef(null);
   
   const [errorMessage, setErrorMessage] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Add state for button disabled
@@ -159,6 +162,7 @@ const Register = () => {
   const [email, setEmail] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [filterTerm, setFilterTerm] = useState('');
+const [hasScrolled, setHasScrolled] = useState(false);
 
   const [conditions, setConditions] = useState([]);
 
@@ -289,7 +293,23 @@ const Register = () => {
     }
   }
 
+
+  const handleFocusOnError = () => {
+    const firstError = Object.keys(errors).reduce((field, a) => {
+      return !!errors[field] ? field : a;
+    }, null);
+
+    if (firstError) {
+      console.log(`First error field found: ${firstError}`);
+      firstErrorFieldRef.current.focus();
+      console.log(`Setting focus to: ${firstError}`);
+    }
+  };
+
+
   const onSubmit = async (data, event) => {
+
+
     console.log("onSubmit function called");
     console.log("Value of conditions:", data.conditions);
 
@@ -299,6 +319,7 @@ const Register = () => {
 
     // Disable the button after the first click
     setIsButtonDisabled(true);
+        
 
     try {
       // Extract the 'value' property from each object in the 'data.conditions' array
@@ -328,10 +349,10 @@ const Register = () => {
     console.log('errors:', errors)
 
       const response = await insertNewUser(requestDataWithoutConditionsSelect);
-      response.write('response:', response)
+      console.log('response:', response)
 
       // Check the response for success or failure
-      if (response.message === "Data inserted successfully") {
+      if (response && response.message === "Data inserted successfully") {
         // Data inserted successfully
         reset(); // Reset the form fields
         toast.success("Registration Successful. Thank you for signing up!");
@@ -339,6 +360,7 @@ const Register = () => {
       } else {
         // Data insertion failed
         toast.error("Registration Failed. Please try again.");
+        handleFocusOnError();
       }
     } catch (catchError) {
     // Handle the specific error types here
@@ -352,7 +374,7 @@ const Register = () => {
     } else {
       setErrorMessage("Registration Failed. Please try again.");
     }
-    // Focus on the top error message
+    handleFocusOnError();
 
   } finally {
     // Re-enable the button after the form submission is complete
@@ -360,6 +382,19 @@ const Register = () => {
     }
   };
 
+// React.useEffect(() => {
+//   console.log('useEffect is running');
+  
+//   const firstError = Object.keys(errors).reduce((field, a) => {
+//     return !!errors[field] ? field : a;
+//   }, null);
+
+//   if (firstError) {
+//     console.log(`First error field found: ${firstError}`);
+//     firstErrorFieldRef.current.focus();
+//     console.log(`Setting focus to: ${firstError}`);
+//   }
+// }, [errors]);
 
 
 
@@ -434,6 +469,26 @@ const Register = () => {
     //setShowConditionsDropdown(false);
   };
 
+//   useEffect(() => {
+//   console.log('useEffect is running');
+
+//   // Find the first input field with an error
+//   for (const field in errors) {
+//     if (errors[field]) {
+//       console.log(`Found error in field: ${field}`);
+//       if (firstErrorFieldRef.current) {
+//         // Set focus to the first input field with an error
+//         console.log('Setting focus to the first error field');
+//         firstErrorFieldRef.current.focus();
+//         break;
+//       }
+//     }
+//   }
+// }, [errors]);
+
+
+  
+
   return (
     <>
 
@@ -446,16 +501,10 @@ const Register = () => {
 
                 {isSubmitted ? <Confirmation /> : (
                   <FormContainer>
-
-
-    
-
                     <form onSubmit={(e) => handleSubmit(onSubmit)(e)}>
-
                       <div className="row">
                         <div className="col-lg-12">
                           <div className="mar-15">
-
                             <StyledControllerContainer>
                               <label className="label-contact">Clinic Name</label>
                               <Controller
@@ -465,8 +514,8 @@ const Register = () => {
                                 rules={{ required: "Clinic Name is required" }}
                                 render={({ field }) => (
                                   <TextField
-
                                     variant="outlined"
+                                    inputRef={firstErrorFieldRef}
                                     style={inputFieldStyle}
                                     error={Boolean(errors.clinicName)}
                                     helperText={
@@ -509,6 +558,7 @@ const Register = () => {
                                       className="input-text"
                                       variant="outlined"
                                       style={inputFieldStyle}
+                                      inputRef={firstErrorFieldRef}
                                       error={Boolean(errors.email)}
                                       helperText={errors.email ? errors.email.message : ""}
                                       {...field}
@@ -517,6 +567,7 @@ const Register = () => {
                                         console.log("Email values:", e.target.value);
                                         setEmail(e.target.value)
                                       }}
+                                      ref={firstErrorFieldRef} 
                                     />
                                   </>
                                 )}
@@ -565,6 +616,7 @@ const Register = () => {
                                         helperText={errors.password ? errors.password.message : ""}
                                         {...field}
                                         type="password"
+                                        inputRef={firstErrorFieldRef}
                                         onChange={(e) => {
                                           field.onChange(e);
                                           console.log("Password values:", e.target.value);
@@ -598,6 +650,7 @@ const Register = () => {
                                     render={({ field }) => (
                                       <TextField
                                         variant="outlined"
+                                        inputRef={firstErrorFieldRef}
                                         style={inputFieldStyle}
                                         fullWidth
                                         error={Boolean(errors.confirmPassword)}
@@ -631,6 +684,7 @@ const Register = () => {
                                         variant="outlined"
                                         style={inputFieldStyle}
                                         error={Boolean(errors.address)}
+                                        inputRef={firstErrorFieldRef}
                                         helperText={errors.address ? errors.address.message : ""}
                                         {...field}
                                         onChange={(e) => {
@@ -662,6 +716,7 @@ const Register = () => {
                                         variant="outlined"
                                         style={inputFieldStyle}
                                         error={Boolean(errors.city)}
+                                        inputRef={firstErrorFieldRef}
                                         helperText={errors.city ? errors.city.message : ""}
                                         {...field}
                                       />
@@ -700,6 +755,7 @@ const Register = () => {
                                         helperText={errors.state ? errors.state.message : ""}
                                         select
                                         disabled={isStateDisabled}
+                                        inputRef={firstErrorFieldRef}
                                         {...field}
                                         onChange={(e) => {
                                           field.onChange(e);
@@ -737,6 +793,7 @@ const Register = () => {
                                     control={control}
                                     defaultValue=""
                                     rules={{ required: "Zip is required" }}
+                                    inputRef={firstErrorFieldRef}
                                     render={({ field }) => (
                                       <TextField
                                         style={inputFieldStyle}
@@ -771,6 +828,7 @@ const Register = () => {
                                         style={inputFieldStyle}
                                         error={Boolean(errors.country)}
                                         helperText={errors.country ? errors.country.message : ""}
+                                        inputRef={firstErrorFieldRef}
                                         select
                                         {...field}
                                         onChange={(e) => {
@@ -822,6 +880,7 @@ const Register = () => {
                                       <TextField
                                         variant="outlined"
                                         style={inputFieldStyle}
+                                        inputRef={firstErrorFieldRef}
                                         error={Boolean(errors.phone)}
                                         helperText={errors.phone ? errors.phone.message : ""}
                                         {...field}
@@ -848,6 +907,7 @@ const Register = () => {
 
                                         variant="outlined"
                                         style={inputFieldStyle}
+                                        inputRef={firstErrorFieldRef}
                                         rules={{
                                           pattern: {
                                             value: /^(ftp|http|https):\/\/[^ "]+$/,
@@ -884,6 +944,7 @@ const Register = () => {
                                       <TextArea
                                         variant="outlined"
                                         style={inputFieldStyle}
+                                        inputRef={firstErrorFieldRef}
                                         error={Boolean(errors.description)}
                                         helperText={errors.description ? errors.description.message : ""}
                                         {...field}
@@ -917,6 +978,7 @@ const Register = () => {
                                     showConditionsDropdown={showConditionsDropdown}
                                     conditionRef={conditionRef}
                                     handleConditionSelect={handleConditionSelect}
+
                                     terms={conditions} // Pass the conditions array
                                     watch={watch}
                                     filterTerm={filterTerm} // Pass the filter term as a prop
@@ -963,7 +1025,7 @@ const Register = () => {
                           <div className="row">
                             <div className="col-lg-12">
                               <div className="mar-no">
-                                <button type="submit" variant="contained" className="Send-message">Sign Up</button>
+                                <button type="submit" variant="contained" onClick={handleFocusOnError} className="Send-message">Sign Up</button>
                               </div>
                             </div>
                           </div>
