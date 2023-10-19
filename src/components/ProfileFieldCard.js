@@ -1,13 +1,14 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { Input, Button } from 'antd';
-import { EditOutlined, MailOutlined, PhoneOutlined, CheckCircleOutlined  } from '@ant-design/icons';
+import { EditOutlined, MailOutlined, PhoneOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import styled from "styled-components";
 import { getConditions } from "../functions/getConditions";
 import debounce from 'lodash/debounce';
 import { Select } from "antd";
-import CreatableSelect from 'react-select/creatable'; 
+import CreatableSelect from 'react-select/creatable';
 import SelectConditions from "./Condiitons/SelectConditions";
+import { states, countries, provinces, EDGE_URL } from "../config";
 
 const CardContainer = styled.div`
   background-color: transparent;
@@ -179,20 +180,36 @@ const ProfileFieldCard = ({
   profileId,
   labelName,
   labelNameOnEdit,
+  profileData,
+  setAddress,
   //customClass,
 }) => {
 
-  const [filteredConditions, setFilteredConditions] = useState([]);
-const [filterTerm, setFilterTerm] = useState('');
-const [selectedConditions, setSelectedConditions] = useState([]);
+  const specificFields = ['address', 'city', 'state', 'country', 'zipCode'];
+  const keyPairs = {};
 
- const handleAddConditions = () => {
+  if (profileData) {
+    specificFields.forEach(fName => {
+      const item = profileData.find(item => item.fieldName === fName);
+      if (item) {
+        keyPairs[fName] = item.fieldValue;
+      }
+    });
+  }
+
+  const [keyValuePair, setKeyValuePair] = useState(keyPairs);
+
+  const [filteredConditions, setFilteredConditions] = useState([]);
+  const [filterTerm, setFilterTerm] = useState('');
+  const [selectedConditions, setSelectedConditions] = useState([]);
+
+  const handleAddConditions = () => {
     // Convert selectedConditions to a comma-separated string
     const updatedValue = selectedConditions.map(condition => condition.value).join(', ');
     onInputChange(fieldName, updatedValue);
   };
 
- const renderFieldValue = () => {
+  const renderFieldValue = () => {
     if (fieldName === "Conditions" && fieldValue && !editMode) {
       return fieldValue.split(",").map((condition, i) => (
         <StyledValueWithIcon key={i}>
@@ -222,20 +239,20 @@ const [selectedConditions, setSelectedConditions] = useState([]);
   };
 
   useEffect(() => {
-  const debouncedFetchConditions = debounce(async () => {
-    const conditionsData = await getConditions(filterTerm);
-    setFilteredConditions(conditionsData);
-  }, 300);
+    const debouncedFetchConditions = debounce(async () => {
+      const conditionsData = await getConditions(filterTerm);
+      setFilteredConditions(conditionsData);
+    }, 300);
 
-  debouncedFetchConditions();
+    debouncedFetchConditions();
 
-  return () => {
-    debouncedFetchConditions.cancel();
-  };
-}, [filterTerm]);
+    return () => {
+      debouncedFetchConditions.cancel();
+    };
+  }, [filterTerm]);
 
 
-    const renderTreatmentButtons = () => {
+  const renderTreatmentButtons = () => {
     if (fieldName === "treatments" && editMode) {
       return (
         <StyledTreatmentButtons>
@@ -259,30 +276,30 @@ const [selectedConditions, setSelectedConditions] = useState([]);
   }
 
 
-const handleTreatmentButtonClick = (option) => {
-  console.log('Option clicked:', option);
-  console.log('Current fieldValue:', fieldValue);
+  const handleTreatmentButtonClick = (option) => {
+    console.log('Option clicked:', option);
+    console.log('Current fieldValue:', fieldValue);
 
-  if (fieldValue !== undefined) {
-    // Check if the option is already included in fieldValue
-    if (fieldValue.includes(option)) {
-      // If it's included, remove it from fieldValue
-      const updatedValue = fieldValue
-        .split(",")
-        .filter((treatment) => treatment.trim() !== option)
-        .join(", ");
-      console.log('Removing option from fieldValue:', option);
-      console.log('Checking treatment:', updatedValue);
-      onInputChange(fieldName, updatedValue);
-    } else {
-      // If it's not included, add it to fieldValue
-      const updatedValue = fieldValue ? `${fieldValue}, ${option}` : option;
-      console.log('Checking treatment:', updatedValue);
-      console.log('Updated value:', updatedValue);
-      onInputChange(fieldName, updatedValue);
+    if (fieldValue !== undefined) {
+      // Check if the option is already included in fieldValue
+      if (fieldValue.includes(option)) {
+        // If it's included, remove it from fieldValue
+        const updatedValue = fieldValue
+          .split(",")
+          .filter((treatment) => treatment.trim() !== option)
+          .join(", ");
+        console.log('Removing option from fieldValue:', option);
+        console.log('Checking treatment:', updatedValue);
+        onInputChange(fieldName, updatedValue);
+      } else {
+        // If it's not included, add it to fieldValue
+        const updatedValue = fieldValue ? `${fieldValue}, ${option}` : option;
+        console.log('Checking treatment:', updatedValue);
+        console.log('Updated value:', updatedValue);
+        onInputChange(fieldName, updatedValue);
+      }
     }
-  }
-};
+  };
 
   const handleCreateOption = (inputValue) => {
     // Create a new option with the inputValue
@@ -294,63 +311,164 @@ const handleTreatmentButtonClick = (option) => {
   };
 
 
-const shouldDisplayLabel = (fieldName, editMode) => {
-  return true;
-};
-console.log('filteredConditions', filteredConditions)
-  
+  const shouldDisplayLabel = (fieldName, editMode) => {
+    return true;
+  };
+  console.log('filteredConditions', filteredConditions)
+
   return (
     <CardContainer>
       {editMode ? (
         <>
           <Label>
-          <LabelText>
-            {editMode ? (
-              labelNameOnEdit
-              ? labelNameOnEdit+":"
-              : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"
-            ): (
-              labelName
-              ? labelName+":"
-              : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"
-            )}
-
-           
-          </LabelText>
-        </Label>
-        <LabelBar />
+            <LabelText>
+              {editMode ? (
+                labelNameOnEdit
+                  ? labelNameOnEdit + ":"
+                  : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"
+              ) : (
+                labelName
+                  ? labelName + ":"
+                  : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"
+              )}
 
 
-            {(fieldName === "treatments" || fieldName === "conditions") ? (
-    <>
-      {fieldName === "treatments" && (
-        <div>
-          {/* <p>Types offered at your clinic:</p> */}
-          {renderTreatmentButtons()}
-          {/* <Input
+            </LabelText>
+          </Label>
+          <LabelBar />
+
+
+          {(fieldName === "treatments" || fieldName === "conditions") ? (
+            <>
+              {fieldName === "treatments" && (
+                <div>
+                  {/* <p>Types offered at your clinic:</p> */}
+                  {renderTreatmentButtons()}
+                  {/* <Input
             type="text"
             value={fieldValue || ""}
             onChange={(event) => onInputChange(fieldName, event)}
           /> */}
-        </div>
-      )}
-      {fieldName === "conditions" && editMode && (
-      <div className="select-box-edit" style={{"width": "100%"}}>
-         <SelectConditions onInputChange={onInputChange} selectedOptions={fieldValue.split(',').map((value) => {return {label: value, value: value}})} options={filteredConditions.map(condition => ({ value: condition, label: condition }))} />
-         
-      </div>
-      )}
-    </>
+                </div>
+              )}
+              {fieldName === "conditions" && editMode && (
+                <div className="select-box-edit" style={{ "width": "100%" }}>
+                  <SelectConditions onInputChange={onInputChange} selectedOptions={fieldValue.split(',').map((value) => { return { label: value, value: value } })} options={filteredConditions.map(condition => ({ value: condition, label: condition }))} />
+
+                </div>
+              )}
+            </>
           ) : (
             ((fieldName === "description" || fieldName === "address") && editMode) ? (
-              <textarea className="area-text input-get" value={fieldValue.trim() || ""}
-              onChange={(event) => onInputChange(fieldName, event)} >{fieldValue.trim() || ""}</textarea>
+
+              (fieldName == "address" ? (
+                <>
+                  <div className="mb-2 custom-control-wrapper">
+                    <label>Address</label>
+                    <Input
+                      type="text"
+                      className="custom-control"
+                      value={keyValuePair.address || ""}
+                      onChange={(event) => {
+                        const updatedJsonData = { ...keyValuePair };
+                        updatedJsonData.address = event.target.value;
+                        setKeyValuePair(updatedJsonData)
+                        onInputChange("address", event)
+                      }}
+                    />
+                  </div>
+
+                  <div className="mb-2 custom-control-wrapper">
+                    <label>City</label>
+                    <Input
+                      type="text"
+                      className="custom-control"
+                      value={keyValuePair.city || ""}
+                      onChange={(event) => {
+                        const updatedJsonData = { ...keyValuePair };
+                        updatedJsonData.city = event.target.value;
+                        setKeyValuePair(updatedJsonData)
+                        onInputChange("city", event)
+                      }}
+                    />
+                  </div>
+
+                  <div className="mb-2 custom-control-wrapper">
+                    <label>State</label>
+                    <Select
+                      className="custom-control"
+                      options={states.map(state => ({ value: state, label: state }))}
+                      value={keyValuePair.state}
+                      onChange={(value) => {
+                        const updatedJsonData = { ...keyValuePair };
+                        updatedJsonData.state = value;
+                        setKeyValuePair(updatedJsonData)
+                        onInputChange("state",  {'target': {"value": value}})
+                      }}
+                      disabled={!(keyValuePair.country === "United States" || keyValuePair.country === "Mexico" || keyValuePair.country === "Canada" )}
+                    />
+                    {/* <Input
+                      type="text"
+                      value={keyValuePair.state || ""}
+                      onChange={(event) => onInputChange("state", event)}
+                    /> */}
+                  </div>
+
+                  <div className="mb-2 custom-control-wrapper">
+                    <label>Zipcode</label>
+                    <Input
+                      type="text"
+                      className="custom-control"
+                      value={keyValuePair.zipCode || ""}
+                      onChange={(event) => {
+                        const updatedJsonData = { ...keyValuePair };
+                        updatedJsonData.zipCode = event.target.value;
+                        setKeyValuePair(updatedJsonData)
+                        onInputChange("zipCode", event)
+                      }}
+                    />
+                  </div>
+
+                  <div className="mb-2 custom-control-wrapper">
+                    <label>Country</label>
+
+                    <Select
+                      className="custom-control"
+                      options={countries.map(country => ({ value: country, label: country }))}
+                      value={keyValuePair.country}
+                      onChange={(value) => {
+                        const updatedJsonData = { ...keyValuePair };
+                        updatedJsonData.country = value;
+                        setKeyValuePair(updatedJsonData)
+                        console.log(value)
+                        onInputChange("country", {'target': {"value": value}})
+                      }}
+                      
+                    />
+
+                    {/* <Input
+                      type="text"
+                      value={keyValuePair.country || ""}
+                      onChange={(event) => onInputChange("country", event)}
+                    /> */}
+                  </div>
+
+
+
+
+
+                </>
+              ) :
+                <textarea className="area-text input-get" value={fieldValue.trim() || ""}
+                  onChange={(event) => onInputChange(fieldName, event)} >{fieldValue.trim() || ""}</textarea>
+              )
+
             ) :
-            <Input
-              type="text"
-              value={fieldValue || ""}
-              onChange={(event) => onInputChange(fieldName, event)}
-            />
+              <Input
+                type="text"
+                value={fieldValue || ""}
+                onChange={(event) => onInputChange(fieldName, event)}
+              />
           )}
           <div className="button-wrapper">
             <Button onClick={() => onSaveField(fieldName)}>Save</Button>
@@ -366,36 +484,36 @@ console.log('filteredConditions', filteredConditions)
           )}
           <div>
             <div>
-             {shouldDisplayLabel(fieldName, editMode) && (
-  <>
-    {fieldName === "website" ? (
-      <div>
-        <WebsiteLabel>Website:</WebsiteLabel>
-        <IconContainer>
-          <CheckCircleOutlined />{" "}
-          {/* Add the CheckCircleOutlined icon */}
-          <a href={fieldValue} target="_blank" rel="noopener noreferrer">
-            {fieldValue}
-          </a>
-        </IconContainer>
-      </div>
-    ) : (
-      <>
-        <Label>
-          <LabelText>
-            {labelName
-              ? labelName+":"
-              : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"}
-          </LabelText>
-        </Label>
-        <LabelBar /> {/* Add the horizontal bar */}
-        <div>
-          {renderFieldValue()}
-        </div>
-      </>
-    )}
-  </>
-)}
+              {shouldDisplayLabel(fieldName, editMode) && (
+                <>
+                  {fieldName === "website" ? (
+                    <div>
+                      <WebsiteLabel>Website:</WebsiteLabel>
+                      <IconContainer>
+                        <CheckCircleOutlined />{" "}
+                        {/* Add the CheckCircleOutlined icon */}
+                        <a href={fieldValue} target="_blank" rel="noopener noreferrer">
+                          {fieldValue}
+                        </a>
+                      </IconContainer>
+                    </div>
+                  ) : (
+                    <>
+                      <Label>
+                        <LabelText>
+                          {labelName
+                            ? labelName + ":"
+                            : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"}
+                        </LabelText>
+                      </Label>
+                      <LabelBar /> {/* Add the horizontal bar */}
+                      <div>
+                        {renderFieldValue()}
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
 
             </div>
 
