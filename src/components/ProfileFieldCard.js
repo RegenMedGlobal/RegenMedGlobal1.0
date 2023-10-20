@@ -314,7 +314,6 @@ const ProfileFieldCard = ({
   const shouldDisplayLabel = (fieldName, editMode) => {
     return true;
   };
-  console.log('filteredConditions', filteredConditions)
 
   return (
     <CardContainer>
@@ -353,8 +352,8 @@ const ProfileFieldCard = ({
               )}
               {fieldName === "conditions" && editMode && (
                 <div className="select-box-edit" style={{ "width": "100%" }}>
-                  <SelectConditions onInputChange={onInputChange} selectedOptions={fieldValue.split(',').map((value) => { return { label: value, value: value } })} options={filteredConditions.map(condition => ({ value: condition, label: condition }))} />
-
+                  <SelectConditions onInputChange={onInputChange} selectedOptions={fieldValue.trim() != "" ? fieldValue.split(',').map((value) => { return { label: value, value: value } }) : "" } options={filteredConditions.map(condition => ({ value: condition, label: condition }))} filterTerm={filterTerm} setFilterTerm={setFilterTerm} />
+ 
                 </div>
               )}
             </>

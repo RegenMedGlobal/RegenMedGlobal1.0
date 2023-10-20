@@ -46,7 +46,9 @@ const ConditionsInput = ({
   terms,
   watch,
   selection,
-  options
+  options,
+  filterTerm,
+  setFilterTerm
 }) => {
   const selectRef = conditionRef; // Use the conditionRef prop as a ref
   const [inputValue, setInputValue] = useState(""); // Track user input
@@ -54,7 +56,7 @@ const ConditionsInput = ({
   const ref = useRef(false);
   
   const handleLocalInputChange = (newValue) => {
-    console.log("Input Value in ConditionsInput:", newValue); // Add this line
+    console.log("Input Value in ConditionsInput--:", newValue); // Add this line
     setInputValue(newValue);
     handleInputChange(newValue); // Call the parent's handleInputChange function
   };
@@ -106,10 +108,15 @@ const ConditionsInput = ({
                 if (actionMeta.action === 'select-option') {
                   // Handle the selection of an option
                   const {value} = field
-                  value.push(selectedOptions[0]);
-                  console.log("Selected Options:", value);
-                  // Update your state variable with the selected options
-                  field.onChange(value);
+                  console.log(!value.includes(selectedOptions[0]))
+                  if(!value.includes(selectedOptions[0])) {
+                    value.push(selectedOptions[0]);
+                    console.log("Selected Options:", value);
+                    // Update your state variable with the selected options
+                    field.onChange(value);
+                  }else {
+                    return false
+                  }
                 }
               }}
               value={watch("conditionsSuggestions")} // Ensure this reflects your selected options

@@ -5,11 +5,12 @@ import { getConditions } from "../../functions/getConditions";
 import ConditionsInput from "../ConditionsInput";
 import { Select } from "antd";
 
-const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
+const SelectConditions = ({ selectedOptions, options, onInputChange, filterTerm, setFilterTerm }) => {
+  // console.log("MYOPT", options)
   const [showConditionsDropdown, setShowConditionsDropdown] = useState(false);
   const [conditions, setConditions] = useState([]);
   const conditionRef = useRef(null);
-  const [filterTerm, setFilterTerm] = useState("");
+  // const [filterTerm, setFilterTerm] = useState("");
   const [conditionsArr, setConditionsArr] = useState([]);
   const {
     watch,
@@ -28,23 +29,21 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
     },
   });
 
-  console.log(options, selectedOptions);
+  // useEffect(() => {
+  //   // Define a debounced version of fetchConditions
+  //   const debouncedFetchConditions = debounce(async () => {
+  //     const conditionsData = await getConditions(filterTerm); // Pass the filterTerm to getConditions
+  //     setConditions(conditionsData);
+  //   }, 300); // Adjust the debounce delay (in milliseconds) as needed
 
-  useEffect(() => {
-    // Define a debounced version of fetchConditions
-    const debouncedFetchConditions = debounce(async () => {
-      const conditionsData = await getConditions(filterTerm); // Pass the filterTerm to getConditions
-      setConditions(conditionsData);
-    }, 300); // Adjust the debounce delay (in milliseconds) as needed
+  //   // Call the debounced function when the component mounts
+  //   debouncedFetchConditions();
 
-    // Call the debounced function when the component mounts
-    debouncedFetchConditions();
-
-    return () => {
-      // Cleanup: Clear the debounced function when the component unmounts
-      debouncedFetchConditions.cancel();
-    };
-  }, [filterTerm]); // Include filterTerm in the dependency array
+  //   return () => {
+  //     // Cleanup: Clear the debounced function when the component unmounts
+  //     debouncedFetchConditions.cancel();
+  //   };
+  // }, [filterTerm]); // Include filterTerm in the dependency array
 
   const handleConditionSelect = (selectedOption) => {
     console.log("Selected Conditions:", selectedOption);
@@ -91,6 +90,7 @@ const SelectConditions = ({ selectedOptions, options, onInputChange }) => {
               selection={selectedOptions}
               options={options}
               filterTerm={filterTerm} // Pass the filter term as a prop
+              setFilterTerm={setFilterTerm}
               handleInputChange={handleInputChange} // Pass the handleInputChange function
               //setShowConditionsDropdown={setShowConditionsDropdown} // Pass setShowConditionsDropdown as a prop
             />
