@@ -384,6 +384,7 @@ const handleReturnToResults = () => {
                 currentUserID={currentUserID}
                 profileId={profileId}
                 labelName="About Us"
+                labelNameOnEdit="About Us"
               />
             </Card>
 
