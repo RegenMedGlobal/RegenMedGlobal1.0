@@ -3,6 +3,7 @@ import { Upload, Button, Input, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { createClient } from '@supabase/supabase-js';
+import { v4 as uuidv4 } from 'uuid';
 
 
 const StyledContainer = styled.div`
@@ -111,33 +112,53 @@ const handleFileChange = (event) => {
   }
 };
 
-
-
+// Uploading a file and associating it with a database record
 const handleFileUpload = async () => {
-  if (!selectedFile || !authorName) {
-    setError('Please select a file and provide the author name.');
-    return;
+  try {
+    if (!selectedFile || !authorName) {
+      setError('Please select a file and provide the author name.');
+      return;
+    }
+
+    // Generate a unique identifier (assuming you're using uuidv4)
+    const fileId = uuidv4();
+
+    // Construct the filename with the unique identifier
+    const fileName = `${fileId}_${selectedFile.name}`;
+
+    // Insert a record in your database table with fileId and authorName
+    const databaseRecord = {
+      id: fileId,
+      author: authorName,
+      // Other relevant data
+    };
+
+    // Upload the file to storage
+    const { data, error } = await supabase.storage
+      .from('articles')
+      .upload(fileName, selectedFile);
+
+    if (error) {
+      console.error('Error uploading file:', error);
+      return;
+    }
+
+    // Insert the database record
+    const { data: insertedData, error: insertError } = await supabase.from('articles').insert([databaseRecord]);
+
+    if (insertError) {
+      console.error('Error inserting record in the database:', insertError);
+      return;
+    }
+
+    console.log('File uploaded successfully:', data);
+    console.log('Database record inserted successfully:', insertedData);
+    setAuthorName('');
+    setSelectedFile(null); // Clear the selected file
+    setUploadSuccess(true);
+  } catch (error) {
+    console.error('An error occurred:', error);
   }
-
-  const randomNumber = Math.floor(Math.random() * 1000); // Generate a random number
-  const fileName = `${authorName}_${randomNumber}_${selectedFile.name}`; // Combine author name, random number, and original filename
-
-  const metadata = {
-    author: authorName,
-    // Other metadata fields
-  };
-
-  const { data, error } = await supabase.storage
-    .from('articles')
-    .upload(fileName, selectedFile, { metadata });
-
-  if (error) {
-    console.error('Error uploading file:', error.message);
-    return;
-  }
-
-  console.log('File uploaded successfully:', data);
-  setUploadSuccess(true);
 };
 
 
