@@ -53,6 +53,7 @@ const ConditionsInput = ({
   const selectRef = conditionRef; // Use the conditionRef prop as a ref
   const [inputValue, setInputValue] = useState(""); // Track user input
   const [conditions, setConditions] = useState([]);
+  const [myselected, setmyselected] = useState(selection)
   const ref = useRef(false);
   
   const handleLocalInputChange = (newValue) => {
@@ -108,6 +109,7 @@ const ConditionsInput = ({
                 if (actionMeta.action === 'select-option') {
                   // Handle the selection of an option
                   const {value} = field
+                  console.log(selectedOptions[0], "----", value)
                   console.log(!value.includes(selectedOptions[0]))
                   if(!value.includes(selectedOptions[0])) {
                     value.push(selectedOptions[0]);
@@ -115,6 +117,8 @@ const ConditionsInput = ({
                     // Update your state variable with the selected options
                     field.onChange(value);
                   }else {
+                    console.log(value)
+                    console.log("Already There")
                     return false
                   }
                 }

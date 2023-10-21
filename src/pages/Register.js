@@ -177,6 +177,9 @@ const [hasScrolled, setHasScrolled] = useState(false);
   const handleInputChange = (newValue) => {
     console.log('Input Value in Register:', newValue);
     setFilterTerm(newValue);
+    console.log("GETVAL", getValues('conditions'))
+    console.log("SS", conditions)
+
   };
 
   console.log('filter term:', filterTerm)
@@ -978,8 +981,12 @@ const [hasScrolled, setHasScrolled] = useState(false);
                                     showConditionsDropdown={showConditionsDropdown}
                                     conditionRef={conditionRef}
                                     handleConditionSelect={handleConditionSelect}
-
-                                    terms={conditions} // Pass the conditions array
+                                    terms={conditions.filter((cond)=> {
+                                      let selectedVals = getValues('conditions').map((scond) => {
+                                        return scond.value
+                                      })
+                                      return !selectedVals.includes(cond)
+                                    })} // Pass the conditions array
                                     watch={watch}
                                     filterTerm={filterTerm} // Pass the filter term as a prop
                                     handleInputChange={handleInputChange} // Pass the handleInputChange function
