@@ -97,6 +97,11 @@ const extractDescription = (html) => {
     return '';
   };
 
+  // Define a utility function to make a string URL-friendly
+function makeURLFriendly(str) {
+  return str.toLowerCase().replace(/ /g, '-').replace(/\.$/, '');
+}
+
 
 return (
   <StyledArticleContainer>
@@ -108,10 +113,10 @@ return (
         <ArticleMeta>
           By: {article.author} | Published on {formatDate(article.created_at)}
         </ArticleMeta>
-      <Link
-  to={`/article/${article.title.toLowerCase().replace(/ /g, '-')}-${article.author.toLowerCase().replace(/ /g, '-')}`}
-  state={{ article: article }}
->
+          <Link
+          to={`/article/${makeURLFriendly(article.title)}-${makeURLFriendly(article.author)}`}
+           state={{ article: article }}
+         >
   Read Article
 </Link>
 
