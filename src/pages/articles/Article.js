@@ -27,6 +27,10 @@ const StyledContent = styled.div`
   }
 `;
 
+const StyledAuthor = styled.p`
+  font-size: 1.2rem;
+`
+
 
 const Article = () => {
   const location = useLocation();
@@ -72,8 +76,9 @@ useEffect(() => {
   return (
     <StyledContainer>
       <StyledContent>
-        <Card title={`Author: ${author}`}>
+        <Card>
           <Title level={3}>{articleTitle}</Title>
+          <StyledAuthor>By {author}</StyledAuthor>
           {ReactHtmlParser(articleContent)}
         </Card>
       </StyledContent>
