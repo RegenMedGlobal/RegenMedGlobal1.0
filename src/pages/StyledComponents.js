@@ -16,9 +16,6 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 5%;
-  @media (max-width: 767px) {
-    margin-top: 20%
-  }
 
   .link {
     text-decoration: none;
@@ -80,6 +77,8 @@ export const StyledContactSection = styled.div`
 export const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
+
+  width: 100%;
  
 
   @media (min-width: 854px) {
@@ -97,6 +96,7 @@ export const ProfileWrapper = styled.div`
 export const Content = styled.div`
   flex: 3;
   padding: 16px;
+
   display: flex;
   flex-direction: column;
   justify-content: space-between; 
@@ -185,3 +185,5 @@ export const ConditionsContainer = styled.section`
   flex-direction: row;
   flex-wrap: wrap; /* Wrap conditions to new line on smaller screens */
 `;
+
+
