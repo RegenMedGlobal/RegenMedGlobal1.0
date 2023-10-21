@@ -18,11 +18,16 @@ const ArticleContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: #f8f8f8;
-  width: 43%;
+  width: 60%; /* Default width for larger screens */
   margin: 20px 0 auto;
   height: 30%;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    /* Adjust the width for screens narrower than 768px */
+    width: 95%;
+  }
 `;
 
 const ArticleDescription = styled.p`

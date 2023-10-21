@@ -8,14 +8,24 @@ import { Typography, Card } from "antd";
 const { Title } = Typography;
 
 const StyledContainer = styled.div`
-  margin-top: 7rem;
-  height: 80%;
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 `;
 
 const StyledContent = styled.div`
-  width: 60%;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 857; /* Max width on mobile */
+  padding: 1rem;
+
+  @media (min-width: 768px) {
+    max-width: 60%; /* Max width on desktop */
+    text-align: justify; /* Justify text */
+  }
 `;
+
 
 const Article = () => {
   const location = useLocation();
@@ -23,18 +33,14 @@ const Article = () => {
   const [author, setAuthor] = useState("");
   const [articleContent, setArticleContent] = useState("");
 
-  console.log("state:", location.state);
-
-
   const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
- const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
+  const SUPABASE_API_KEY = 'your-api-key';
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
- useEffect(() => {
+  useEffect(() => {
     const fetchArticleContent = async () => {
       try {
-        // Fetch the article content using the article ID
         const { data: articleData, error } = await supabase
           .from("articles")
           .select("content, author")
@@ -44,7 +50,6 @@ const Article = () => {
         if (error) {
           console.error("Error fetching article content:", error);
         } else {
-          // Set the author and article content
           setAuthor(articleData.author);
           setArticleContent(articleData.content);
         }
