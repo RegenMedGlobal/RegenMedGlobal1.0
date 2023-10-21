@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { Upload, Button, Input, message } from 'antd';
+import { Upload, Button as AntButton, Input, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; // Import styles
+import html2pdf from 'html2pdf.js';
 
 
 const StyledContainer = styled.div`
@@ -17,12 +20,13 @@ const StyledContainer = styled.div`
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 7%;
+  
 `;
 
 const StyledInput = styled.input`
-width: 12rem;
+width: 16rem;
 margin: 0 auto;
-margin-top: 2%;
+
 margin-bottom: 2%;
 `
 
@@ -74,6 +78,8 @@ const PasswordForm = ({ onSignIn }) => {
     }
   };
 
+
+
   return (
     <div>
       <Header>Sign In</Header>
@@ -90,103 +96,159 @@ const PasswordForm = ({ onSignIn }) => {
 };
 
 const SubmitArticle = () => {
-   const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-   const [authorName, setAuthorName] = useState(''); // Stat
+  const [articleContent, setArticleContent] = useState('');
+  const [authorName, setAuthorName] = useState('');
+  const [articleTitle, setArticleTitle] = useState('');
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [error, setError] = useState(null); // New state for error handling
+  const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
 
+  
   const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
  const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
- const handleAuthorNameChange = (event) => {
-    setAuthorName(event.target.value); // Update authorName state with the entered name
+  const modules = {
+    toolbar: [
+      [{ header: '1' }, { header: '2' }],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['bold', 'italic', 'underline'],
+      ['link'],
+      ['clean'],
+    ],
+  };
+
+  const formats = [
+    'header',
+    'list',
+    'bold',
+    'italic',
+    'underline',
+    'link',
+  ];
+
+  const handleAuthorNameChange = (event) => {
+    setAuthorName(event.target.value);
+  };
+
+  const handleTitleChange = (event) => {
+    setArticleTitle(event.target.value);
   };
 
 
-const handleFileChange = (event) => {
-  if (event.target.files && event.target.files[0]) {
-    setSelectedFile(event.target.files[0]);
-  }
-};
-
-// Uploading a file and associating it with a database record
-const handleFileUpload = async () => {
+const handleArticleSubmission = async () => {
   try {
-    if (!selectedFile || !authorName) {
-      setError('Please select a file and provide the author name.');
+    if (!articleContent || !authorName || !articleTitle) {
+      setError('Please provide content, the author name, and the article title.');
       return;
     }
 
-    // Generate a unique identifier (assuming you're using uuidv4)
-    const fileId = uuidv4();
+    // Generate a unique identifier for the database record
+    const recordId = uuidv4();
 
-    // Construct the filename with the unique identifier
-    const fileName = `${fileId}_${selectedFile.name}`;
+    // Construct the filename for the HTML file
+    const fileName = `${recordId}_${articleTitle}_${authorName}.html`;
 
-    // Insert a record in your database table with fileId and authorName
+    // Upload the HTML content to the storage bucket
+    const { data: storageData, error: storageError } = await supabase.storage
+      .from('articles')
+      .upload(fileName, articleContent);
+
+    if (storageError) {
+      console.error('Error uploading HTML content to storage:', storageError);
+      setError('An error occurred while submitting the article.');
+      return;
+    }
+
+    // Insert a record in your database table with author, id, and title
     const databaseRecord = {
-      id: fileId,
+      id: recordId,
       author: authorName,
-      // Other relevant data
+      title: articleTitle,
+      content: articleContent
     };
 
-    // Upload the file to storage
-    const { data, error } = await supabase.storage
-      .from('articles')
-      .upload(fileName, selectedFile);
-
-    if (error) {
-      console.error('Error uploading file:', error);
-      return;
-    }
-
-    // Insert the database record
     const { data: insertedData, error: insertError } = await supabase.from('articles').insert([databaseRecord]);
 
     if (insertError) {
       console.error('Error inserting record in the database:', insertError);
+      setError('An error occurred while submitting the article.');
       return;
     }
 
-    console.log('File uploaded successfully:', data);
-    console.log('Database record inserted successfully:', insertedData);
+    // Reset the relevant input fields and error message after successful submission
     setAuthorName('');
-    setSelectedFile(null); // Clear the selected file
-    setUploadSuccess(true);
+    setArticleTitle('');
+    setArticleContent('');
+    setError(null);
+
+      setSuccess(true);
+
+    console.log('HTML content uploaded to storage:', storageData);
+    console.log('Database record inserted successfully:', insertedData);
   } catch (error) {
     console.error('An error occurred:', error);
+    setError('An error occurred while submitting the article.');
   }
 };
 
 
-return (
-  <StyledContainer>
-    {isSignedIn ? (
-      <>
-        <Header>Upload Article</Header>
-        <input
-          type="file"
-          accept=".doc,.docx" // Accept DOC and DOCX files
-          onChange={handleFileChange}
-        />
-        <StyledInput
-          value={authorName}
-          onChange={handleAuthorNameChange}
-          placeholder="Author's Name"
-        />
-       <UploadButton onClick={handleFileUpload}>Upload Article</UploadButton>
+  // Define custom CSS styles for the ReactQuill editor
+  const editorStyles = {
+    height: '400px', // Adjust the height as needed
+    width: '80%', // Set the width to 100% to make it responsive
+  };
 
-        {uploadSuccess && <SuccessMessage>Article successfully uploaded to Supabase!</SuccessMessage>}
-        {error && <ErrorMessage>{error}</ErrorMessage>}
-      </>
-    ) : (
-      <PasswordForm onSignIn={() => setIsSignedIn(true)} />
-    )}
-  </StyledContainer>
-);
+    const handleRichTextChange = (content) => {
+    // Log the HTML content
+    console.log('HTML Content:', content);
+    setArticleContent(content);
+  };
+
+  return (
+    <StyledContainer>
+      {isSignedIn ? (
+        <>
+          <Header>Submit Article</Header>
+          <StyledInput
+            type="text"
+            value={articleTitle}
+            onChange={handleTitleChange}
+            placeholder="Article Title"
+          />
+          <StyledInput
+            type="text"
+            value={authorName}
+            onChange={handleAuthorNameChange}
+            placeholder="Author's Name"
+          />
+
+  <ReactQuill
+    value={articleContent}
+    modules={modules}
+    formats={formats}
+    onChange={handleRichTextChange}
+    style={editorStyles}
+  />
+
+
+         <AntButton
+  type="primary" // You can use different types like 'primary', 'default', 'dashed', 'text', etc.
+  size="large" // You can use 'small', 'default', or 'large' for different sizes
+  onClick={handleArticleSubmission}
+>
+  Submit Article
+</AntButton>
+
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+            {success && <SuccessMessage>Article submitted successfully!</SuccessMessage>}
+        </>
+      ) : (
+        <PasswordForm onSignIn={() => setIsSignedIn(true)} />
+      )}
+    </StyledContainer>
+  );
 };
 
 export default SubmitArticle;

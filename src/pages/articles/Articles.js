@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const StyledArticleContainer = styled.div`
   display: flex;
@@ -43,43 +43,51 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
 const Articles = () => {
   const [articles, setArticles] = useState([]);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const { data, error } = await supabase.from('articles').select('*');
 
-useEffect(() => {
-  const fetchArticles = async () => {
-    try {
-      const { data, error } = await supabase.storage.from('articles').list();
+        if (error) {
+          console.error('Error fetching articles:', error);
+          return;
+        }
 
-      if (error) {
-        console.error('Error fetching articles:', error);
-        return;
+        // Set the articles to the data fetched from the database
+        setArticles(data);
+      } catch (error) {
+        console.error('Error:', error);
       }
+    };
 
-      // Access and display the author's name from the metadata for each article
-      const articlesWithAuthorNames = data.map(article => {
-        const authorName = article.metadata?.author || 'Unknown Author'; // Provide a default value if author's name is not available
-        return { ...article, authorName };
-      });
+    fetchArticles();
+  }, []);
 
-      console.log('Fetched articles with author names:', articlesWithAuthorNames);
+  console.log('articles:', articles)
 
-      setArticles(articlesWithAuthorNames);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  fetchArticles();
-}, []);
-
-
-  const extractDescription = (text) => {
-    if (text) {
-      const sentences = text.split('. ');
-      const firstFourSentences = sentences.slice(0, 4).join('. ');
-      return firstFourSentences;
-    }
+const extractDescription = (html) => {
+  if (!html) {
     return '';
-  };
+  }
+
+  // Create a temporary div element to parse the HTML
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+
+  // Extract the text content from the parsed HTML
+  const text = tempDiv.textContent;
+
+  // Trim the text and limit it to a certain length
+  const maxLength = 200; // You can adjust this to your desired length
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + '...';
+  }
+
+  return text;
+};
+
 
   const formatDate = (dateString) => {
     if (dateString) {
@@ -89,25 +97,29 @@ useEffect(() => {
     return '';
   };
 
-  return (
-    <StyledArticleContainer>
-      <h2>Articles</h2>
-      {articles.map((article, index) => (
-        <ArticleContainer key={index}>
-          <ArticleDescription>{extractDescription(article.name)}</ArticleDescription>
-          <ArticleMeta>
-            {/* Replace 'article.name' with the appropriate field for author and published date */}
-            By: Author Name | Published on {formatDate(article.created_at)}
-          </ArticleMeta>
-        <Link to={`/article/${article.name.replace('.docx', '').toLowerCase()}`} state={{ article: article }}>
+
+return (
+  <StyledArticleContainer>
+    <h2>Articles</h2>
+    {articles.map((article, index) => (
+      <ArticleContainer key={index}>
+        <h3>{article.title}</h3>
+        <ArticleDescription>{extractDescription(article.content)}</ArticleDescription>
+        <ArticleMeta>
+          By: {article.author} | Published on {formatDate(article.created_at)}
+        </ArticleMeta>
+      <Link
+  to={`/article/${article.title.toLowerCase().replace(/ /g, '-')}-${article.author.toLowerCase().replace(/ /g, '-')}`}
+  state={{ article: article }}
+>
   Read Article
 </Link>
 
 
-        </ArticleContainer>
-      ))}
-    </StyledArticleContainer>
-  );
+      </ArticleContainer>
+    ))}
+  </StyledArticleContainer>
+);
 };
 
 export default Articles;
