@@ -9,7 +9,7 @@ const { Title } = Typography;
 
 const StyledContainer = styled.div`
   margin-top: 7rem;
-  height: 80vh;
+  height: 80%;
 `;
 
 const StyledContent = styled.div`
