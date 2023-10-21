@@ -11,8 +11,10 @@ import DoctorContact from "./DoctorContact";
 import { terms } from "../config";
 import Map from "../components/Map";
 import {
-  Container, Sidebar, Content, StyledContactSection, ReturnLink, ProfileWrapper, MapContainer, CardContainer, Card, ContactHeader, NameCard, ConditionsContainer
+  Container, Sidebar, Content, StyledContactSection, ReturnLink, ProfileWrapper, MapContainer, CardContainer, Card, ContactHeader, NameCard, StyledContactMap, ConditionsContainer
 } from './StyledComponents'; 
+
+
 
 
 const Profile = () => {
@@ -31,6 +33,7 @@ const Profile = () => {
   const [selectedConditions, setSelectedConditions] = useState([]);
   const [profileData, setProfileData] = useState([]);
   const [isProfileVerified, setIsProfileVerified] = useState(false);
+  const [shouldDisplayDoctorContact, setShouldDisplayDoctorContact ] = useState(false)
 
   console.log('state from profile:', state)
 
@@ -256,7 +259,9 @@ const handleReturnToResults = () => {
         <h3>No profile data available.</h3>
       </Container>
     );
-  }return (
+  }
+  
+  return (
     <Container>
       {loggedIn && currentUser.firstTimeLogin && (
         <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
@@ -430,10 +435,13 @@ const handleReturnToResults = () => {
 
           </CardContainer>
        
-       <DoctorContact />
-       <MapContainer>
-            <Map address={profileData.find((field) => field.fieldName === "address")?.fieldValue} />
-          </MapContainer>
+      
+        {shouldDisplayDoctorContact ? <DoctorContact /> : null}
+        <MapContainer>
+          <Map address={profileData.find((field) => field.fieldName === "address")?.fieldValue} />
+        </MapContainer>
+    
+      
         </Content>
       </ProfileWrapper>
     </Container>
