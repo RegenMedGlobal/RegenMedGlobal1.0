@@ -352,7 +352,9 @@ const ProfileFieldCard = ({
               )}
               {fieldName === "conditions" && editMode && (
                 <div className="select-box-edit" style={{ "width": "100%" }}>
-                  <SelectConditions onInputChange={onInputChange} selectedOptions={fieldValue.trim() != "" ? fieldValue.split(',').map((value) => { return { label: value, value: value } }) : "" } options={filteredConditions.map(condition => ({ value: condition, label: condition }))} filterTerm={filterTerm} setFilterTerm={setFilterTerm} />
+                  <SelectConditions onInputChange={onInputChange} selectedOptions={fieldValue.trim() != "" ? fieldValue.split(',').map((value) => { return { label: value, value: value } }) : "" } options={filteredConditions.filter((option)=>{
+                    return !fieldValue.split(',').includes(option)
+                  }).map(condition => ({ value: condition, label: condition }))} filterTerm={filterTerm} setFilterTerm={setFilterTerm} setOptions={setFilteredConditions} />
  
                 </div>
               )}
