@@ -19,6 +19,7 @@ import Footer from './components/Footer'
 import "@fontsource/poppins";
 import CodeValidator from './pages/CodeValidator'
 import Articles from './pages/articles/Articles'
+import Article from './pages/articles/Article'
 import SubmitArticle from './pages/articles/SubmitArticle'
 import ReactGA from 'react-ga';
 
@@ -56,6 +57,9 @@ function App() {
       case "/contact":
         setClassName("non-color");
         break;
+        case "/article":
+        setClassName("non-color");
+        break;
       case "/results":
       case "/CodeValidator":
         setClassName("non-color");
@@ -82,6 +86,7 @@ function App() {
           <Route path='/profile/:userId' element={<Profile />} />
           <Route path='/claim' element={<Claim />} />
           <Route path='/articles' element={<Articles />} />
+          <Route path="/article/:articleId" element={<Article />} />
          <Route path='/submitarticle' element={<SubmitArticle />} />
           <Route path='/ResetPassword' element={<ResetPassword />} />
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
