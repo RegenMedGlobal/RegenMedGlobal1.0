@@ -196,6 +196,11 @@ const Navbar = () => {
                   Contact
                 </Link>
               </li>
+                 <li className="nav-item">
+                <Link className="nav-link" to="/articles" onClick={() => handleLinkClick('Articles')}>
+                  Articles
+                </Link>
+              </li>
               {loggedIn && (
                 <li className="nav-item">
                   <a
