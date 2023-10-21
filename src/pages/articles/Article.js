@@ -8,7 +8,7 @@ import { Typography, Card } from "antd";
 const { Title } = Typography;
 
 const StyledContainer = styled.div`
-  margin-top: 2rem;
+  margin-top: 8rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,9 +32,11 @@ const Article = () => {
   const articleId = location.state.article.id;
   const [author, setAuthor] = useState("");
   const [articleContent, setArticleContent] = useState("");
+  const [articleTitle, setArticleTitle] = useState("");
 
-  const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
-  const SUPABASE_API_KEY = 'your-api-key';
+   const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
+ const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
+
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
@@ -51,6 +53,7 @@ const Article = () => {
           console.error("Error fetching article content:", error);
         } else {
           setAuthor(articleData.author);
+          setArticleTitle(articleData.title)
           setArticleContent(articleData.content);
         }
       } catch (error) {
@@ -65,7 +68,7 @@ const Article = () => {
     <StyledContainer>
       <StyledContent>
         <Card title={`Author: ${author}`}>
-          <Title level={3}>Article Content</Title>
+          <Title level={3}>{articleTitle}</Title>
           {ReactHtmlParser(articleContent)}
         </Card>
       </StyledContent>
