@@ -16,6 +16,7 @@ const StyledContainer = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  
 `;
 
 const StyledContent = styled.div`
@@ -23,6 +24,10 @@ const StyledContent = styled.div`
   max-width: 857; /* Max width on mobile */
   padding: 1rem;
   text-align: center;
+   border: 1px solid #ddd; /* Add a border */
+  border-radius: 8px; /* Add border-radius for rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+
 
   @media (min-width: 768px) {
     max-width: 60%; /* Max width on desktop */
@@ -32,6 +37,14 @@ const StyledContent = styled.div`
 
 const StyledAuthor = styled.p`
   font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--main-color);
+
+   a {
+    font-weight: bold;
+    color: var(--main-color); /* Apply the color to links within StyledAuthor */
+     text-decoration: none; 
+  }
 `
 
 
