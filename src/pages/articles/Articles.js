@@ -9,6 +9,11 @@ const { Search } = Input;
 const StyledAntdInput = styled(Search)`
   width: 40%;
   margin: 0 auto;
+
+   @media (max-width: 865px) {
+    /* Adjust top margin for screens narrower than 768px (mobile) */
+    width: 90%;
+  }
 `;
 
 const StyledArticleContainer = styled.div`
