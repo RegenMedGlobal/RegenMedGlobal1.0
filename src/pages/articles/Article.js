@@ -1,9 +1,14 @@
 import  { useEffect, useState } from "react";
-import {useParams} from "react-router-dom";
+import {useParams, Link, useNavigate} from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import { Typography, Card } from "antd";
+import { Helmet } from "react-helmet";
+import logoImage from "../../assets/logo.png"; // Adjust the path as needed
+
+
+
 import ReactGA from "react-ga";
 
 const { Title } = Typography;
@@ -34,6 +39,7 @@ const StyledAuthor = styled.p`
 
 
 const Article = () => {
+  const navigate = useNavigate(); 
  const { articleId } = useParams(); 
   const [author, setAuthor] = useState("");
   const [articleContent, setArticleContent] = useState("");
@@ -89,9 +95,27 @@ useEffect(() => {
   return (
     <StyledContainer>
       <StyledContent>
+                <Helmet>
+          <title>{articleTitle}</title>
+          <meta property="og:title" content={articleTitle} />
+ 
+          <meta property="og:image" content={logoImage} />
+          <meta property="og:url" content={window.location.href} />
+          <meta property="og:type" content="article" />
+        </Helmet>
+
         <Card>
           <Title level={3}>{articleTitle}</Title>
-          <StyledAuthor>By {author}</StyledAuthor>
+             <StyledAuthor>
+            By{' '}
+            <Link
+              to="/articles"
+              state={{ authorName: author }} // Pass the author's name as state
+              onClick={() => navigate('/articles', { state: { authorName: author } })}
+            >
+              {author}
+            </Link>
+          </StyledAuthor>
           {ReactHtmlParser(articleContent)}
         </Card>
       </StyledContent>
