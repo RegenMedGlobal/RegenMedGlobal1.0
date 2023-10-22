@@ -5,7 +5,8 @@ import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import { Typography, Card } from "antd";
 import { Helmet } from "react-helmet";
-import logoImage from "../../assets/logo.png"; // Adjust the path as needed
+const ogImageUrl = 'https://i.imgur.com/LQeToLA.png';
+
 
 
 
@@ -99,7 +100,7 @@ useEffect(() => {
           <title>{articleTitle}</title>
           <meta property="og:title" content={articleTitle} />
  
-          <meta property="og:image" content={logoImage} />
+          <meta property="og:image" content={ogImageUrl} /> 
           <meta property="og:url" content={window.location.href} />
           <meta property="og:type" content="article" />
         </Helmet>
