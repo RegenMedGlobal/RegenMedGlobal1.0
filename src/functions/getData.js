@@ -88,29 +88,33 @@ const getData = async (filterTerm, checkboxOptions, city, state, country, maxDis
     }
 
     // Query 2: Search by filterTerm (if present)
-    if (filterTerm && filterTerm.trim() !== '') {
-      const searchWords = filterTerm.split(/\s+/).filter(word => word.length > 0);
-      const wordSearchPromises = searchWords.map(async word => {
-        const wordSearchText = `'%${word}%'`;
-        const { data: wordFilterResults, error: wordFilterError } = await supabase
-          .from(maindataTable)
-          .select()
-          .textSearch('conditions', wordSearchText)
-          .limit(200);
+ // Query 2: Search by filterTerm and checkboxOptions (if filterTerm is present or at least one checkbox option is selected)
+if (filterTerm && filterTerm.trim() !== '') {
+  const selectedOptions = checkboxOptions.filter(option => option.checked);
+  if (selectedOptions.length > 0) {
+    const searchWords = filterTerm.split(/\s+/).filter(word => word.length > 0);
+    const wordSearchPromises = searchWords.map(async word => {
+      const wordSearchText = `'%${word}%'`;
+      const { data: wordFilterResults, error: wordFilterError } = await supabase
+        .from(maindataTable)
+        .select()
+        .textSearch('conditions', wordSearchText)
+        .limit(200);
 
-        if (wordFilterError) {
-          console.error('Error executing filterTerm query:', wordFilterError);
-          return [];
-        }
+      if (wordFilterError) {
+        console.error('Error executing filterTerm query:', wordFilterError);
+        return [];
+      }
 
-        return wordFilterResults;
-      });
+      return wordFilterResults;
+    });
 
-      const wordSearchResults = await Promise.all(wordSearchPromises);
-      const flattenedResults = wordSearchResults.flat();
+    const wordSearchResults = await Promise.all(wordSearchPromises);
+    const flattenedResults = wordSearchResults.flat();
 
-      combinedResults = [...combinedResults, ...flattenedResults];
-    }
+    combinedResults = [...combinedResults, ...flattenedResults];
+  }
+}
 
     console.log('combined results:', combinedResults);
 
@@ -190,6 +194,7 @@ const getData = async (filterTerm, checkboxOptions, city, state, country, maxDis
       }
     }
 
+console.log('filter term: ', filterTerm)
     console.log('Filtered and Deduplicated Results:', uniqueResults);
 
     // Store or use the uniqueResults as needed
