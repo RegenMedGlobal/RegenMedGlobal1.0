@@ -70,6 +70,7 @@
     "react-geocode": "^0.2.3",
     "react-geosuggest": "^2.14.1",
     "react-google-maps": "^9.4.5",
+    "react-helmet": "^6.1.0",
     "react-hook-form": "^7.45.2",
     "react-html-parser": "^2.0.2",
     "react-icons": "^4.11.0",
