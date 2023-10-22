@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import  { useEffect, useState } from "react";
+import {useParams} from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
@@ -33,8 +33,7 @@ const StyledAuthor = styled.p`
 
 
 const Article = () => {
-  const location = useLocation();
-  const articleId = location.state.article.id;
+ const { articleId } = useParams(); 
   const [author, setAuthor] = useState("");
   const [articleContent, setArticleContent] = useState("");
   const [articleTitle, setArticleTitle] = useState("");

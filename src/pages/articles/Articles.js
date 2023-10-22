@@ -2,6 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
+import { Input, Space } from 'antd';
+const { Search } = Input;
+
+// Create a styled component for the Input
+const StyledAntdInput = styled(Search)`
+  /* Add your custom styles here */
+  width: 50%;
+  margin: 0 auto;
+`;
 
 const StyledArticleContainer = styled.div`
   display: flex;
@@ -107,10 +116,12 @@ function makeURLFriendly(str) {
   return str.toLowerCase().replace(/ /g, '-').replace(/\.$/, '');
 }
 
+const onSearch = (value, _e, info) => console.log(info?.source, value);
 
 return (
   <StyledArticleContainer>
     <h2>Articles</h2>
+   {/* <StyledAntdInput placeholder="input search text" onSearch={onSearch} enterButton /> */}
     {articles.map((article, index) => (
       <ArticleContainer key={index}>
         <h3>{article.title}</h3>
@@ -119,7 +130,7 @@ return (
           By: {article.author} | Published on {formatDate(article.created_at)}
         </ArticleMeta>
           <Link
-          to={`/article/${makeURLFriendly(article.title)}-${makeURLFriendly(article.author)}`}
+          to={`/article/${article.id}`}
            state={{ article: article }}
          >
   Read Article
