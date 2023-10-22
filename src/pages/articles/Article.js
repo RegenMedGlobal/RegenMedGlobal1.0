@@ -98,8 +98,8 @@ useEffect(() => {
       <StyledContent>
                 <Helmet>
           <title>{articleTitle}</title>
-          <meta property="og:title" content={articleTitle} />
- 
+  
+          <meta property="og:description"  content={articleTitle}  />
           <meta property="og:image" content={ogImageUrl} /> 
           <meta property="og:url" content={window.location.href} />
           <meta property="og:type" content="article" />
