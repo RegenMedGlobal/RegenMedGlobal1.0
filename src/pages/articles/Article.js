@@ -4,11 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import { Typography, Card } from "antd";
-import { Helmet } from "react-helmet";
-const ogImageUrl = 'https://i.imgur.com/LQeToLA.png';
-
-
-
+import { Helmet } from 'react-helmet-async';
 
 import ReactGA from "react-ga";
 
@@ -100,7 +96,6 @@ useEffect(() => {
           <title>{articleTitle}</title>
   
           <meta property="og:description"  content={articleTitle}  />
-          <meta property="og:image" content={ogImageUrl} /> 
           <meta property="og:url" content={window.location.href} />
           <meta property="og:type" content="article" />
         </Helmet>
@@ -109,13 +104,16 @@ useEffect(() => {
           <Title level={3}>{articleTitle}</Title>
              <StyledAuthor>
             By{' '}
-            <Link
-              to="/articles"
-              state={{ authorName: author }} // Pass the author's name as state
-              onClick={() => navigate('/articles', { state: { authorName: author } })}
-            >
-              {author}
-            </Link>
+          <Link
+  to={{
+    pathname: '/articles',
+    state: { filterTerm: author },
+    search: `?filterTerm=${encodeURIComponent(author)}`,
+  }}
+>
+  {author}
+</Link>
+
           </StyledAuthor>
           {ReactHtmlParser(articleContent)}
         </Card>

@@ -59,9 +59,13 @@ const ArticleMeta = styled.div`
 const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
 const Articles = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialFilterTerm = urlParams.get('filterTerm');
   const [articles, setArticles] = useState([]);
-  const [filterTerm, setFilterTerm] = useState('');
+  const [filterTerm, setFilterTerm] = useState(initialFilterTerm || '');
   const [filteredArticles, setFilteredArticles] = useState([]);
+   // Extract the filterTerm from the query parameter in the URL
+
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -109,28 +113,41 @@ const Articles = () => {
     return '';
   };
 
-  const onSearch = (value) => {
-    setFilterTerm(value);
-    let filtered;
-    if (value.trim() === '') {
-      // If the search term is empty, show all articles
-      filtered = articles;
-    } else {
-      // Filter articles based on the search value
-      filtered = articles.filter((article) =>
-        article.content.toLowerCase().includes(value.toLowerCase())
+const onSearch = (value) => {
+  setFilterTerm(value);
+  let filtered;
+
+  if (value.trim() === '') {
+    // If the search term is empty, show all articles
+    filtered = articles;
+  } else {
+    // Filter articles based on the search value in content, title, and author
+    filtered = articles.filter((article) => {
+      const content = article.content.toLowerCase();
+      const title = article.title.toLowerCase();
+      const authorName = article.author.toLowerCase();
+
+      // Check if the search value is found in content, title, or author
+      return (
+        content.includes(value.toLowerCase()) ||
+        title.includes(value.toLowerCase()) ||
+        authorName.includes(value.toLowerCase())
       );
-    }
-    setFilteredArticles(filtered);
-  };
+    });
+  }
+
+  setFilteredArticles(filtered);
+};
+
 
   return (
     <StyledArticleContainer>
       <h2>Articles</h2>
       <StyledAntdInput
-        placeholder="Search articles by content"
+        placeholder="Search articles by content, title, or author"
         onSearch={onSearch}
         enterButton
+         defaultValue={filterTerm}
       />
       {filteredArticles.length === 0 ? (
         <p>No articles found.</p>
