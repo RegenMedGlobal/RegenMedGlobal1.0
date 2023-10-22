@@ -437,10 +437,16 @@ const handleReturnToResults = () => {
        
       
         {shouldDisplayDoctorContact ? <DoctorContact /> : null}
-        <MapContainer>
-          <Map address={profileData.find((field) => field.fieldName === "address")?.fieldValue} />
-        </MapContainer>
-    
+     <MapContainer>
+  <Map
+    city={profileData.find((field) => field.fieldName === "city")?.fieldValue}
+    state={profileData.find((field) => field.fieldName === "state")?.fieldValue}
+    country={profileData.find((field) => field.fieldName === "country")?.fieldValue}
+    address={profileData.find((field) => field.fieldName === "address")?.fieldValue}
+  />
+</MapContainer>
+
+
       
         </Content>
       </ProfileWrapper>

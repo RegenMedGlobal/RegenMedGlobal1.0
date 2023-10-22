@@ -96,7 +96,7 @@ const Results = () => {
   const { state } = useLocation();
   const [radius, setRadius] = useState(25);
   const [results, setResults] = useState([]);
-  console.log('state in results:', state)
+  //console.log('state in results:', state)
   const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(-1);
   const [currentResults, setCurrentResults] = useState([]);
   const [sortedResults, setSortedResults] = useState([]);
