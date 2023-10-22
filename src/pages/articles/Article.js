@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import { Typography, Card } from "antd";
+import ReactGA from "react-ga";
 
 const { Title } = Typography;
 
@@ -44,6 +45,19 @@ const Article = () => {
 
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
+
+ useEffect(() => {
+    // Track a page view for this article
+    ReactGA.pageview(window.location.pathname);
+
+    // Send an event with custom dimension data
+    ReactGA.event({
+      category: "Article View",
+      action: "View",
+      label: articleTitle, // Replace with the title of the article
+      dimension1: author, // Custom dimension for author
+    });
+  }, [articleId]);
 
 useEffect(() => {
   const fetchArticleContent = async () => {
