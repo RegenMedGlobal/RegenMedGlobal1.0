@@ -21,6 +21,7 @@ import CodeValidator from './pages/CodeValidator'
 import Articles from './pages/articles/Articles'
 import Article from './pages/articles/Article'
 import SubmitArticle from './pages/articles/SubmitArticle'
+import Author from './pages/articles/Author'
 import ReactGA from 'react-ga';
 
 // Initialize Google Analytics with your Measurement ID
@@ -87,6 +88,7 @@ function App() {
           <Route path='/claim' element={<Claim />} />
           <Route path='/articles' element={<Articles />} />
           <Route path="/article/:articleId" element={<Article />} />
+            <Route path="/author/:authorName" element={<Author />} />
          <Route path='/submitarticle' element={<SubmitArticle />} />
           <Route path='/ResetPassword' element={<ResetPassword />} />
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
