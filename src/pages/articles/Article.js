@@ -24,10 +24,6 @@ const StyledContent = styled.div`
   max-width: 857; /* Max width on mobile */
   padding: 1rem;
   text-align: center;
-   border: 1px solid #ddd; /* Add a border */
-  border-radius: 8px; /* Add border-radius for rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-
 
   @media (min-width: 768px) {
     max-width: 60%; /* Max width on desktop */
@@ -105,14 +101,6 @@ useEffect(() => {
   return (
     <StyledContainer>
       <StyledContent>
-                <Helmet>
-          <title>{articleTitle}</title>
-  
-          <meta property="og:description"  content={articleTitle}  />
-          <meta property="og:url" content={window.location.href} />
-          <meta property="og:type" content="article" />
-        </Helmet>
-
         <Card>
           <Title level={3}>{articleTitle}</Title>
              <StyledAuthor>
