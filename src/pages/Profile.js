@@ -23,6 +23,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [profileName, setProfileName] = useState(null)
+  const [profileEmail, setProfileEmail] = useState('')
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state || {};
@@ -33,7 +34,7 @@ const Profile = () => {
   const [selectedConditions, setSelectedConditions] = useState([]);
   const [profileData, setProfileData] = useState([]);
   const [isProfileVerified, setIsProfileVerified] = useState(false);
-  const [shouldDisplayDoctorContact, setShouldDisplayDoctorContact ] = useState(false)
+  const [shouldDisplayDoctorContact, setShouldDisplayDoctorContact ] = useState(true)
 
   console.log('state from profile:', state)
 
@@ -63,6 +64,7 @@ useEffect(() => {
     .then((response) => {
       console.log('Fetched profile data-:', response); // Debugging log
       setProfileName(response.name)
+      setProfileEmail(response.email)
       // Initialize the editMode property for each field
       const profileDataWithEditModes = Object.keys(response).map((fieldName) => ({
         fieldName,
@@ -436,7 +438,7 @@ const handleReturnToResults = () => {
           </CardContainer>
        
       
-        {shouldDisplayDoctorContact ? <DoctorContact /> : null}
+        {shouldDisplayDoctorContact ? <DoctorContact email={profileEmail} /> : null}
      <MapContainer>
   <Map
     city={profileData.find((field) => field.fieldName === "city")?.fieldValue}
