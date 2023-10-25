@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Confirmation = () => {
   const modalStyle = {
@@ -30,11 +31,23 @@ const Confirmation = () => {
     contentStyle.width = '90%'; // Adjust the width for small screens
   }
 
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/doctorlogin');
+  };
+
   return (
     <div style={modalStyle}>
       <div style={contentStyle}>
         <h2>Confirmation</h2>
-        <p>Thank you for signing up. Please log in to access your page.</p>
+        <p>
+          Thank you for signing up. You can access or edit your page at anytime by{' '}
+          <span style={{ color: 'var(--main-color)', cursor: 'pointer' }} onClick={handleLoginClick}>
+            logging in.
+          </span>{' '}
+         
+        </p>
       </div>
     </div>
   );
