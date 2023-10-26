@@ -17,6 +17,11 @@ export const Container = styled.div`
   align-items: center;
   margin-top: 5%;
 
+  @media (max-width: 850px) {
+
+    margin-top: 3rem;
+  }
+
   .link {
     text-decoration: none;
     color: ${mainColor};
@@ -146,6 +151,8 @@ export const ReturnLink = styled(Typography)`
   font-size: 1.8rem;
   cursor: pointer;
   transition: font-size 0.3s;
+
+
 
   &:hover {
     text-decoration: underline;
