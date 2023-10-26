@@ -1,9 +1,13 @@
 import React, { useContext, Fragment, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import styled, { css } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
+import img1 from '../assets/social-3.png'
+import img2 from '../assets/Search.png'
 import img3 from '../assets/logo.png'
 import {
   AppBar,
+  Toolbar,
+  IconButton,
   List,
   ListItemText,
   useMediaQuery,
@@ -13,24 +17,23 @@ import {
 import { AuthContext } from '../AuthContext';
 import Logo from '../assets/logo.png';
 
-const DownArrow = styled.div`
-  position: relative;
-  display: inline-block;
-  color: white;
-  font-size: 18px;
-  margin-left: 4px;
-  &:before {
-    content: '▼'; /* Add the down arrow character here */
+const bounceAnimation = keyframes`
+  0%, 20%, 60%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  80% {
+    transform: translateY(-10px);
   }
 `;
-
 
 const NavbarMenu = styled.div`
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
 `;
-
 const StyledList = styled(List)`
   &.drawerList {
     color: #000;
@@ -39,97 +42,26 @@ const StyledList = styled(List)`
   }
 `;
 
-const Dropdown = styled.div`
-  position: relative;
-  display: inline-block;
-   
-  margin-right: 16px; /* Adjust the margin as needed */
-`;
-
-const DropdownContainer = styled.div`
-  display: inline-block;
-  position: relative;
-
-
-  .dropdown-menu {
-    display: ${props => (props.isArticlesOpen ? 'block' : 'none')};
-    position: absolute;
-    background-color: transparent;
-    min-width: 160px; /* Adjust the minimum width as needed */
-    z-index: 1;
-    border: none; /* Remove the border */
-  }
-`;
-
-const DropdownItemWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  background:  var(--main-color);
-  border: 1px solid #555; /* Add a border */
-  border-radius: 4px; /* Add rounded corners */
-  padding: 8px; /* Add some padding */
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle box shadow */
-  color: white; /* Text color */
-`;
-
-const DropdownItem = styled(Link)`
-  text-decoration: none;
-
-  color: white;
-  padding: 8px 16px;
-  display: block;
-
-  width: 9rem;
-  transition: 0.3s;
-
-  &:hover {
-    background-color: white;
-  }
-`;
-
-const DropdownItemContainer = styled.div`
- margin-bottom: 2rem; /* Add margin between items */
-`;
-
-
-const NavbarLink = styled(Link)`
-  text-decoration: none;
-  color: #fff;
-  font-size: 18px;
-  margin-left: 16px;
-  
-  &:hover {
-    color: yellow;
-    transform: scale(1.2);
-  }
-`;
-
-
 const NavbarItem = styled(Link)`
   text-decoration: none;
   color: ${props => (props.sidebar ? "#000" : "#fff")};
   margin-left: 16px;
   display: inline-block;
   font-size: 18px;
-  font-weight: normal;
-
+  font-weight: normal; /* Default font-weight */
   &:hover {
     color: yellow;
     transform: scale(1.2);
   }
-
   /* Conditional styling for the active page */
   ${props =>
     props.active &&
     css`
       color: yellow;
-      font-size: 20px;
-      font-weight: bold;
+      font-size: 20px; /* Font size for active item */
+      font-weight: bold; /* Font weight for active item */
     `}
 `;
-
-
-
 
 
 const MenuIconWrapper = styled.span`
@@ -139,7 +71,6 @@ const MenuIconWrapper = styled.span`
   background-color: #fff;
   position: relative;
   transition: background-color 0.3s ease-in-out;
-
   &::before,
   &::after {
     content: '';
@@ -149,32 +80,26 @@ const MenuIconWrapper = styled.span`
     background-color: #fff;
     transition: transform 0.3s ease-in-out;
   }
-
   &::before {
     top: -6px;
   }
-
   &::after {
     top: 6px;
   }
-
   ${props =>
     props.open &&
     css`
       background-color: transparent;
-
       &::before {
         transform: rotate(45deg);
         top: 0;
       }
-
       &::after {
         transform: rotate(-45deg);
         top: 0;
       }
     `}
 `;
-
 const LogoImage = styled.img`
   height: 4rem;
   width: 10rem;
@@ -183,14 +108,12 @@ const LogoImage = styled.img`
   cursor: pointer;
   padding: 5px;
 `;
-
 const Navbar = () => {
   const { loggedIn, logout, currentUser } = useContext(AuthContext);
   const isMobile = useMediaQuery('(max-width: 856px)');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false); 
-    const [isArticlesOpen, setIsArticlesOpen] = useState(false);
   console.log('current user from navbar', currentUser);
 
   let currentUserID;
@@ -202,28 +125,18 @@ const Navbar = () => {
       console.error('Error parsing or accessing user data:', error);
     }
   }
-
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen); // Toggle the mobile menu state
   };
-
-
   const handleLinkClick = (text) => {
     // Close the mobile menu when a link is clicked
     setMobileOpen(false);
-    setIsArticlesOpen(false)
     console.log(`Clicked on link: ${text}`);
   };
-
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
-
-  const toggleArticlesDropdown = () => {
-  setIsArticlesOpen(!isArticlesOpen); // Toggle the Articles dropdown state
-};
-
 
   const handleLogout = () => {
     logout();
@@ -232,13 +145,26 @@ const Navbar = () => {
 
   return (
 
-     <AppBar position="fixed">
+   <AppBar position="fixed">
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/" onClick={() => handleLinkClick('Home')}>
             <img src={img3} alt="Logo" />
           </Link>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+            onClick={handleDrawerToggle} // Toggle mobile menu
+          >
+            {mobileOpen ?  <span className={`navbar-cross-icon`}>X</span> : <span className="navbar-toggler-icon"></span> }
+
+          </button>
+             <div className={`collapse navbar-collapse${mobileOpen ? ' show' : ''}`} id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <Link className="nav-link active" aria-current="page" to="/" onClick={() => handleLinkClick('Home')}>
@@ -255,36 +181,11 @@ const Navbar = () => {
                   Contact
                 </Link>
               </li>
-              <li className="nav-item">
-<DropdownContainer isArticlesOpen={isArticlesOpen}>
-<Link className="nav-link" onClick={() => toggleArticlesDropdown()} style={{ marginBottom: '2px'}}>
-  Articles<DownArrow />
-</Link>
-
-  <div className="dropdown-menu">
-    <DropdownItemWrapper>
-      <DropdownItemContainer>
-        <DropdownItem
-          to="/submitarticle"
-          onClick={() => handleLinkClick('Submit Article')}
-        >
-          Submit Article
-        </DropdownItem>
-      </DropdownItemContainer>
-      <DropdownItemContainer>
-        <DropdownItem
-          to="/articles"
-          onClick={() => handleLinkClick('Read Articles')}
-        >
-          Read Articles
-        </DropdownItem>
-      </DropdownItemContainer>
-    </DropdownItemWrapper>
-  </div>
-</DropdownContainer>
-
-
-</li>
+                 <li className="nav-item">
+                <Link className="nav-link" to="/articles" onClick={() => handleLinkClick('Articles')}>
+                  Articles
+                </Link>
+              </li>
               {loggedIn && (
                 <li className="nav-item">
                   <a
@@ -298,15 +199,25 @@ const Navbar = () => {
               )}
             </ul>
             <form className="d-flex" role="search">
-              {loggedIn ? (
-                <a className="nav-link" onClick={handleLogout}>
-                  Logout
-                </a>
-              ) : (
-                <Link className="nav-link doc-login" to="/doctorlogin" onClick={() => handleLinkClick('Doctor Login')}>
-                  Free Registration
-                </Link>
-              )}
+              <ul className="right-nav">
+                {loggedIn ? (
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      onClick={handleLogout}
+                      style={{ color: '#000 !important' }}
+                    >
+                      Logout
+                    </a>
+                  </li>
+                ) : (
+                  <li>
+                    <Link className="nav-link doc-login" to="/doctorlogin" onClick={() => handleLinkClick('Doctor Login')}>
+                      Free Registration
+                    </Link>
+                  </li>
+                )}
+              </ul>
             </form>
           </div>
         </div>
@@ -314,5 +225,4 @@ const Navbar = () => {
     </AppBar>
   );
 };
-
 export default Navbar;
