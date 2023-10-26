@@ -23,6 +23,7 @@ import Article from './pages/articles/Article'
 import SubmitArticle from './pages/articles/SubmitArticle'
 import Author from './pages/articles/Author'
 import ReactGA from 'react-ga';
+import Videos from './pages/podcasts/Videos'
 
 // Initialize Google Analytics with your Measurement ID
 ReactGA.initialize('G-E1K3NF9839');
@@ -91,6 +92,7 @@ function App() {
             <Route path="/author/:authorName" element={<Author />} />
          <Route path='/submitarticle' element={<SubmitArticle />} />
           <Route path='/ResetPassword' element={<ResetPassword />} />
+          <Route path='/videos' element={<Videos />} />
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
         </Routes>
         <Footer />
