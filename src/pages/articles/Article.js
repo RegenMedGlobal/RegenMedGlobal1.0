@@ -4,7 +4,9 @@ import { createClient } from "@supabase/supabase-js";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import { Typography, Card } from "antd";
-import { Helmet } from 'react-helmet-async';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 
 import ReactGA from "react-ga";
 
@@ -31,6 +33,10 @@ const StyledContent = styled.div`
   }
 `;
 
+const TitleWrapper = styled.div`
+  text-align: center; /* Center text */
+`;
+
 const StyledAuthor = styled.p`
   font-size: 1.2rem;
   font-weight: bold;
@@ -50,6 +56,8 @@ const Article = () => {
   const [author, setAuthor] = useState("");
   const [articleContent, setArticleContent] = useState("");
   const [articleTitle, setArticleTitle] = useState("");
+    const [content, setContent] = useState(articleContent);
+  const [editMode, setEditMode] = useState(false);
 
 
    const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
@@ -57,6 +65,10 @@ const Article = () => {
 
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
+
+   const toggleEditMode = () => {
+    setEditMode(!editMode);
+  };
 
  useEffect(() => {
     // Track a page view for this article
@@ -102,7 +114,9 @@ useEffect(() => {
     <StyledContainer>
       <StyledContent>
         <Card>
+         <TitleWrapper>
           <Title level={3}>{articleTitle}</Title>
+        </TitleWrapper>
              <StyledAuthor>
             By{' '}
           <Link
