@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, Suspense, useMemo} from "react";
 import {
-  Layout,
+  Layout as AntLayout,
   Pagination,
   Input,
   Form,
@@ -9,7 +9,7 @@ import {
   Progress as AntProgress,
   AutoComplete,
 } from "antd";
-import { getDistance } from "geolib";
+import { getDistance, fromAddress } from "geolib";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
@@ -23,6 +23,9 @@ import { getConditions } from  "../functions/getConditions";
 import debounce from 'lodash.debounce';
 
 
+const StyledAntLayout = styled(AntLayout)`
+ 
+`;
 
 const StyledForm = styled(Form)`
   width: 40%;
@@ -286,15 +289,10 @@ const updateResults = (filteredResults) => {
   }
 };
 
-
- // Replace the getFilteredOptions function with this simplified version
 const getFilteredConditions = (value) => {
   const filterTerm = value.trim().toLowerCase();
-  return conditions.filter((condition) =>
-    condition.toLowerCase().includes(filterTerm)
-  );
+  return conditions.filter((condition) => condition.toLowerCase().includes(filterTerm));
 };
-
 
 
   useEffect(() => {
@@ -390,34 +388,86 @@ useEffect(() => {
 const sortResults = () => {
    let sorted = [...results];
 
-    if (sortOrder === "distance") {
-      console.log("Sorting by distance...");
+ if (sortOrder === "distance") {
+  console.log("Sorting by distance...");
 
-      if (!userLocation) {
-        // Sort by a default property (e.g., name) if userLocation is not available
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-      } else {
-        sorted = results.map((result) => {
+ if (!userLocation) {
+  console.log(`User location not available. Address: ${address}`);
+
+  // Use the Mapbox Geocoding API to convert the address to coordinates
+  const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+    address
+  )}.json?access_token=${MAPBOX_TOKEN}`;
+
+  // Create an array of promises
+  const geocodingPromises = sorted.map((result) => {
+    return new Promise(async (resolve) => {
+      try {
+        const response = await axios.get(geocodeUrl);
+        const features = response.data.features;
+
+        if (features.length > 0) {
+          // Extract coordinates from the first feature
+          const coordinates = features[0].center;
+          const addressCoordinates = {
+            latitude: coordinates[1],
+            longitude: coordinates[0],
+          };
+
           const distance = getDistance(
-            {
-              latitude: userLocation.latitude,
-              longitude: userLocation.longitude,
-            },
-            { latitude: result.latitude, longitude: result.longitude }
+            { latitude: result.latitude, longitude: result.longitude },
+            addressCoordinates
           );
-          return { ...result, distance };
-        });
-        sorted.sort((a, b) => a.distance - b.distance);
-      }
-    } else if (sortOrder === "asc") {
-      console.log("Sorting in ascending order...");
-      sorted.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortOrder === "desc") {
-      console.log("Sorting in descending order...");
-      sorted.sort((a, b) => b.name.localeCompare(a.name));
-    }
 
-    return sorted;
+          resolve({ ...result, distance });
+        } else {
+          // Handle the case where the geocoding response doesn't contain valid coordinates
+          console.log('Invalid address:', address);
+          resolve({ ...result, distance: 0 }); // Set a default distance or handle it as needed
+        }
+      } catch (error) {
+        // Handle any errors from the geocoding request
+        console.error('Error geocoding address:', error);
+        resolve({ ...result, distance: 0 }); // Set a default distance or handle it as needed
+      }
+    });
+  });
+
+  // Wait for all promises to resolve
+  Promise.all(geocodingPromises).then((resolvedResults) => {
+    // Sort the resolved results by distance
+    resolvedResults.sort((a, b) => a.distance - b.distance);
+    sorted = resolvedResults;
+  });
+}
+
+ else {
+    // Calculate distances based on user location
+    sorted = results.map((result) => {
+      const distance = getDistance(
+        {
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+        },
+        { latitude: result.latitude, longitude: result.longitude }
+      );
+      console.log(`Distance for ${result.name}: ${distance} miles`);
+      return { ...result, distance };
+    });
+
+    // Sort the results by distance
+    sorted.sort((a, b) => a.distance - b.distance);
+  }
+} else if (sortOrder === "asc") {
+  console.log("Sorting in ascending order...");
+  sorted.sort((a, b) => a.name.localeCompare(b.name));
+} else if (sortOrder === "desc") {
+  console.log("Sorting in descending order...");
+  sorted.sort((a, b) => b.name.localeCompare(a.name));
+}
+
+return sorted;
+
 };
 
 
@@ -437,7 +487,7 @@ console.log(`current results: ${currentResults}`)
 
 
   return (
-    <Layout className="results">
+    <StyledAntLayout className="results">
       {/* <h1>Results</h1> */}
 
       <section className="results-section">
@@ -488,6 +538,10 @@ console.log(`current results: ${currentResults}`)
 
 
           </div>
+
+          
+
+
           <div className="div-2">
             {window.innerWidth > 500 && <ResultsMap
               style={{ width: "20%" }}
@@ -537,7 +591,8 @@ console.log(`current results: ${currentResults}`)
 
               </div>
             )}
-            {window.innerWidth < 500 && <ResultsMap
+
+            {window.innerWidth < 500 && currentResults.length > 0 && <ResultsMap
               style={{ width: "20%" }}
               results={results}
             />}
@@ -546,7 +601,7 @@ console.log(`current results: ${currentResults}`)
 
         </section>
       </section>
-    </Layout>
+    </StyledAntLayout>
   );
 };
 
