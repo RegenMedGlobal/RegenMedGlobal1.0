@@ -22,7 +22,7 @@ const StyledArticleContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   height: 100vh;
-  margin-top: 5%;
+  margin-top:8%;
 
   @media (max-width: 865px) {
     /* Adjust top margin for screens narrower than 768px (mobile) */
@@ -71,26 +71,29 @@ const Articles = () => {
   const [filteredArticles, setFilteredArticles] = useState([]);
    // Extract the filterTerm from the query parameter in the URL
 
+useEffect(() => {
+  const fetchArticles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .order('created_at', { ascending: false }); // Order by 'created_at' in descending order
 
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const { data, error } = await supabase.from('articles').select('*');
-
-        if (error) {
-          console.error('Error fetching articles:', error);
-          return;
-        }
-
-        setArticles(data);
-        setFilteredArticles(data);
-      } catch (error) {
-        console.error('Error:', error);
+      if (error) {
+        console.error('Error fetching articles:', error);
+        return;
       }
-    };
 
-    fetchArticles();
-  }, []);
+      setArticles(data);
+      setFilteredArticles(data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  fetchArticles();
+}, []);
+
 
   const extractDescription = (html) => {
     if (!html) {
@@ -165,7 +168,7 @@ const onSearch = (value) => {
               By: {article.author} | Published on {formatDate(article.created_at)}
             </ArticleMeta>
             <Link to={`/article/${article.id}`} state={{ article: article }}>
-              Read Article
+              Details
             </Link>
           </ArticleContainer>
         ))
