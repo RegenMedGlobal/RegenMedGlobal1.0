@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { EDGE_URL } from "../config";
 
-const DoctorContact = ({ email }) => {
+const DoctorContact = ({ email, profileId }) => {
   const [emailData, setEmailData] = useState({
     firstName: "",
     lastName: "",
@@ -10,27 +11,50 @@ const DoctorContact = ({ email }) => {
     message: "",
   });
 
+  const [msg, setMsg] = useState(false)
+  const [emsg, setEmsg] = useState(false)
+
   console.log('Email from doctor contact: ', email)
 
   const sendEmail = async () => {
-    const postData = {
-      From: "sender@example.com", // Replace with your verified sender email address
-      To: "ben.havis1@gmail.com", // Replace with the recipient's email address
-      Subject: "Contact Request",
-      TextBody: `Name: ${emailData.firstName} ${emailData.lastName}\nEmail: ${emailData.email}\nPhone: ${emailData.phoneNumber}\nMessage: ${emailData.message}`,
-    };
-
-    try {
-      await axios.post("https://api.postmarkapp.com/email", postData, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Postmark-Server-Token": "a6972bc2-de00-45d3-acfa-2ea388ca77b2",
-        },
-      });
-      console.log("Email sent successfully");
-    } catch (error) {
-      console.error("Error sending email", error);
+    setMsg(false)
+    setEmsg(false)
+    
+    if(emailData.firstName == "" || emailData.lastName == "" || emailData.email == "" || emailData.phoneNumber == "" || emailData.message == "") {
+      setEmsg(true)
+      return false
     }
+
+
+    let emailinfo = {
+      'first_name': emailData.firstName,
+      'last_name': emailData.lastName,
+      'email': emailData.email,
+      'phone_no': emailData.phoneNumber,
+      'message': emailData.message,
+      'profileId': profileId
+    }
+
+    const response = await axios.post(EDGE_URL + "/regen-emailer", emailinfo);
+        const responseData = response.data;
+        console.log("Response ", responseData)
+        if (responseData.success) {
+          setMsg(true)
+          setEmailData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            phoneNumber: "",
+            message: "",
+          })
+          
+        } else {
+          console.log("ERROR")
+          console.log(responseData.message)
+        }
+
+
+
   };
 
   return (
@@ -39,6 +63,7 @@ const DoctorContact = ({ email }) => {
         <div className="row">
           <div className="col-lg-12">
             <p className="get-p">Get in touch</p>
+            {(emsg ? (<p className="text-bg-danger">Alert! Please fill all details.</p>) : <></>)}
           </div>
           <div className="col-lg-6">
             <div className="common-data">
@@ -111,6 +136,7 @@ const DoctorContact = ({ email }) => {
           </div>
           <div className="col-lg-12">
             <div className="common-data mr-0">
+              {(msg ? (<p className="text-bg-success">Thank you! Your message has been sent to the clinic/doctor.</p>) : <></>)}
               <button className="Contact-bt" onClick={sendEmail}>
                 Contact
               </button>

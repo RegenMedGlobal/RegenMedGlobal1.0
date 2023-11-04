@@ -145,6 +145,7 @@ export const insertNewUser = async (userData) => {
       latitude: userCoordinates.latitude,
       longitude: userCoordinates.longitude,
       created_at: new Date().toISOString(),
+      isVerified: true
     };
 
     // Insert data into the "maindata" table using Supabase
