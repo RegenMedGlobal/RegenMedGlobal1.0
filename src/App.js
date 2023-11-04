@@ -76,6 +76,7 @@ function App() {
     <AuthProvider>
       <div className={`App ${className}`}>
         <Navbar />
+        <div className="in-body">
         <Routes>
           <Route path='/' element={<Main />} />
           <Route path='/Services' element={<Services />} />
@@ -95,6 +96,7 @@ function App() {
           <Route path='/videos' element={<Videos />} />
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
         </Routes>
+        </div>
         <Footer />
       </div>
     </AuthProvider>

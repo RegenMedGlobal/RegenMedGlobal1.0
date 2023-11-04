@@ -2474,3 +2474,7 @@ input.ant-input:focus {
   display: block;
   width: 100%;
 }
+
+.in-body {
+  min-height: 70vh;
+}
