@@ -38,16 +38,27 @@ const Profile = () => {
 
   console.log('state from profile:', state)
 
+  function isJSONEmpty(json) {
+    for (var key in json) {
+      if (json.hasOwnProperty(key)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 
   // Add console.log statements to check values
   console.log("loggedIn:", loggedIn);
   console.log("current user from profile:", currentUser);
   let currentUserID;
   try {
-    const jsonUser = JSON.parse(currentUser);
-    console.log("jsonuser", jsonUser);
-    currentUserID = jsonUser.userId;
-    console.log("current userid from json in profile:", currentUserID);
+    if(!isJSONEmpty(currentUser)) {
+      const jsonUser = JSON.parse(currentUser);
+      console.log("jsonuser", jsonUser);
+      currentUserID = jsonUser.userId;
+      console.log("current userid from json in profile:", currentUserID);
+    }
   } catch (error) {
     console.error("Error parsing or accessing user data:", error);
   }
@@ -87,8 +98,12 @@ useEffect(() => {
     // Call the isVerified function with the profileId as a parameter
     isVerified(profileId)
       .then((result) => {
-        console.log("verified")
-        setIsProfileVerified(result);
+        
+        if(result != undefined){
+          console.log("verified")
+          console.log(result)
+          setIsProfileVerified(result);
+        }
       })
       .catch((error) => {
         console.error('Error verifying profile:', error);
@@ -438,7 +453,7 @@ const handleReturnToResults = () => {
           </CardContainer>
        
       
-        {shouldDisplayDoctorContact ? <DoctorContact email={profileEmail} /> : null}
+        {isProfileVerified ? <DoctorContact email={profileEmail} profileId={profileId} /> : null}
      <MapContainer>
   <Map
     city={profileData.find((field) => field.fieldName === "city")?.fieldValue}
