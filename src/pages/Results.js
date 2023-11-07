@@ -224,7 +224,9 @@ const handleChangePage = (page) => {
   };
 
   useEffect(() => {
+    
     const fetchUserLocation = async () => {
+      console.log("FETCH-USER-LOCATION")
       try {
         const position = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -296,7 +298,9 @@ const getFilteredConditions = (value) => {
 
 
   useEffect(() => {
+    
     const fetchResults = async () => {
+      console.log("FETCH-RESULT")
       setLoading(true);
 
       if (!address || address.length === 0) {
@@ -380,7 +384,7 @@ const getFilteredConditions = (value) => {
     };
 
     fetchResults();
-  }, [filterTerm, checkboxOptions, address, radius]);
+  }, [userLocation, filterTerm, checkboxOptions, address, radius]);
 
   useEffect(() => {
     const locationArray = address.split(",");
