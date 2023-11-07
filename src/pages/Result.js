@@ -86,41 +86,42 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
 
 
   const { id, name, city, country, resultState, specialty, placeId, address } = result;
-  const [distance, setDistance] = useState('');
+  const [distance, setDistance] = useState(result.distance.toFixed(2));
   const [isProfileVerified, setIsProfileVerified] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   console.log('Result city: ', city);
 
-const fetchDistance = async () => {
-  if (!resultAddress || !userLocation) {
-    setDistance('');
-    return;
-  }
+// const fetchDistance = async () => {
+//   if (!resultAddress || !userLocation) {
+//     setDistance('');
+//     return;
+//   }
 
 
-  try {
-    const userCoordinates = userLocation;
-    const addressCoordinates = await getLocationCoordinates(resultAddress);
+//   try {
+//     const userCoordinates = userLocation;
+//     console.log("UserLocation ", userLocation)
+//     const addressCoordinates = await getLocationCoordinates(resultAddress);
 
-    if (!addressCoordinates) {
-      setDistance('');
-      return;
-    }
+//     if (!addressCoordinates) {
+//       setDistance('');
+//       return;
+//     }
 
-    const distanceInMeters = getDistance(userCoordinates, addressCoordinates);
-    const distanceInMiles = distanceInMeters * 0.000621371;
+//     const distanceInMeters = getDistance(userCoordinates, addressCoordinates);
+//     const distanceInMiles = distanceInMeters * 0.000621371;
 
-    setDistance(distanceInMiles.toFixed(2));
-  } catch (error) {
-    console.error('Error fetching distance:', error);
-    setDistance('');
-  }
-};
+//     setDistance(distanceInMiles.toFixed(2));
+//   } catch (error) {
+//     console.error('Error fetching distance:', error);
+//     setDistance('');
+//   }
+// };
 
 
-  useEffect(() => {
-    fetchDistance();
-  }, [resultAddress, userLocation]);
+  // useEffect(() => {
+  //   fetchDistance();
+  // }, [resultAddress, userLocation]);
 
   useEffect(() => {
     // Call the isVerified function with the profileId as a parameter
@@ -133,73 +134,73 @@ const fetchDistance = async () => {
       });
   }, []);
 
-useEffect(() => {
-  // Define a function to retrieve the user's location
-  const fetchUserLocation = async () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('Error retrieving user location:', error);
-          // If geolocation fails,  get coordinates from resultAddress
-          setUserLocation({
-        latitude: result.latitude,
-        longitude: result.longitude,
-      });
-        }
-      );
-    } else {
-      console.log('Geolocation is not supported by this browser.');
-      // If geolocation is not supported, attempt to get coordinates from resultAddress
-       // If geolocation is not supported, use coordinates from result.latitude and result.longitude
-      setUserLocation({
-        latitude: result.latitude,
-        longitude: result.longitude,
-      });
-    }
-  };
+// useEffect(() => {
+//   // Define a function to retrieve the user's location
+//   const fetchUserLocation = async () => {
+//     if (navigator.geolocation) {
+//       navigator.geolocation.getCurrentPosition(
+//         (position) => {
+//           setUserLocation({
+//             latitude: 25.775080,
+//             longitude: -80.194702,
+//           });
+//         },
+//         (error) => {
+//           console.error('Error retrieving user location:', error);
+//           // If geolocation fails,  get coordinates from resultAddress
+//           setUserLocation({
+//         latitude: 25.775080,
+//         longitude: -80.194702,
+//       });
+//         }
+//       );
+//     } else {
+//       console.log('Geolocation is not supported by this browser.');
+//       // If geolocation is not supported, attempt to get coordinates from resultAddress
+//        // If geolocation is not supported, use coordinates from result.latitude and result.longitude
+//       setUserLocation({
+//         latitude: 25.775080,
+//         longitude: -80.194702,
+//       });
+//     }
+//   };
 
-  // Call the function to fetch user location when the component mounts
-  fetchUserLocation();
-}, []);
+//   // Call the function to fetch user location when the component mounts
+//   fetchUserLocation();
+// }, []);
 
 
 
-  const getLocationCoordinates = async (location) => {
-  try {
-    const url = `https://geocode.search.hereapi.com/v1/geocode?apiKey=${apiKey}&q=${encodeURIComponent(location)}`;
-    console.log('URL:', url);
+//   const getLocationCoordinates = async (location) => {
+//   try {
+//     const url = `https://geocode.search.hereapi.com/v1/geocode?apiKey=${apiKey}&q=${encodeURIComponent(location)}`;
+//     console.log('URL:', url);
 
-    const response = await fetch(url);
-    console.log('Response:', response);
+//     const response = await fetch(url);
+//     console.log('Response:', response);
 
-    if (response.ok) {
-      console.log('Response Type:', response.type);
-      console.log('Response Headers:', response.headers);
-      const data = await response.json();
-      console.log('Data:', data);
+//     if (response.ok) {
+//       console.log('Response Type:', response.type);
+//       console.log('Response Headers:', response.headers);
+//       const data = await response.json();
+//       console.log('Data:', data);
 
-      if (data && data.items && data.items.length > 0) {
-        const { position } = data.items[0];
-        console.log('Coordinates:', position);
-        return position;
-      } else {
-        throw new Error('No results found for the location.');
-      }
-    } else {
-      throw new Error('Failed to fetch data from the API.');
-    }
-  } catch (error) {
-    console.log('Error retrieving location coordinates:', error);
-    // Handle the error, such as showing a message to the user or setting a specific state variable to indicate the error.
-    return null;
-  }
-};
+//       if (data && data.items && data.items.length > 0) {
+//         const { position } = data.items[0];
+//         console.log('Coordinates:', position);
+//         return position;
+//       } else {
+//         throw new Error('No results found for the location.');
+//       }
+//     } else {
+//       throw new Error('Failed to fetch data from the API.');
+//     }
+//   } catch (error) {
+//     console.log('Error retrieving location coordinates:', error);
+//     // Handle the error, such as showing a message to the user or setting a specific state variable to indicate the error.
+//     return null;
+//   }
+// };
   
   const navigate = useNavigate();
  
