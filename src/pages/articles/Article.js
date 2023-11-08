@@ -220,13 +220,8 @@ const handleEditClick = () => {
 </Link>
 
           </StyledAuthor>
-                 {imageUrl && (
-            <StyledArticleImage
-              src={`https://sxjdyfdpdhepsgzhzhak.supabase.co/storage/v1/object/public/article_photos/${fileName}`}
-              alt="Article Image"
-            />
-          )}
-          
+            
+           <div>{ReactHtmlParser(articleContent)}</div>
           
         </Card>
       </StyledContent>
