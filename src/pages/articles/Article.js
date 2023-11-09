@@ -105,7 +105,7 @@ const Article = () => {
   const [articleTitle, setArticleTitle] = useState("");
   const [imageUrl, setImageUrl] = useState(''); 
   const [editMode, setEditMode] = useState(false)
-  const [editAvailable, setEditAvailable] = useState(true)
+  const [editAvailable, setEditAvailable] = useState(false)
 
 
    const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
@@ -220,29 +220,9 @@ const handleEditClick = () => {
 </Link>
 
           </StyledAuthor>
-                 {imageUrl && (
-            <StyledArticleImage
-              src={`https://sxjdyfdpdhepsgzhzhak.supabase.co/storage/v1/object/public/article_photos/${fileName}`}
-              alt="Article Image"
-            />
-          )}
+            
+           <div>{ReactHtmlParser(articleContent)}</div>
           
-             {editMode ? (
-              <>
-                    <ReactQuill
-            value={editedContent}
-           onChange={setEditedContent}
-       style={editorStyle}
-          />
-               <StyledButtonContainer>
-                <StyledSaveButton onClick={handleSaveClick}>
-                  Save
-                </StyledSaveButton>
-              </StyledButtonContainer>
-              </>
-        ) : (
-          <div>{ReactHtmlParser(articleContent)}</div>
-        )}
         </Card>
       </StyledContent>
     </StyledContainer>

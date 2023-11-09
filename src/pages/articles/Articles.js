@@ -157,6 +157,8 @@ const onSearch = (value) => {
         enterButton
          defaultValue={filterTerm}
       />
+      <br/>
+      <p>Want to submit an article? Click here to register or log-in!</p>
       {filteredArticles.length === 0 ? (
         <p>No articles found.</p>
       ) : (

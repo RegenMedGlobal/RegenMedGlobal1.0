@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Upload, Button as AntButton, Input, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -6,8 +6,6 @@ import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import styles
-import html2pdf from 'html2pdf.js';
-
 
 const StyledContainer = styled.div`
   display: flex;
@@ -64,6 +62,8 @@ const PasswordForm = ({ onSignIn }) => {
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
+
+
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
     // Clear the password error message when the user starts typing a new password
@@ -101,6 +101,8 @@ const SubmitArticle = () => {
   const [articleTitle, setArticleTitle] = useState('');
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [error, setError] = useState(null);
+  const [file, setFile] = useState(null);
+const fileInputRef = useRef(null);
     const [success, setSuccess] = useState(false);
 
   
@@ -136,37 +138,62 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
     setArticleTitle(event.target.value);
   };
 
+  const clearFileInput = () => {
+  // Clear the file input by resetting its value
+  if (fileInputRef.current) {
+    console.log('Clearing file input value');
+    fileInputRef.current.value = '';
+    console.log('File input value after clearing:', fileInputRef.current.value);
+  }
+};
+
+const handleFileChange = (info) => {
+  if (info.file.status === 'done') {
+    message.success(`${info.file.name} file uploaded successfully`);
+    setFile(info.file.originFileObj); // Store the uploaded file
+    clearFileInput();
+  } else if (info.file.status === 'error') {
+    message.error(`${info.file.name} file upload failed.`);
+  }
+};
+
+
 
 const handleArticleSubmission = async () => {
   try {
-    if (!articleContent || !authorName || !articleTitle) {
-      setError('Please provide content, the author name, and the article title.');
+    if (!articleContent || !authorName || !articleTitle || !file) {
+      setError('Please provide content, the author name, the article title, and upload an image.');
       return;
     }
 
     // Generate a unique identifier for the database record
     const recordId = uuidv4();
 
-    // Construct the filename for the HTML file
-    const fileName = `${recordId}_${articleTitle}_${authorName}.html`;
+    // Upload the image file to the storage bucket
+    const { data: imageStorageData, error: imageStorageError } = await supabase.storage
+      .from('article_photos')
+      .upload(`${recordId}_${file.name}`, file);
 
-    // Upload the HTML content to the storage bucket
-    const { data: storageData, error: storageError } = await supabase.storage
-      .from('articles')
-      .upload(fileName, articleContent);
+    console.log('Image storage data:', imageStorageData);
 
-    if (storageError) {
-      console.error('Error uploading HTML content to storage:', storageError);
+    if (imageStorageError) {
+      console.error('Error during image upload:', imageStorageError); // Log the error
       setError('An error occurred while submitting the article.');
       return;
     }
 
-    // Insert a record in your database table with author, id, and title
+  // Construct the image URL from the path
+const imageUrl = `${SUPABASE_URL}/storage/v1/object/${imageStorageData.path}`;
+
+
+
+    // Insert a record in your database table with author, id, title, and image URL
     const databaseRecord = {
       id: recordId,
       author: authorName,
       title: articleTitle,
-      content: articleContent
+      content: articleContent,
+      imageUrl: imageUrl, // Store the image URL in the database
     };
 
     const { data: insertedData, error: insertError } = await supabase.from('articles').insert([databaseRecord]);
@@ -177,15 +204,16 @@ const handleArticleSubmission = async () => {
       return;
     }
 
-    // Reset the relevant input fields and error message after successful submission
+    // Reset the relevant input fields, file, and error message after successful submission
     setAuthorName('');
     setArticleTitle('');
     setArticleContent('');
+    setFile(null);
     setError(null);
+    clearFileInput();
+    setSuccess(true);
 
-      setSuccess(true);
-
-    console.log('HTML content uploaded to storage:', storageData);
+    console.log('Image uploaded to storage:', imageStorageData);
     console.log('Database record inserted successfully:', insertedData);
   } catch (error) {
     console.error('An error occurred:', error);
@@ -206,7 +234,8 @@ const handleArticleSubmission = async () => {
     setArticleContent(content);
   };
 
-  return (
+
+return (
     <StyledContainer>
       {isSignedIn ? (
         <>
@@ -223,26 +252,44 @@ const handleArticleSubmission = async () => {
             onChange={handleAuthorNameChange}
             placeholder="Author's Name"
           />
+    <Upload
+        accept=".jpg, .jpeg, .png, .gif"
+        
+        
+        beforeUpload={(file) => {
+           fileInputRef.current = file;
+          // Log when a file is selected
+          console.log('File selected:', file);
+            
+          // Store the selected file in the component's state
+          setFile(file);
 
-  <ReactQuill
-    value={articleContent}
-    modules={modules}
-    formats={formats}
-    onChange={handleRichTextChange}
-    style={editorStyles}
-  />
+          // Return false to prevent automatic upload
+          return false;
+        }}
+        onChange={handleFileChange}
+      >
+        <AntButton icon={<UploadOutlined />}>Upload Image</AntButton>
+      </Upload>
 
+          <ReactQuill
+            value={articleContent}
+            modules={modules}
+            formats={formats}
+            onChange={handleRichTextChange}
+            style={editorStyles}
+          />
 
-         <AntButton
-  type="primary" // You can use different types like 'primary', 'default', 'dashed', 'text', etc.
-  size="large" // You can use 'small', 'default', or 'large' for different sizes
-  onClick={handleArticleSubmission}
->
-  Submit Article
-</AntButton>
+          <AntButton
+            type="primary"
+            size="large"
+            onClick={handleArticleSubmission}
+          >
+            Submit Article
+          </AntButton>
 
           {error && <ErrorMessage>{error}</ErrorMessage>}
-            {success && <SuccessMessage>Article submitted successfully!</SuccessMessage>}
+          {success && <SuccessMessage>Article submitted successfully!</SuccessMessage>}
         </>
       ) : (
         <PasswordForm onSignIn={() => setIsSignedIn(true)} />

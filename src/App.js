@@ -22,6 +22,8 @@ import Articles from './pages/articles/Articles'
 import Article from './pages/articles/Article'
 import SubmitArticle from './pages/articles/SubmitArticle'
 import Author from './pages/articles/Author'
+import AuthorSignUp from './pages/articles/AuthorSignUp'
+import AuthorSignIn from './pages/articles/AuthorSignIn'
 import ReactGA from 'react-ga';
 import Videos from './pages/podcasts/Videos'
 
@@ -76,6 +78,7 @@ function App() {
     <AuthProvider>
       <div className={`App ${className}`}>
         <Navbar />
+        <div className="in-body">
         <Routes>
           <Route path='/' element={<Main />} />
           <Route path='/Services' element={<Services />} />
@@ -89,12 +92,15 @@ function App() {
           <Route path='/claim' element={<Claim />} />
           <Route path='/articles' element={<Articles />} />
           <Route path="/article/:articleId" element={<Article />} />
-            <Route path="/author/:authorName" element={<Author />} />
+          <Route path="/author/:authorId" element={<Author />} />
          <Route path='/submitarticle' element={<SubmitArticle />} />
+         <Route path='/authorsignup' element={<AuthorSignUp />} />
+          <Route path='/authorsignin' element={<AuthorSignIn />} />
           <Route path='/ResetPassword' element={<ResetPassword />} />
           <Route path='/videos' element={<Videos />} />
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
         </Routes>
+        </div>
         <Footer />
       </div>
     </AuthProvider>
