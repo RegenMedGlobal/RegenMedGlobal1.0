@@ -137,7 +137,7 @@ useEffect(() => {
   
   console.log('author logged in:', authorLoggedIn);
   console.log('author id:', authorId);
-  console.log('id from current user:', currentAuthorUser.id);
+  //console.log('id from current user:', currentAuthorUser.id);
 
   // Check if the user is logged in as an author and matches the current author ID
   if (authorLoggedIn && currentAuthorUser && currentAuthorUser.id === parseInt(authorId)) {
