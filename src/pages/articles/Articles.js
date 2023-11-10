@@ -71,28 +71,29 @@ const Articles = () => {
   const [filteredArticles, setFilteredArticles] = useState([]);
    // Extract the filterTerm from the query parameter in the URL
 
-useEffect(() => {
-  const fetchArticles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .order('created_at', { ascending: false }); // Order by 'created_at' in descending order
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('recordStatus', true) // Filter articles where recordStatus is true
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching articles:', error);
-        return;
+        if (error) {
+          console.error('Error fetching articles:', error);
+          return;
+        }
+
+        setArticles(data);
+        setFilteredArticles(data);
+      } catch (error) {
+        console.error('Error:', error);
       }
+    };
 
-      setArticles(data);
-      setFilteredArticles(data);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  fetchArticles();
-}, []);
+    fetchArticles();
+  }, []);
 
 
   const extractDescription = (html) => {
@@ -157,6 +158,8 @@ const onSearch = (value) => {
         enterButton
          defaultValue={filterTerm}
       />
+      <br/>
+      <p>Want to submit an article? Click here to register or log-in!</p>
       {filteredArticles.length === 0 ? (
         <p>No articles found.</p>
       ) : (

@@ -103,6 +103,7 @@ const Article = () => {
   const [articleContent, setArticleContent] = useState("");
   const [editedContent, setEditedContent] = useState("")
   const [articleTitle, setArticleTitle] = useState("");
+  const [articleAuthorId, setArticleAuthorId] = useState("")
   const [imageUrl, setImageUrl] = useState(''); 
   const [editMode, setEditMode] = useState(false)
   const [editAvailable, setEditAvailable] = useState(false)
@@ -137,7 +138,7 @@ useEffect(() => {
     try {
       const { data: articleData, error } = await supabase
         .from("articles")
-        .select("content, author, title, imageUrl")
+        .select("*")
         .eq("id", articleId)
         .single();
 
@@ -148,6 +149,7 @@ useEffect(() => {
       } else {
         setAuthor(articleData.author);
         setArticleTitle(articleData.title);
+        setArticleAuthorId(articleData.authorId)
         setArticleContent(articleData.content);
         setEditedContent(articleData.content)
         setImageUrl(articleData.imageUrl); 
@@ -208,16 +210,14 @@ const handleEditClick = () => {
         </TitleWrapper>
           {editAvailable && <StyledEditButton onClick={handleEditClick}>Edit</StyledEditButton>}
              <StyledAuthor>
-            By{' '}
-          <Link
-  to={{
-    pathname: '/articles',
-    state: { filterTerm: author },
-    search: `?filterTerm=${encodeURIComponent(author)}`,
-  }}
->
-  {author}
-</Link>
+           <StyledAuthor>
+  By{' '}
+  {/* Update the link to navigate to the author's page */}
+  <Link to={`/author/${articleAuthorId}`}>
+    {author}
+  </Link>
+</StyledAuthor>
+
 
           </StyledAuthor>
             
