@@ -32,7 +32,6 @@ const StyledContainer = styled.div`
     align-self: flex-end;
   }
 `;
-
 const ResetAuthorPassword = () => {
   const [form] = Form.useForm();
 
@@ -60,7 +59,7 @@ const ResetAuthorPassword = () => {
   };
 
   const validateConfirmEmail = (_, value) => {
-    const { email } = form.getFieldValue('email');
+    const { email } = form.getFieldsValue(['email']);
     if (value !== email) {
       return Promise.reject('The two emails do not match!');
     }
