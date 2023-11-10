@@ -1,5 +1,37 @@
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
+import styled from 'styled-components';
+
+const StyledContainer = styled.div`
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 18rem;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    text-align: center;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    margin-bottom: 8px;
+  }
+
+  input {
+    margin-bottom: 16px;
+  }
+
+  button {
+    align-self: flex-end;
+  }
+`;
 
 const ResetAuthorPassword = () => {
   const [form] = Form.useForm();
@@ -36,7 +68,7 @@ const ResetAuthorPassword = () => {
   };
 
   return (
-    <div>
+    <StyledContainer>
       <h1>Password Reset</h1>
 
       <Form
@@ -73,7 +105,7 @@ const ResetAuthorPassword = () => {
           </Button>
         </Form.Item>
       </Form>
-    </div>
+    </StyledContainer>
   );
 };
 
