@@ -140,7 +140,7 @@ useEffect(() => {
   //console.log('id from current user:', currentAuthorUser.id);
 
   // Check if the user is logged in as an author and matches the current author ID
-  if (authorLoggedIn && currentAuthorUser && currentAuthorUser.id === parseInt(authorId)) {
+  if (authorLoggedIn && currentAuthorUser && currentAuthorUser.authorId === authorId) {
   //console.log('Setting Edit available to true');
   setEditAvailable(true);
 } else {

@@ -79,7 +79,7 @@ const AuthorSignIn = () => {
              // Redirect to the author's profile page if an ID is available
       if (response.authorData && response.authorData.id) {
         // Use the ID from the response for navigation
-        navigate(`/author/${response.authorData.id}`);
+        navigate(`/author/${response.authorData.authorId}`);
       }
 
 
@@ -157,6 +157,10 @@ const AuthorSignIn = () => {
         Don't have an account? Click here to sign up
       </StyledTextLink>
 
+
+      {/* <StyledTextLink onClick={() => navigate('/resetauthorpassword')}>
+        Forgot your password? Click here to reset
+      </StyledTextLink> */}
     </StyledContainer>
   );
 };

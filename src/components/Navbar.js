@@ -109,14 +109,30 @@ const LogoImage = styled.img`
   padding: 5px;
 `;
 const Navbar = () => {
-  const { loggedIn, logout, currentUser } = useContext(AuthContext);
+  const { loggedIn, logout, currentUser , authorLoggedIn, currentAuthorUser, authorLogout} = useContext(AuthContext);
+
+    // Add this console.log to check the value of currentAuthorUser
   const isMobile = useMediaQuery('(max-width: 856px)');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false); 
+    
+
+
+
   console.log('current user from navbar', currentUser);
 
+    useEffect(() => {
+    console.log('currentAuthorUser in Navbar:', currentAuthorUser);
+    // Access the authorName property
+    const authorName = currentAuthorUser?.authorName;
+    console.log('current auth name in Navbar:', authorName);
+    // Now it should log the updated authorName when currentAuthorUser changes
+  }, [currentAuthorUser]);
+
   let currentUserID;
+
+
   if(Object.keys(currentUser).length !== 0) {
     try {
       const jsonUser = JSON.parse(currentUser);
@@ -125,6 +141,11 @@ const Navbar = () => {
       console.error('Error parsing or accessing user data:', error);
     }
   }
+
+
+  //console.log("author name: ", currentAuthorName)
+
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen); // Toggle the mobile menu state
   };
@@ -142,6 +163,12 @@ const Navbar = () => {
     logout();
     navigate('/');
   };
+
+  const handleAuthorLogout= () => {
+    authorLogout();
+    navigate('/');
+
+  }
 
   return (
 
@@ -186,6 +213,30 @@ const Navbar = () => {
                   Articles
                 </Link>
               </li>
+                {authorLoggedIn && (
+  <>
+    <li className="nav-item">
+      <a
+        className="nav-link"
+        href={`/author/${currentAuthorUser.authorId}`}
+        onClick={() => handleLinkClick('Author')}
+      >
+        {currentAuthorUser.authorName}
+      </a>
+    </li>
+    <li className="nav-item">
+      <a
+        className="nav-link"
+        href="#"
+        onClick={handleAuthorLogout} // Assuming handleAuthorLogout is your logout function
+        style={{ color: '#000 !important' }}
+      >
+        Author Logout
+      </a>
+    </li>
+  </>
+)}
+
               {loggedIn && (
                 <li className="nav-item">
                   <a

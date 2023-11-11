@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 import { Upload, Button as AntButton, Input, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -6,8 +6,9 @@ import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 import ReactQuill from 'react-quill';
 import { AuthContext } from '../../AuthContext';
+import getProfile from '../../functions/getProfile';
 import 'react-quill/dist/quill.snow.css'; // Import styles
-import htmlDocx from 'html-docx-js/dist/html-docx';
+
 
 
 const StyledContainer = styled.div`
@@ -64,13 +65,15 @@ const UploadButton = styled.button`
 const SubmitArticle = () => {
   const [articleContent, setArticleContent] = useState('');
   const [authorName, setAuthorName] = useState('');
-  const [htmlContent, setHtmlContent] = useState('');
   const [articleTitle, setArticleTitle] = useState('');
   const [error, setError] = useState(null);
   const [file, setFile] = useState(null); 
   const fileInputRef = useRef(null);
   const [success, setSuccess] = useState(false);
-  const { authorLoggedIn, currentAuthorUser} = useContext(AuthContext);
+  const [doctorData, setDoctorData] = useState([])
+  const { authorLoggedIn, currentAuthorUser, currentUser, loggedIn} = useContext(AuthContext);
+
+  console.log('current user  in from submit:', currentUser)
 
   console.log('current author  from submit article: ', currentAuthorUser.authorName)
 
@@ -99,6 +102,35 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
     'link',
   ];
 
+ 
+  let currentUserID;
+  try {
+    if(currentUser) {
+      const jsonUser = JSON.parse(currentUser);
+      console.log("jsonuser", jsonUser);
+      currentUserID = jsonUser.userId;
+      console.log("current userid from json in profile:", currentUserID);
+    }
+  } catch (error) {
+    console.error("Error parsing or accessing user data:", error);
+  }
+
+
+
+useEffect(() => {
+  getProfile(currentUserID)
+    .then((response) => {
+      console.log('Fetched profile data-:', response); // Debugging log
+      setDoctorData(response)
+
+    })
+    .catch((error) => {
+      console.error('Error fetching profile data:', error);
+    });
+}, [currentUser]);
+
+console.log('doctor data from submit: ', doctorData)
+
   const handleAuthorNameChange = (event) => {
     setAuthorName(event.target.value);
   };
@@ -125,7 +157,6 @@ const handleFileChange = (info) => {
     message.error(`${info.file.name} file upload failed.`);
   }
 };
-
 
 
 
@@ -164,12 +195,12 @@ const handleFileChange = (info) => {
       // Insert a record in your database table with author, id, title, and image URL
       const databaseRecord = {
         id: recordId,
-        author: currentAuthorUser.authorName,
+        author: authorLoggedIn ? currentAuthorUser.authorName : doctorData.name,
         title: articleTitle,
         content: articleContent,
         imageUrl: imageUrl, // Store the image URL in the database if available
         recordStatus: false,
-        authorId: currentAuthorUser.id
+        authorId: authorLoggedIn ? currentAuthorUser.id : doctorData.id
       };
 
       const { data: insertedData, error: insertError } = await supabase.from('articles').insert([databaseRecord]);
@@ -212,7 +243,7 @@ const handleFileChange = (info) => {
   };
 
     // Check if the user is not logged in
-  if (!authorLoggedIn) {
+  if (!authorLoggedIn && !loggedIn) {
     return (
       <StyledContainer>
         <ErrorMessage>You must be logged in to submit an article.</ErrorMessage>
@@ -225,6 +256,7 @@ return (
   <StyledContainer>
     <Header>Submit Article</Header>
     <h4>{currentAuthorUser.authorName}</h4>
+    <h4>{doctorData.name}</h4>
     <StyledInput
       type="text"
       value={articleTitle}

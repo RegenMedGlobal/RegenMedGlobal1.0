@@ -108,6 +108,11 @@ const Article = () => {
   const [editMode, setEditMode] = useState(false)
   const [editAvailable, setEditAvailable] = useState(false)
 
+  const linkTo = articleAuthorId.startsWith('A')
+    ? `/author/${articleAuthorId}`
+    : `/profile/${articleAuthorId}`;
+
+
 
    const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
  const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
@@ -212,8 +217,8 @@ const handleEditClick = () => {
              <StyledAuthor>
            <StyledAuthor>
   By{' '}
-  {/* Update the link to navigate to the author's page */}
-  <Link to={`/author/${articleAuthorId}`}>
+
+   <Link to={linkTo}>
     {author}
   </Link>
 </StyledAuthor>

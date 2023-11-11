@@ -11,8 +11,7 @@ const fetchArticleData = async (uuid) => {
     const { data, error } = await supabase
       .from('articles')
       .select('*')
-      .eq('id', uuid) // Assuming 'id' is the field in the 'articles' table that represents the unique ID
-      .single(); // Ensure it returns a single row
+      .eq('authorId', uuid) // Assuming 'id' is the field in the 'articles' table that represents the unique ID
 
     if (error) {
       console.error('Supabase error:', error);
