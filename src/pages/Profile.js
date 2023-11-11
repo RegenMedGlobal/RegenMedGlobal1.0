@@ -47,7 +47,6 @@ const Profile = () => {
     return true;
   }
 
-
   // Add console.log statements to check values
   console.log("loggedIn:", loggedIn);
   console.log("current user from profile:", currentUser);
@@ -388,7 +387,7 @@ const handleReturnToResults = () => {
 
       
     </StyledContactSection>
- 
+
 </Sidebar>
 
         <Content>
