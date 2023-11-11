@@ -194,3 +194,28 @@ export const ConditionsContainer = styled.section`
 `;
 
 
+export const StyledArticleContainer = styled.div`
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  h2 {
+     margin-bottom: 3rem;
+
+  }
+
+  h4 {
+    color: ${mainColor};
+    margin-bottom: 10px;
+  }
+
+  a {
+    color: #007bff;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;

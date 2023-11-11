@@ -129,6 +129,18 @@ input[type="text"] {
   }
 }
 
+/* Add this CSS in your component's stylesheet or a global stylesheet */
+/* Custom styles for Ant Design AutoComplete */
+.ant-select-selection {
+  border: 2px solid red; /* Add border style here */
+}
+
+/* Adjust the margin-top as needed to prevent overlap */
+.ant-select-dropdown {
+  margin-top: 10px;
+}
+
+
 
 li[class*="ant-pagination-item ant-pagination-item"] {
 	font-size: 2rem;
