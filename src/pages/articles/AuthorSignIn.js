@@ -8,6 +8,11 @@ import styled from 'styled-components';
 
 const { Title } = Typography;
 
+const StyledTextLink = styled(Typography.Link)`
+  margin-top: 16px;
+  display: block;
+`;
+
 const StyledContainer = styled.div`
   margin-top: 10rem;
 `;
@@ -147,6 +152,11 @@ const AuthorSignIn = () => {
           </StyledFormItem>
         </StyledForm>
       </Formik>
+
+       <StyledTextLink onClick={() => navigate('/authorsignup')}>
+        Don't have an account? Click here to sign up
+      </StyledTextLink>
+
     </StyledContainer>
   );
 };
