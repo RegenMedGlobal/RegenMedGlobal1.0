@@ -75,6 +75,8 @@ const SubmitArticle = () => {
 
   console.log('current user  in from submit:', currentUser)
 
+  console.log('current author usser: ', currentAuthorUser)
+
   console.log('current author  from submit article: ', currentAuthorUser.authorName)
 
   
@@ -200,7 +202,7 @@ const handleFileChange = (info) => {
         content: articleContent,
         imageUrl: imageUrl, // Store the image URL in the database if available
         recordStatus: false,
-        authorId: authorLoggedIn ? currentAuthorUser.id : doctorData.id
+        authorId: authorLoggedIn ? currentAuthorUser.authorId : doctorData.id
       };
 
       const { data: insertedData, error: insertError } = await supabase.from('articles').insert([databaseRecord]);
@@ -241,6 +243,8 @@ const handleFileChange = (info) => {
     console.log('HTML Content:', content);
     setArticleContent(content);
   };
+
+  console.log()
 
     // Check if the user is not logged in
   if (!authorLoggedIn && !loggedIn) {
