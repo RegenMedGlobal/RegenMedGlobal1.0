@@ -6,6 +6,13 @@ import { Input } from 'antd';
 
 const { Search } = Input;
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: bold;
+color: var(--main-color);
+`;
+
+
 const StyledAntdInput = styled(Search)`
   width: 40%;
   margin: 0 auto;
@@ -159,7 +166,10 @@ const onSearch = (value) => {
          defaultValue={filterTerm}
       />
       <br/>
-      <p>Want to submit an article? Click here to register or log-in!</p>
+       <p>
+      Want to submit an article?{' '}
+      <StyledLink to="/authorsignin">Click here</StyledLink> to register or log-in!
+    </p>
       {filteredArticles.length === 0 ? (
         <p>No articles found.</p>
       ) : (
