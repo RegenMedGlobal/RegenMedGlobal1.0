@@ -156,7 +156,7 @@ useEffect(() => {
       const { data: authorData, error: authorError } = await supabase
         .from('author_data')
         .select('*')
-        .eq('id', authorId)
+        .eq('authorId', authorId)
         .single();
 
       if (authorError) {
@@ -168,7 +168,7 @@ useEffect(() => {
       setAuthorData(authorData);
 
       // Fetch articles
-      if (authorData && authorData.id) {
+      if (authorData && authorData.authorId) {
         console.log('Fetching author articles...');
         const { data: articles, error: articlesError } = await supabase
           .from('articles')
@@ -284,12 +284,12 @@ const handleSaveButtonClick = async () => {
       .from("author_data")
       .update([
         {
-          id: authorId,
+          authorId: authorId,
           authorName: editedName,
           bio: editedBio,
         },
       ])
-      .eq("id", authorId);
+      .eq("authorId", authorId);
 
     if (error) {
       console.error("Error updating author data:", error);
