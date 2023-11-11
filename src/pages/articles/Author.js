@@ -3,6 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../AuthContext";
 import { createClient } from "@supabase/supabase-js";
 import styled from 'styled-components';
+import ReactGA from "react-ga"; // Import React Google Analytics
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -124,6 +125,17 @@ const Author = () => {
  const [authorArticles, setAuthorArticles] = useState([]);
 
 
+  useEffect(() => {
+    // Initialize React Google Analytics
+    ReactGA.initialize("G-7C3YMEXX61");
+    // Send a pageview event to Google Analytics when the component mounts
+    ReactGA.pageview(window.location.pathname + window.location.search);
+  }, []);
+
+  useEffect(() => {
+    // Track a virtual pageview whenever the authorId changes
+    ReactGA.pageview(`/author/${authorId}`);
+  }, [authorId]);
 
 
    
@@ -166,6 +178,14 @@ useEffect(() => {
 
       console.log('Fetched author data:', authorData);
       setAuthorData(authorData);
+
+       // Send a custom event to Google Analytics when author data is fetched
+      ReactGA.event({
+        category: 'Author',
+        action: 'Fetched Author Data',
+        label: authorData?.authorName,
+      });
+
 
       // Fetch articles
       if (authorData && authorData.authorId) {
