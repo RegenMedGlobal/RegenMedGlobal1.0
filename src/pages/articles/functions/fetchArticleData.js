@@ -12,6 +12,7 @@ const fetchArticleData = async (uuid) => {
       .from('articles')
       .select('*')
       .eq('authorId', uuid) // Assuming 'id' is the field in the 'articles' table that represents the unique ID
+      .eq('recordStatus', true); 
 
     if (error) {
       console.error('Supabase error:', error);
