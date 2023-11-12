@@ -201,7 +201,7 @@ const handleFileChange = (info) => {
         title: articleTitle,
         content: articleContent,
         imageUrl: imageUrl, // Store the image URL in the database if available
-        recordStatus: false,
+        recordStatus: true,
         authorId: authorLoggedIn ? currentAuthorUser.authorId : doctorData.id
       };
 
