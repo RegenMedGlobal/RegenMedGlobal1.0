@@ -1534,8 +1534,12 @@ margin-left: 0;
 }
 .footer-custom {
   background: #201451;
-  padding: 40px 0 70px 0;
-  position: relative;
+  padding: 20px 0 20px 0;
+  bottom: 0;
+  position: sticky;
+  height: 8rem;
+
+  
 }
 .center-footer-2 ul {
   margin: 0;
@@ -2138,9 +2142,12 @@ p.span-clr {
   }
 }
 
-@media(max-width: 767px){
+@media(max-width: 858px){
   .faq.onlydextop{
       display: none;
+  }
+  .footer-custom {
+    height: 7rem;
   }
   .banner-top,.footer-custom {
       overflow: hidden;
@@ -2473,4 +2480,8 @@ input.ant-input:focus {
 .custom-control {
   display: block;
   width: 100%;
+}
+
+.in-body {
+  min-height: 70vh;
 }
