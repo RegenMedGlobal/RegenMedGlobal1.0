@@ -20,7 +20,7 @@ const loginAuthor = async (email, password) => {
   try {
     const { data: authorData, error: fetchError } = await supabase
       .from('author_data')
-      .select()
+      .select('*')
       .eq('email', email)
       .single();
 

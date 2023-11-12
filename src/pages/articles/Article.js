@@ -1,8 +1,9 @@
-import  { useEffect, useState } from "react";
+import  { useEffect, useState, useContext } from "react";
 import {useParams, Link, useNavigate} from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
+import { AuthContext } from "../../AuthContext";
 import { Typography, Card, Image, Button as AntButton } from "antd";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -103,9 +104,30 @@ const Article = () => {
   const [articleContent, setArticleContent] = useState("");
   const [editedContent, setEditedContent] = useState("")
   const [articleTitle, setArticleTitle] = useState("");
+  const [articleAuthorId, setArticleAuthorId] = useState("")
   const [imageUrl, setImageUrl] = useState(''); 
   const [editMode, setEditMode] = useState(false)
   const [editAvailable, setEditAvailable] = useState(false)
+   const { authorLoggedIn, currentAuthorUser} = useContext(AuthContext);
+
+
+   console.log('current auth user id', currentAuthorUser.authorId)
+   console.log('aarticle data id:', articleAuthorId)
+
+   useEffect(() => {
+
+  if (authorLoggedIn && currentAuthorUser.authorId === articleAuthorId) {
+    setEditAvailable(true);
+  } else {
+    setEditAvailable(false);
+  }
+}, [authorLoggedIn, currentAuthorUser.authorId, articleAuthorId]);
+
+
+  const linkTo = articleAuthorId.startsWith('A')
+    ? `/author/${articleAuthorId}`
+    : `/profile/${articleAuthorId}`;
+
 
 
    const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
@@ -137,7 +159,7 @@ useEffect(() => {
     try {
       const { data: articleData, error } = await supabase
         .from("articles")
-        .select("content, author, title, imageUrl")
+        .select("*")
         .eq("id", articleId)
         .single();
 
@@ -148,6 +170,7 @@ useEffect(() => {
       } else {
         setAuthor(articleData.author);
         setArticleTitle(articleData.title);
+        setArticleAuthorId(articleData.authorId)
         setArticleContent(articleData.content);
         setEditedContent(articleData.content)
         setImageUrl(articleData.imageUrl); 
@@ -178,13 +201,14 @@ const handleEditClick = () => {
     try {
       const { error } = await supabase
         .from("articles")
-        .update({ newContent })
+        .update({ content: editedContent })
         .eq("id", articleId);
 
       if (error) {
         console.error("Error updating article content:", error);
       } else {
         console.log("Article content updated successfully");
+        setArticleContent(newContent)
       }
     } catch (error) {
       console.error("An error occurred:", error);
@@ -193,13 +217,17 @@ const handleEditClick = () => {
 
 
  let fileName;
-  if (imageUrl) {
-    const imageUrlParts = imageUrl.split("/");
-    fileName = imageUrlParts[imageUrlParts.length - 1];
-  }
+let formattedSrc;
+
+if (imageUrl) {
+  const imageUrlParts = imageUrl.split("/");
+  fileName = imageUrlParts[imageUrlParts.length - 1];
+  formattedSrc = `https://sxjdyfdpdhepsgzhzhak.supabase.co/storage/v1/object/public/article_photos/${fileName}`;
+}
 
   return (
     <StyledContainer>
+          {formattedSrc && <img src={formattedSrc} alt="Article Preview" />}
       
       <StyledContent>
         <Card>
@@ -208,20 +236,32 @@ const handleEditClick = () => {
         </TitleWrapper>
           {editAvailable && <StyledEditButton onClick={handleEditClick}>Edit</StyledEditButton>}
              <StyledAuthor>
-            By{' '}
-          <Link
-  to={{
-    pathname: '/articles',
-    state: { filterTerm: author },
-    search: `?filterTerm=${encodeURIComponent(author)}`,
-  }}
->
-  {author}
-</Link>
+           <StyledAuthor>
+  By{' '}
+
+   <Link to={linkTo}>
+    {author}
+  </Link>
+</StyledAuthor>
+
 
           </StyledAuthor>
             
-           <div>{ReactHtmlParser(articleContent)}</div>
+          {editMode ? (
+            <>
+              <ReactQuill
+                value={editedContent}
+                onChange={(value) => setEditedContent(value)}
+                modules={{ toolbar: true }}
+                style={editorStyle}
+              />
+              <StyledButtonContainer>
+                <StyledSaveButton onClick={handleSaveClick}>Save Changes</StyledSaveButton>
+              </StyledButtonContainer>
+            </>
+          ) : (
+            <div>{ReactHtmlParser(articleContent)}</div>
+          )}
           
         </Card>
       </StyledContent>

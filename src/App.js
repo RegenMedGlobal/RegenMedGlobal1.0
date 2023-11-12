@@ -24,6 +24,7 @@ import SubmitArticle from './pages/articles/SubmitArticle'
 import Author from './pages/articles/Author'
 import AuthorSignUp from './pages/articles/AuthorSignUp'
 import AuthorSignIn from './pages/articles/AuthorSignIn'
+import ResetAuthorPassword from './pages/articles/ResetAuthorPassword'
 import ReactGA from 'react-ga';
 import Videos from './pages/podcasts/Videos'
 
@@ -97,6 +98,7 @@ function App() {
          <Route path='/authorsignup' element={<AuthorSignUp />} />
           <Route path='/authorsignin' element={<AuthorSignIn />} />
           <Route path='/ResetPassword' element={<ResetPassword />} />
+          <Route path='/resetauthorpassword' element={<ResetAuthorPassword />} />
           <Route path='/videos' element={<Videos />} />
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
         </Routes>

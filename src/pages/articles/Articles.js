@@ -6,6 +6,13 @@ import { Input } from 'antd';
 
 const { Search } = Input;
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: bold;
+color: var(--main-color);
+`;
+
+
 const StyledAntdInput = styled(Search)`
   width: 40%;
   margin: 0 auto;
@@ -21,8 +28,8 @@ const StyledArticleContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  height: 100vh;
-  margin-top:8%;
+  height: 80%;
+  margin-top: 8rem;
 
   @media (max-width: 865px) {
     /* Adjust top margin for screens narrower than 768px (mobile) */
@@ -71,28 +78,29 @@ const Articles = () => {
   const [filteredArticles, setFilteredArticles] = useState([]);
    // Extract the filterTerm from the query parameter in the URL
 
-useEffect(() => {
-  const fetchArticles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .order('created_at', { ascending: false }); // Order by 'created_at' in descending order
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('recordStatus', true) // Filter articles where recordStatus is true
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching articles:', error);
-        return;
+        if (error) {
+          console.error('Error fetching articles:', error);
+          return;
+        }
+
+        setArticles(data);
+        setFilteredArticles(data);
+      } catch (error) {
+        console.error('Error:', error);
       }
+    };
 
-      setArticles(data);
-      setFilteredArticles(data);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  fetchArticles();
-}, []);
+    fetchArticles();
+  }, []);
 
 
   const extractDescription = (html) => {
@@ -158,7 +166,10 @@ const onSearch = (value) => {
          defaultValue={filterTerm}
       />
       <br/>
-      <p>Want to submit an article? Click here to register or log-in!</p>
+       <p>
+      Want to submit an article?{' '}
+      <StyledLink to="/authorsignin">Click here</StyledLink> to register or log-in!
+    </p>
       {filteredArticles.length === 0 ? (
         <p>No articles found.</p>
       ) : (

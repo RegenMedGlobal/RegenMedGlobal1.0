@@ -47,7 +47,12 @@ const insertNewAuthor = async (authorData) => {
     }
 
     // Generate a unique ID for the author
-    const id = Math.floor(Math.random() * 9000000) + 1000000;
+     // Generate a unique ID for the author
+
+     const id = Math.floor(Math.random() * 9000000) + 1000000;
+
+    const authorId = 'A' + id
+
 
     // Generate a random salt for password hashing
     const salt = generateSalt();
@@ -58,6 +63,7 @@ const insertNewAuthor = async (authorData) => {
     // Prepare the data to be inserted into the "author_data" table
     const newAuthorData = {
       id: id,
+      authorId: authorId,
       authorName: authorName,
       email: email,
       password: hashedPassword, // Use the hashed password

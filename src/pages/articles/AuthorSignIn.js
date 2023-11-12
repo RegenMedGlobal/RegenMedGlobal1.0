@@ -8,6 +8,11 @@ import styled from 'styled-components';
 
 const { Title } = Typography;
 
+const StyledTextLink = styled(Typography.Link)`
+  margin-top: 16px;
+  display: block;
+`;
+
 const StyledContainer = styled.div`
   margin-top: 10rem;
 `;
@@ -74,7 +79,7 @@ const AuthorSignIn = () => {
              // Redirect to the author's profile page if an ID is available
       if (response.authorData && response.authorData.id) {
         // Use the ID from the response for navigation
-        navigate(`/author/${response.authorData.id}`);
+        navigate(`/author/${response.authorData.authorId}`);
       }
 
 
@@ -147,6 +152,15 @@ const AuthorSignIn = () => {
           </StyledFormItem>
         </StyledForm>
       </Formik>
+
+       <StyledTextLink onClick={() => navigate('/authorsignup')}>
+        Don't have an account? Click here to sign up
+      </StyledTextLink>
+
+
+      {/* <StyledTextLink onClick={() => navigate('/resetauthorpassword')}>
+        Forgot your password? Click here to reset
+      </StyledTextLink> */}
     </StyledContainer>
   );
 };

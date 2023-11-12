@@ -4,14 +4,12 @@ import * as Yup from "yup";
 import styled from "styled-components";
 import insertNewAuthor from "./functions/insertNewAuthor";
 import zxcvbn from "zxcvbn";
-import { Typography } from "antd";
+import { Typography, Modal } from "antd";
 
 const { Text } = Typography;
 
-
 const StyledContainer = styled.div`
-  margin-top: 10rem; /* Adjust this value to control the top margin */
-
+  margin-top: 10rem;
 `;
 
 const StyledForm = styled(Form)`
@@ -52,9 +50,22 @@ const StyledErrorMessageContainer = styled(Text)`
   font-weight: bold;
 `;
 
+const StyledSuccessContainer = styled.div`
+  text-align: center;
+  padding: 20px;
+  width: 40%;
+  margin: 0 auto;
+  border: 1px solid #d9d9d9;
+  background-color: #e6f7ff;
+  border-radius: 4px;
+`;
+
 
 const AuthorSignUp = () => {
       const [errors, setErrors] = useState({ message: null });
+        const [successfulSignUp, setSuccessfulSignUp] = useState(false);
+
+
 
     const validationSchema = Yup.object().shape({
     authorName: Yup.string().required("Please enter your name"),
@@ -98,6 +109,7 @@ const AuthorSignUp = () => {
       if (response && response.message === "Author data inserted successfully") {
         resetForm();
         setErrors({ message: null });
+           setSuccessfulSignUp(true);
         console.log("Form submitted successfully");
       } else {
         setErrors({ message: "An error occurred. Please try again." });
@@ -113,12 +125,21 @@ const AuthorSignUp = () => {
     }
   };
 
+
+
   console.log('errors:', errors)
 
  return (
+
     <StyledContainer>
       <h1>Author Sign-Up</h1>
-      <Formik
+      {successfulSignUp ? (
+       <StyledSuccessContainer>
+        <p>Thank You for Signing Up!</p>
+
+      </StyledSuccessContainer>
+      ) : (
+        <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
@@ -187,6 +208,8 @@ const AuthorSignUp = () => {
           </StyledForm>
         )}
       </Formik>
+
+      )}
     </StyledContainer>
   );
 };

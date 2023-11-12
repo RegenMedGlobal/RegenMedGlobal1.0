@@ -218,7 +218,7 @@ const Navbar = () => {
     <li className="nav-item">
       <a
         className="nav-link"
-        href={`/author/${currentAuthorUser.id}`}
+        href={`/author/${currentAuthorUser.authorId}`}
         onClick={() => handleLinkClick('Author')}
       >
         {currentAuthorUser.authorName}

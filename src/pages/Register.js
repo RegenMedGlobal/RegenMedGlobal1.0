@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import styled from "styled-components";
 import { TextField, Button, Snackbar, MenuItem } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { states, countries, provinces, EDGE_URL } from "../config";
+import { states, countries, provinces, EDGE_URL, mexicanStates } from "../config";
 import { insertNewUser, isEmailAlreadyInDB } from "../functions/insertNewUser";
 import insertErrorLog from "../functions/insertErrors";
 import { getConditions } from "../functions/getConditions";
@@ -20,7 +20,7 @@ import ConditionsInput2 from "../components/ConditionsInput2";
 import { terms } from "../config";
 import TreatmentInput from "../components/TreatmentInput";
 import debounce from 'lodash/debounce';
-
+import emailjs from "emailjs-com";
 
 const StyledErrorMessage = styled.div`
    color: red;
@@ -151,6 +151,11 @@ const Register = () => {
   });
 
 
+
+    const YOUR_EMAILJS_SERVICE_ID  = 'service_2r0se76';
+      const YOUR_EMAILJS_TEMPLATE_ID  = 'template_ga5ywph';
+      const YOUR_EMAILJS_USER_ID  = 'qVS-rHwiDSnK_KcU9';
+
 const passwordRef = useRef(null);
   
   const [errorMessage, setErrorMessage] = useState("");
@@ -163,6 +168,7 @@ const passwordRef = useRef(null);
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [filterTerm, setFilterTerm] = useState('');
 const [hasScrolled, setHasScrolled] = useState(false);
+ const topElementRef = useRef(); 
 
   const [conditions, setConditions] = useState([]);
 
@@ -228,6 +234,7 @@ const [hasScrolled, setHasScrolled] = useState(false);
 
   const handleCountryChange = (event) => {
     const selectedCountry = event.target.value;
+    console.log('selected country:', selectedCountry)
     setIsStateDisabled(
       selectedCountry !== "United States" &&
       selectedCountry !== "Canada" &&
@@ -298,14 +305,14 @@ const [hasScrolled, setHasScrolled] = useState(false);
 
 
   const handleFocusOnError = () => {
-    const firstError = Object.keys(errors).reduce((field, a) => {
-      return !!errors[field] ? field : a;
-    }, null);
+    const errorCount = Object.keys(errors).length;
 
-    if (firstError) {
-      console.log(`First error field found: ${firstError}`);
-      firstErrorFieldRef.current.focus();
-      console.log(`Setting focus to: ${firstError}`);
+    if (errorCount > 0) {
+      // Scroll to the top of the form
+    //  topElementRef.current.scrollIntoView({ behavior: "smooth" });
+
+      // Update the error message with the number of errors
+      setErrorMessage(`We aren't able to continue because of the following errors: ${errorCount} field(s) have errors.`);
     }
   };
 
@@ -359,6 +366,26 @@ const [hasScrolled, setHasScrolled] = useState(false);
         // Data inserted successfully
         reset(); // Reset the form fields
         toast.success("Registration Successful. Thank you for signing up!");
+
+           // Prepare data for the confirmation email using EmailJS
+      const { name, website, email, phone } = requestDataWithoutConditionsSelect;
+
+      const emailData = {
+        name,
+        website,
+        email,
+        phone,
+      };
+
+      await emailjs.send(
+        YOUR_EMAILJS_SERVICE_ID,
+        YOUR_EMAILJS_TEMPLATE_ID,
+        {
+          form_data: emailData,
+        },
+        YOUR_EMAILJS_USER_ID
+      );
+      
         setIsSubmitted(true)
       } else {
         // Data insertion failed
@@ -384,20 +411,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
     setIsButtonDisabled(false);
     }
   };
-
-// React.useEffect(() => {
-//   console.log('useEffect is running');
-  
-//   const firstError = Object.keys(errors).reduce((field, a) => {
-//     return !!errors[field] ? field : a;
-//   }, null);
-
-//   if (firstError) {
-//     console.log(`First error field found: ${firstError}`);
-//     firstErrorFieldRef.current.focus();
-//     console.log(`Setting focus to: ${firstError}`);
-//   }
-// }, [errors]);
 
 
 
@@ -472,23 +485,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
     //setShowConditionsDropdown(false);
   };
 
-//   useEffect(() => {
-//   console.log('useEffect is running');
-
-//   // Find the first input field with an error
-//   for (const field in errors) {
-//     if (errors[field]) {
-//       console.log(`Found error in field: ${field}`);
-//       if (firstErrorFieldRef.current) {
-//         // Set focus to the first input field with an error
-//         console.log('Setting focus to the first error field');
-//         firstErrorFieldRef.current.focus();
-//         break;
-//       }
-//     }
-//   }
-// }, [errors]);
-
 
   
 
@@ -504,6 +500,7 @@ const [hasScrolled, setHasScrolled] = useState(false);
 
                 {isSubmitted ? <Confirmation /> : (
                   <FormContainer>
+                
                     <form onSubmit={(e) => handleSubmit(onSubmit)(e)}>
                       <div className="row">
                         <div className="col-lg-12">
@@ -766,16 +763,23 @@ const [hasScrolled, setHasScrolled] = useState(false);
                                         }}
                                       >
                                         {selectedCountry === "Canada"
-                                          ? provinces.map((province) => (
-                                            <MenuItem key={province} value={province}>
-                                              {province}
-                                            </MenuItem>
-                                          ))
-                                          : states.map((state) => (
-                                            <MenuItem key={state} value={state}>
-                                              {state}
-                                            </MenuItem>
-                                          ))}
+  ? provinces.map((province) => (
+      <MenuItem key={province} value={province}>
+        {province}
+      </MenuItem>
+    ))
+  : selectedCountry === "Mexico"
+  ? mexicanStates.map((state) => (
+      <MenuItem key={state} value={state}>
+        {state}
+      </MenuItem>
+    ))
+  : states.map((state) => (
+      <MenuItem key={state} value={state}>
+        {state}
+      </MenuItem>
+    ))}
+
                                       </TextField>
                                     )}
                                   />
@@ -795,7 +799,14 @@ const [hasScrolled, setHasScrolled] = useState(false);
 
                                     control={control}
                                     defaultValue=""
-                                    rules={{ required: "Zip is required" }}
+                                     rules={{
+                                      required:
+                                        selectedCountry === "United States" ||
+                                          selectedCountry === "Mexico" ||
+                                          selectedCountry === "Canada"
+                                          ? "Zip is required"
+                                          : undefined,
+                                    }}
                                     inputRef={firstErrorFieldRef}
                                     render={({ field }) => (
                                       <TextField

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 import getProfile from "../functions/getProfile";
 import isVerified from "../functions/isVerified";
@@ -8,16 +8,18 @@ import { Typography, Button } from 'antd';
 import ReactGA from 'react-ga';
 import ProfileFieldCard from "../components/ProfileFieldCard";
 import DoctorContact from "./DoctorContact";
+import fetchArticleData from "./articles/functions/fetchArticleData";
 import { terms } from "../config";
 import Map from "../components/Map";
 import {
-  Container, Sidebar, Content, StyledContactSection, ReturnLink, ProfileWrapper, MapContainer, CardContainer, Card, ContactHeader, NameCard, StyledContactMap, ConditionsContainer
+  Container, Sidebar, Content, StyledArticleContainer, StyledContactSection, ReturnLink, ProfileWrapper, MapContainer, CardContainer, Card, ContactHeader, NameCard, StyledContactMap, ConditionsContainer
 } from './StyledComponents'; 
 
 
 
 
 const Profile = () => {
+     const { userId } = useParams(); 
   const { loggedIn, currentUser } = useContext(AuthContext);
   const [profileId, setProfileId] = useState(``);
   const [loading, setLoading] = useState(false);
@@ -35,8 +37,10 @@ const Profile = () => {
   const [profileData, setProfileData] = useState([]);
   const [isProfileVerified, setIsProfileVerified] = useState(false);
   const [shouldDisplayDoctorContact, setShouldDisplayDoctorContact ] = useState(true)
+   const [doctorArticles, setDoctorArticles] = useState([]);
 
-  console.log('state from profile:', state)
+  
+
 
   function isJSONEmpty(json) {
     for (var key in json) {
@@ -46,7 +50,6 @@ const Profile = () => {
     }
     return true;
   }
-
 
   // Add console.log statements to check values
   console.log("loggedIn:", loggedIn);
@@ -64,14 +67,32 @@ const Profile = () => {
   }
 
 
+ 
+///
+  useEffect(() => {
+    const getArticleData = async () => {
+      const result = await fetchArticleData(profileId);
+
+      if (result.success) {
+        // Handle successful fetch, access articleData from result.articleData
+        console.log('Article data:', result.articleData);
+        setDoctorArticles(result.articleData)
+      } else {
+        // Handle error
+        console.error('Error fetching article:', result.message);
+      }
+    };
+
+    getArticleData();
+  }, [profileId]); // Empty dependency array means this effect will run once when the component mounts
+
+  console.log('article data: ', doctorArticles)
 
 
 useEffect(() => {
   setLoading(true);
-  const url = window.location.href;
-  const id = url.substring(url.lastIndexOf("/") + 1);
 
-  getProfile(id)
+  getProfile(userId)
     .then((response) => {
       console.log('Fetched profile data-:', response); // Debugging log
       setProfileName(response.name)
@@ -388,7 +409,27 @@ const handleReturnToResults = () => {
 
       
     </StyledContactSection>
+ {loggedIn && currentUserID === profileId && (
+        <p>
+          Post an article  <Link to="/submitarticle">here</Link>
+        </p>
+      )}
+
  
+       {doctorArticles && doctorArticles.map && (
+        <StyledArticleContainer>
+          <h2>Articles by this clinic:</h2>
+          {doctorArticles.map((article, index) => (
+            <div key={index}>
+              <Link to={`/article/${article.id}`}>
+                <h4>{article.title}</h4>
+              </Link>
+
+            </div>
+          ))}
+        </StyledArticleContainer>
+      )}
+    
 </Sidebar>
 
         <Content>

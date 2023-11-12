@@ -1,11 +1,15 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 import { Upload, Button as AntButton, Input, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 import ReactQuill from 'react-quill';
+import { AuthContext } from '../../AuthContext';
+import getProfile from '../../functions/getProfile';
 import 'react-quill/dist/quill.snow.css'; // Import styles
+
+
 
 const StyledContainer = styled.div`
   display: flex;
@@ -58,52 +62,22 @@ const UploadButton = styled.button`
 `;
 
 
-const PasswordForm = ({ onSignIn }) => {
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-
-
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-    // Clear the password error message when the user starts typing a new password
-    setPasswordError('');
-  };
-
-  const handleSignIn = () => {
-    if (password === 'regenmedarticle') {
-      onSignIn();
-    } else {
-      setPasswordError('Invalid password. Please try again.');
-    }
-  };
-
-
-
-  return (
-    <div>
-      <Header>Sign In</Header>
-      <StyledInput
-        type="password"
-        value={password}
-        onChange={handlePasswordChange}
-        placeholder="Enter your password..."
-      />
-      <button onClick={handleSignIn}>Sign In</button>
-      {passwordError && <ErrorMessage>{passwordError}</ErrorMessage>}
-    </div>
-  );
-};
-
 const SubmitArticle = () => {
   const [articleContent, setArticleContent] = useState('');
   const [authorName, setAuthorName] = useState('');
   const [articleTitle, setArticleTitle] = useState('');
-  const [isSignedIn, setIsSignedIn] = useState(false);
   const [error, setError] = useState(null);
-  const [file, setFile] = useState(null);
-const fileInputRef = useRef(null);
-    const [success, setSuccess] = useState(false);
+  const [file, setFile] = useState(null); 
+  const fileInputRef = useRef(null);
+  const [success, setSuccess] = useState(false);
+  const [doctorData, setDoctorData] = useState([])
+  const { authorLoggedIn, currentAuthorUser, currentUser, loggedIn} = useContext(AuthContext);
+
+  console.log('current user  in from submit:', currentUser)
+
+  console.log('current author usser: ', currentAuthorUser)
+
+  console.log('current author  from submit article: ', currentAuthorUser.authorName)
 
   
   const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
@@ -129,6 +103,35 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
     'underline',
     'link',
   ];
+
+ 
+  let currentUserID;
+  try {
+    if(currentUser) {
+      const jsonUser = JSON.parse(currentUser);
+      console.log("jsonuser", jsonUser);
+      currentUserID = jsonUser.userId;
+      console.log("current userid from json in profile:", currentUserID);
+    }
+  } catch (error) {
+    console.error("Error parsing or accessing user data:", error);
+  }
+
+
+
+useEffect(() => {
+  getProfile(currentUserID)
+    .then((response) => {
+      console.log('Fetched profile data-:', response); // Debugging log
+      setDoctorData(response)
+
+    })
+    .catch((error) => {
+      console.error('Error fetching profile data:', error);
+    });
+}, [currentUser]);
+
+console.log('doctor data from submit: ', doctorData)
 
   const handleAuthorNameChange = (event) => {
     setAuthorName(event.target.value);
@@ -159,67 +162,74 @@ const handleFileChange = (info) => {
 
 
 
-const handleArticleSubmission = async () => {
-  try {
-    if (!articleContent || !authorName || !articleTitle || !file) {
-      setError('Please provide content, the author name, the article title, and upload an image.');
-      return;
-    }
 
-    // Generate a unique identifier for the database record
-    const recordId = uuidv4();
+ const handleArticleSubmission = async () => {
+    try {
+      if (!articleContent  || !articleTitle) {
+        setError('Please provide content, the author name, and the article title.');
+        return;
+      }
 
-    // Upload the image file to the storage bucket
-    const { data: imageStorageData, error: imageStorageError } = await supabase.storage
-      .from('article_photos')
-      .upload(`${recordId}_${file.name}`, file);
+      // Generate a unique identifier for the database record
+      const recordId = uuidv4();
 
-    console.log('Image storage data:', imageStorageData);
+      let imageUrl = null;
 
-    if (imageStorageError) {
-      console.error('Error during image upload:', imageStorageError); // Log the error
+      // Check if a file is selected
+      if (file) {
+        // Upload the image file to the storage bucket
+        const { data: imageStorageData, error: imageStorageError } = await supabase.storage
+          .from('article_photos')
+          .upload(`${recordId}_${file.name}`, file);
+
+        console.log('Image storage data:', imageStorageData);
+
+        if (imageStorageError) {
+          console.error('Error during image upload:', imageStorageError);
+          setError('An error occurred while submitting the article.');
+          return;
+        }
+
+        // Construct the image URL from the path
+        imageUrl = `${SUPABASE_URL}/storage/v1/object/${imageStorageData.path}`;
+      }
+
+      // Insert a record in your database table with author, id, title, and image URL
+      const databaseRecord = {
+        id: recordId,
+        author: authorLoggedIn ? currentAuthorUser.authorName : doctorData.name,
+        title: articleTitle,
+        content: articleContent,
+        imageUrl: imageUrl, // Store the image URL in the database if available
+        recordStatus: true,
+        authorId: authorLoggedIn ? currentAuthorUser.authorId : doctorData.id
+      };
+
+      const { data: insertedData, error: insertError } = await supabase.from('articles').insert([databaseRecord]);
+
+      if (insertError) {
+        console.error('Error inserting record in the database:', insertError);
+        setError('An error occurred while submitting the article.');
+        return;
+      }
+
+      // Reset the relevant input fields, file, and error message after successful submission
+      setAuthorName('');
+      setArticleTitle('');
+      setArticleContent('');
+      setFile(null);
+      setError(null);
+      clearFileInput();
+      setSuccess(true);
+
+      console.log('Image uploaded to storage:', imageUrl);
+      console.log('Database record inserted successfully:', insertedData);
+    } catch (error) {
+      console.error('An error occurred:', error);
       setError('An error occurred while submitting the article.');
-      return;
     }
+  };
 
-  // Construct the image URL from the path
-const imageUrl = `${SUPABASE_URL}/storage/v1/object/${imageStorageData.path}`;
-
-
-
-    // Insert a record in your database table with author, id, title, and image URL
-    const databaseRecord = {
-      id: recordId,
-      author: authorName,
-      title: articleTitle,
-      content: articleContent,
-      imageUrl: imageUrl, // Store the image URL in the database
-    };
-
-    const { data: insertedData, error: insertError } = await supabase.from('articles').insert([databaseRecord]);
-
-    if (insertError) {
-      console.error('Error inserting record in the database:', insertError);
-      setError('An error occurred while submitting the article.');
-      return;
-    }
-
-    // Reset the relevant input fields, file, and error message after successful submission
-    setAuthorName('');
-    setArticleTitle('');
-    setArticleContent('');
-    setFile(null);
-    setError(null);
-    clearFileInput();
-    setSuccess(true);
-
-    console.log('Image uploaded to storage:', imageStorageData);
-    console.log('Database record inserted successfully:', insertedData);
-  } catch (error) {
-    console.error('An error occurred:', error);
-    setError('An error occurred while submitting the article.');
-  }
-};
 
 
   // Define custom CSS styles for the ReactQuill editor
@@ -234,43 +244,16 @@ const imageUrl = `${SUPABASE_URL}/storage/v1/object/${imageStorageData.path}`;
     setArticleContent(content);
   };
 
+  console.log()
 
-return (
-    <StyledContainer>
-      {isSignedIn ? (
-        <>
-          <Header>Submit Article</Header>
-          <StyledInput
-            type="text"
-            value={articleTitle}
-            onChange={handleTitleChange}
-            placeholder="Article Title"
-          />
-          <StyledInput
-            type="text"
-            value={authorName}
-            onChange={handleAuthorNameChange}
-            placeholder="Author's Name"
-          />
-    <Upload
-        accept=".jpg, .jpeg, .png, .gif"
-        
-        
-        beforeUpload={(file) => {
-           fileInputRef.current = file;
-          // Log when a file is selected
-          console.log('File selected:', file);
-            
-          // Store the selected file in the component's state
-          setFile(file);
-
-          // Return false to prevent automatic upload
-          return false;
-        }}
-        onChange={handleFileChange}
-      >
-        <AntButton icon={<UploadOutlined />}>Upload Image</AntButton>
-      </Upload>
+    // Check if the user is not logged in
+  if (!authorLoggedIn && !loggedIn) {
+    return (
+      <StyledContainer>
+        <ErrorMessage>You must be logged in to submit an article.</ErrorMessage>
+      </StyledContainer>
+    );
+  }
 
           <ReactQuill
             value={articleContent}
@@ -280,22 +263,49 @@ return (
             style={editorStyles}
           />
 
-          <AntButton
-            type="primary"
-            size="large"
-            onClick={handleArticleSubmission}
-          >
-            Submit Article
-          </AntButton>
+return (
+  <StyledContainer>
+    <Header>Submit Article</Header>
+    <h4>{currentAuthorUser.authorName}</h4>
+    <h4>{doctorData.name}</h4>
+    <StyledInput
+      type="text"
+      value={articleTitle}
+      onChange={handleTitleChange}
+      placeholder="Article Title"
+    />
 
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          {success && <SuccessMessage>Article submitted successfully!</SuccessMessage>}
-        </>
-      ) : (
-        <PasswordForm onSignIn={() => setIsSignedIn(true)} />
-      )}
-    </StyledContainer>
-  );
+    <Upload
+      accept=".jpg, .jpeg, .png, .gif"
+      beforeUpload={(file) => {
+        fileInputRef.current = file;
+        setFile(file);
+        return false;
+      }}
+      onChange={handleFileChange}
+    >
+      <UploadButton icon={<UploadOutlined />}>Upload Image</UploadButton>
+    </Upload>
+
+    <ReactQuill
+      value={articleContent}
+      modules={modules}
+      formats={formats}
+      onChange={handleRichTextChange}
+      style={editorStyles}
+    />
+
+ 
+
+    <AntButton type="primary" size="large" onClick={handleArticleSubmission}>
+      Submit Article
+    </AntButton>
+
+    {error && <ErrorMessage>{error}</ErrorMessage>}
+    {success && <SuccessMessage>Article submitted successfully!</SuccessMessage>}
+  </StyledContainer>
+);
+
 };
 
 export default SubmitArticle;
