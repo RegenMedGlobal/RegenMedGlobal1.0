@@ -2148,6 +2148,7 @@ p.span-clr {
   }
   .footer-custom {
     height: 7rem;
+    display: none;
   }
   .banner-top,.footer-custom {
       overflow: hidden;
