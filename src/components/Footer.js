@@ -3,6 +3,9 @@ import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa';;
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+
+  const currentYear = new Date().getFullYear();
+
   return (
     <div className="footer-custom">
       <div className="container">
@@ -29,7 +32,7 @@ const Footer = () => {
               </div>
             </div>
             <div className="right-copy">
-              <p>© Copyright 2023, All Rights Reserved by Regenerative</p>
+              <p>© Copyright {currentYear}, All Rights Reserved by Regenerative</p>
             </div>
           </div>
         </div>
