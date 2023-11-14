@@ -1534,13 +1534,13 @@ margin-left: 0;
 }
 .footer-custom {
   background: #201451;
-  padding: 20px 0 20px 0;
+  /* padding: 20px 0 20px 0; */
   bottom: 0;
   position: sticky;
+  /* display: none; */
   height: 8rem;
-
-  
 }
+
 .center-footer-2 ul {
   margin: 0;
   padding: 0;
@@ -2148,6 +2148,7 @@ p.span-clr {
   }
   .footer-custom {
     height: 7rem;
+    display: none;
   }
   .banner-top,.footer-custom {
       overflow: hidden;

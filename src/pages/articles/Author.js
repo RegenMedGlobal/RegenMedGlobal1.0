@@ -1,10 +1,12 @@
 import {useParams, Link} from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
+import AuthorSocialLinks from "./AuthorSocialLinks";
 import { AuthContext } from "../../AuthContext";
 import { createClient } from "@supabase/supabase-js";
 import styled from 'styled-components';
 import ReactGA from "react-ga"; // Import React Google Analytics
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { SUPABASE_API_KEY, SUPABASE_URL } from "../../config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faInstagram,
@@ -21,6 +23,12 @@ const StyledAuthorContainer = styled.div`
   display: flex;
   margin-top: 8rem;
   padding: 1rem;
+`;
+
+const ReadMoreLink = styled(Link)`
+  text-decoration: none; // Remove underline
+  color: var(--main-color); 
+  font-weight: bold;
 `;
 
 const ArticleHeader = styled.h4`
@@ -180,12 +188,6 @@ const Author = () => {
     ReactGA.pageview(`/author/${authorId}`);
   }, [authorId]);
 
-
-   
-  const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
- const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
-
-
   const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
 useEffect(() => {
@@ -237,6 +239,7 @@ useEffect(() => {
           .from('articles')
           .select('*')
           .eq('authorId', authorId)
+          .order('created_at', { ascending: false })
           .eq('recordStatus', true); 
 
         if (articlesError) {
@@ -375,16 +378,6 @@ const handleSaveButtonClick = async () => {
 };
 
 
-
-  const formatDate = (dateString) => {
-    if (dateString) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    }
-    return '';
-  };
-
-
   const handleFileInputChange = (e) => {
   const file = e.target.files[0];
   setProfilePicture(file);
@@ -462,28 +455,9 @@ useEffect(() => {
                 Remove
               </Button>
             )}
-            <SocialLinks>
-              {authorData.facebookLink && (
-                <a href={authorData.facebookLink}>
-                  <FontAwesomeIcon icon={faFacebook} />
-                </a>
-              )}
-              {authorData.twitterLink && (
-                <a href={authorData.twitterLink}>
-                  <FontAwesomeIcon icon={faTwitter} />
-                </a>
-              )}
-              {authorData.instagramLink && (
-                <a href={authorData.instagramLink}>
-                  <FontAwesomeIcon icon={faInstagram} />
-                </a>
-              )}
-              {authorData.youtubeLink && (
-                <a href={authorData.youtubeLink}>
-                  <FontAwesomeIcon icon={faYoutube} />
-                </a>
-              )}
-            </SocialLinks>
+          <SocialLinks>
+           <AuthorSocialLinks socialLinks={authorData} />
+         </SocialLinks>
            {editAvailable && (
   <p>
     Submit an article{' '}
@@ -518,11 +492,12 @@ useEffect(() => {
                     <ArticleTitle>{article.title}</ArticleTitle>
                     <ArticleDescription>{/* extract description logic here */}</ArticleDescription>
                     <ArticleMeta>
-                      By: {article.author} | Published on {formatDate(article.created_at)}
-                    </ArticleMeta>
-                    <Link to={`/article/${article.id}`} state={{ article: article }}>
-                      Details
-                    </Link>
+  By: {article.author} | Published on {new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(article.created_at))}
+</ArticleMeta>
+
+                    <ReadMoreLink to={`/article/${article.id}`} state={{ article: article }}>
+  Read More
+</ReadMoreLink>
                   </ArticleContainer>
                 ))}
               </div>

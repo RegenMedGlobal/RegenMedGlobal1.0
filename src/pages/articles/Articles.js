@@ -121,14 +121,6 @@ const Articles = () => {
     return text;
   };
 
-  const formatDate = (dateString) => {
-    if (dateString) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    }
-    return '';
-  };
-
 const onSearch = (value) => {
   setFilterTerm(value);
   let filtered;
@@ -155,7 +147,6 @@ const onSearch = (value) => {
   setFilteredArticles(filtered);
 };
 
-
   return (
     <StyledArticleContainer>
       <h2>Articles</h2>
@@ -178,10 +169,11 @@ const onSearch = (value) => {
             <h3>{article.title}</h3>
             <ArticleDescription>{extractDescription(article.content)}</ArticleDescription>
             <ArticleMeta>
-              By: {article.author} | Published on {formatDate(article.created_at)}
+              By: {article.author} | Published on {new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(article.created_at))}
             </ArticleMeta>
+
             <Link to={`/article/${article.id}`} state={{ article: article }}>
-              Details
+              Read More
             </Link>
           </ArticleContainer>
         ))
