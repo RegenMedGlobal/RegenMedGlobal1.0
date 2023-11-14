@@ -1,5 +1,5 @@
 import imgLogo from "../assets/logo.png"
-import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa';;
+import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { Link } from "react-router-dom";
 
 const Footer = () => {
