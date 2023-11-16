@@ -1535,9 +1535,6 @@ margin-left: 0;
 .footer-custom {
   background: #201451;
   /* padding: 20px 0 20px 0; */
-  bottom: 0;
-  position: sticky;
-  /* display: none; */
   height: 8rem;
 }
 
@@ -1608,13 +1605,13 @@ margin-left: 0;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #fff;
-  padding: 0 0 40px 0;
+  padding: 0 0 15px 0;
   position: relative;
   z-index: 9;
   flex-wrap: wrap;
 }
 .right-copy {
-  padding: 40px 0 0 0;
+  padding: 15px 0 0 0;
   position: relative;
   z-index: 9;
 }
