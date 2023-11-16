@@ -49,6 +49,10 @@ const ArticleContainer = styled.div`
   display: flex;
   flex-direction: column;
 
+  &:last-of-type {
+    margin-bottom: 20px;
+  }
+
   @media (max-width: 768px) {
     width: 95%;
   }
