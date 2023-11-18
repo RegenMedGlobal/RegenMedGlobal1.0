@@ -2,22 +2,20 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from "react-hook-form";
 import styled from "styled-components";
-import { TextField, Button, Snackbar, MenuItem } from "@mui/material";
+import { TextField, MenuItem } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { states, countries, provinces, EDGE_URL, mexicanStates } from "../config";
 import { insertNewUser, isEmailAlreadyInDB } from "../functions/insertNewUser";
-import insertErrorLog from "../functions/insertErrors";
 import { getConditions } from "../functions/getConditions";
 import zxcvbn from "zxcvbn";
 import { Select } from "antd";
 import _ from "lodash"; // Import lodash
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TextArea from "antd/es/input/TextArea";
 import axios from 'axios';
 import Confirmation from "../components/Confirmation";
 import ConditionsInput2 from "../components/ConditionsInput2";
-import { terms } from "../config";
 import TreatmentInput from "../components/TreatmentInput";
 import debounce from 'lodash/debounce';
 import emailjs from "emailjs-com";
@@ -26,21 +24,10 @@ const StyledErrorMessage = styled.div`
    color: red;
    font-weight: bold;
    font-size: 1.2rem;
-`
-
-
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  color: var(--main-color);
-  padding: 20px;
 `;
 
 const StyledControllerContainerConditions = styled.div`
   /* Other styles */
-
   /* Added styles for positioning */
   position: relative;
   z-index: 1; /* Set a higher z-index for the ConditionsInput2 dropdown container */
@@ -48,12 +35,10 @@ const StyledControllerContainerConditions = styled.div`
 
 const StyledControllerContainerSelect = styled.div`
   /* Other styles */
-
   /* Added styles for positioning */
   position: relative;
   z-index: 2; /* Set a higher z-index for the Select dropdown container */
 `;
-
 
 const StyledControllerContainer = styled.div`
   margin-bottom: 1rem;
@@ -84,8 +69,6 @@ const StyledControllerContainer = styled.div`
     border-radius: 4px !important;
     padding: 10px !important;
   }
-
-
 
   /* Added styles for dropdown menu */
   .react-dropdown-select-dropdown {
@@ -119,19 +102,14 @@ const Title = styled.h3`
   margin-bottom: 20px;
 `;
 
-
 const Register = () => {
 
   const navigate = useNavigate();
 
   const conditionRef = React.useRef(null);
-    const firstErrorFieldRef = useRef(null);
+  const firstErrorFieldRef = useRef(null);
   const [showConditionsDropdown, setShowConditionsDropdown] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [isStateDisabled, setIsStateDisabled] = useState(false);
-  // const [terms, setTerms] = useState([]); 
-  const [selectedValue, setSelectedValue] = useState(""); // Add state for selected value
   const [selectedCountry, setSelectedCountry] = useState("United States");
   const {
     watch,
@@ -150,14 +128,12 @@ const Register = () => {
     },
   });
 
+  const YOUR_EMAILJS_SERVICE_ID  = 'service_2r0se76';
+  const YOUR_EMAILJS_TEMPLATE_ID  = 'template_ga5ywph';
+  const YOUR_EMAILJS_USER_ID  = 'qVS-rHwiDSnK_KcU9';
 
+  const passwordRef = useRef(null);
 
-    const YOUR_EMAILJS_SERVICE_ID  = 'service_2r0se76';
-      const YOUR_EMAILJS_TEMPLATE_ID  = 'template_ga5ywph';
-      const YOUR_EMAILJS_USER_ID  = 'qVS-rHwiDSnK_KcU9';
-
-const passwordRef = useRef(null);
-  
   const [errorMessage, setErrorMessage] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Add state for button disabled
 
@@ -167,8 +143,8 @@ const passwordRef = useRef(null);
   const [email, setEmail] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [filterTerm, setFilterTerm] = useState('');
-const [hasScrolled, setHasScrolled] = useState(false);
- const topElementRef = useRef(); 
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const topElementRef = useRef(); 
 
   const [conditions, setConditions] = useState([]);
 
@@ -178,18 +154,9 @@ const [hasScrolled, setHasScrolled] = useState(false);
     borderRadius: "4px",
   };
 
-
-
   const handleInputChange = (newValue) => {
-    console.log('Input Value in Register:', newValue);
     setFilterTerm(newValue);
-    console.log("GETVAL", getValues('conditions'))
-    console.log("SS", conditions)
-
   };
-
-  console.log('filter term:', filterTerm)
-
 
   useEffect(() => {
     // Define a debounced version of fetchConditions
@@ -207,8 +174,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
     };
   }, [filterTerm]); // Include filterTerm in the dependency array
 
-
-
   useEffect(() => {
     const timeout = setTimeout(() => {
       checkEmail()
@@ -220,13 +185,10 @@ const [hasScrolled, setHasScrolled] = useState(false);
   }, [email])
 
   const checkEmail = async () => {
-    console.log("Email Checking...")
-    console.log("Email Value ", email)
     setIsValidEmail(checkEmailValidation(email));
 
     let emailInDB = await isEmailAlreadyInDB(email);
     setisEmailInDB(emailInDB)
-    console.log("Email Status in DB ", isEmailInDB)
     if (emailInDB) {
       setFieldsVisibility(false)
     }
@@ -234,7 +196,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
 
   const handleCountryChange = (event) => {
     const selectedCountry = event.target.value;
-    console.log('selected country:', selectedCountry)
     setIsStateDisabled(
       selectedCountry !== "United States" &&
       selectedCountry !== "Canada" &&
@@ -261,8 +222,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
     setSelectedCountry(stateToCountryMap[selectedState] || "");
   };
 
-
-
   // Function to set the error message
   const handleSetErrorMessage = (message) => {
     setErrorMessage(message);
@@ -285,9 +244,7 @@ const [hasScrolled, setHasScrolled] = useState(false);
     // Make the POST request to the API
     const response = await axios.post(EDGE_URL + "/sendgrid-emailer", data);
     const responseData = response.data;
-    console.log("Response ", responseData)
     if (responseData.status) {
-      console.log("Redirect")
       navigate("/CodeValidator/" + responseData.id + "?new=true")
     }
   }
@@ -303,33 +260,23 @@ const [hasScrolled, setHasScrolled] = useState(false);
     }
   }
 
-
   const handleFocusOnError = () => {
     const errorCount = Object.keys(errors).length;
 
     if (errorCount > 0) {
       // Scroll to the top of the form
-    //  topElementRef.current.scrollIntoView({ behavior: "smooth" });
-
+      //  topElementRef.current.scrollIntoView({ behavior: "smooth" });
       // Update the error message with the number of errors
       setErrorMessage(`We aren't able to continue because of the following errors: ${errorCount} field(s) have errors.`);
     }
   };
 
-
   const onSubmit = async (data, event) => {
-
-
-    console.log("onSubmit function called");
-    console.log("Value of conditions:", data.conditions);
-
-    console.log('data', data)
     // Prevent the default form submission
     event.preventDefault();
 
     // Disable the button after the first click
     setIsButtonDisabled(true);
-        
 
     try {
       // Extract the 'value' property from each object in the 'data.conditions' array
@@ -350,16 +297,7 @@ const [hasScrolled, setHasScrolled] = useState(false);
         "conditionsSelect"
       );
 
-      console.log(
-        "Request Body from front end:",
-        JSON.stringify(requestDataWithoutConditionsSelect)
-      );
-
-
-    console.log('errors:', errors)
-
       const response = await insertNewUser(requestDataWithoutConditionsSelect);
-      console.log('response:', response)
 
       // Check the response for success or failure
       if (response && response.message === "Data inserted successfully") {
@@ -368,24 +306,24 @@ const [hasScrolled, setHasScrolled] = useState(false);
         toast.success("Registration Successful. Thank you for signing up!");
 
            // Prepare data for the confirmation email using EmailJS
-      const { name, website, email, phone } = requestDataWithoutConditionsSelect;
+        const { name, website, email, phone } = requestDataWithoutConditionsSelect;
 
-      const emailData = {
-        name,
-        website,
-        email,
-        phone,
-      };
+        const emailData = {
+          name,
+          website,
+          email,
+          phone,
+        };
 
-      await emailjs.send(
-        YOUR_EMAILJS_SERVICE_ID,
-        YOUR_EMAILJS_TEMPLATE_ID,
-        {
-          form_data: emailData,
-        },
-        YOUR_EMAILJS_USER_ID
-      );
-      
+        await emailjs.send(
+          YOUR_EMAILJS_SERVICE_ID,
+          YOUR_EMAILJS_TEMPLATE_ID,
+          {
+            form_data: emailData,
+          },
+          YOUR_EMAILJS_USER_ID
+        );
+        
         setIsSubmitted(true)
       } else {
         // Data insertion failed
@@ -393,34 +331,30 @@ const [hasScrolled, setHasScrolled] = useState(false);
         handleFocusOnError();
       }
     } catch (catchError) {
-    // Handle the specific error types here
-    if (catchError.name === "EmailExistingError") {
-      setErrorMessage("Email already in use. Please choose a different email address.");
-    } else if (catchError.name === "LocationError") {
-      setErrorMessage("Invalid location. Please provide a valid city, state, and country.");
-      // You can also access the error message from the catchError object if needed:
-      const errorMessage = catchError.message;
-      console.error("LocationError: " + errorMessage);
-    } else {
-      setErrorMessage("Registration Failed. Please try again.");
-    }
-    handleFocusOnError();
+      // Handle the specific error types here
+      if (catchError.name === "EmailExistingError") {
+        setErrorMessage("Email already in use. Please choose a different email address.");
+      } else if (catchError.name === "LocationError") {
+        setErrorMessage("Invalid location. Please provide a valid city, state, and country.");
+        // You can also access the error message from the catchError object if needed:
+        const errorMessage = catchError.message;
+        console.error("LocationError: " + errorMessage);
+      } else {
+        setErrorMessage("Registration Failed. Please try again.");
+      }
+      handleFocusOnError();
 
-  } finally {
-    // Re-enable the button after the form submission is complete
-    setIsButtonDisabled(false);
+    } finally {
+      // Re-enable the button after the form submission is complete
+      setIsButtonDisabled(false);
     }
   };
-
-
 
   const handleTreatmentSelection = (
     selectedTreatments,
     treatmentType,
     field
   ) => {
-    console.log("Selected Treatments before:", selectedTreatments);
-
     let updatedTreatments = [...selectedTreatments];
 
     // Check if the treatment type is already selected
@@ -429,14 +363,10 @@ const [hasScrolled, setHasScrolled] = useState(false);
     if (treatmentIndex > -1) {
       // Treatment is already selected, remove it
       updatedTreatments.splice(treatmentIndex, 1);
-      console.log("Removed Treatment:", treatmentType);
     } else {
       // Treatment is not selected, add it
       updatedTreatments.push(treatmentType);
-      console.log("Added Treatment:", treatmentType);
     }
-
-    console.log("Updated Treatments:", updatedTreatments);
 
     // Update the field value
     field.onChange(updatedTreatments);
@@ -471,12 +401,9 @@ const [hasScrolled, setHasScrolled] = useState(false);
   });
 
   const handleConditionSelect = (selectedOption) => {
-    console.log("Selected Conditionsss:", selectedOption);
     const conditionsLoweredCased = watch("conditions").map((option) =>
       option.toLowerCase()
     );
-
-    console.log("Custom Conditions", conditions)
 
     if (!conditionsLoweredCased.includes(selectedOption.toLowerCase())) {
       setValue("conditions", watch("conditions").concat(selectedOption));
@@ -485,14 +412,10 @@ const [hasScrolled, setHasScrolled] = useState(false);
     //setShowConditionsDropdown(false);
   };
 
-
-  
-
   return (
     <>
-
       <div className="form-custom">
-        <img className="bottom-vector" src="images/hero-bg.png" alt="" />
+        <img className="bottom-vector" src="images/hero-bg.png" alt="Regen Med Global - Hero Background" />
         <div className="container">
           <div className="row">
             <div className="col-lg-12">
@@ -500,14 +423,15 @@ const [hasScrolled, setHasScrolled] = useState(false);
 
                 {isSubmitted ? <Confirmation /> : (
                   <FormContainer>
-                
                     <form onSubmit={(e) => handleSubmit(onSubmit)(e)}>
                       <div className="row">
                         <div className="col-lg-12">
                           <div className="mar-15">
                             <StyledControllerContainer>
-                              <label className="label-contact">Clinic Name</label>
+                              {/* TODO: This style creates accessibility issues for tying the label to the input */}
+                              <label className="label-contact" htmlFor="clinicName">Clinic Name</label>
                               <Controller
+                                id="clinicName"
                                 name="clinicName"
                                 control={control}
                                 defaultValue=""
@@ -524,7 +448,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
                                     {...field}
                                     onChange={(e) => {
                                       field.onChange(e);
-                                      console.log("Clinic values:", e.target.value);
                                     }}
                                   />
                                 )}
@@ -539,8 +462,10 @@ const [hasScrolled, setHasScrolled] = useState(false);
                           <div className="mar-15">
 
                             <StyledControllerContainer>
-                              <label className="label-contact">Email</label>
+                              {/* TODO: This style creates accessibility issues for tying the label to the input */}
+                              <label className="label-contact" htmlFor="email">Email</label>
                               <Controller
+                                id="email"
                                 name="email"
                                 control={control}
                                 defaultValue=""
@@ -564,7 +489,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
                                       {...field}
                                       onChange={(e) => {
                                         field.onChange(e);
-                                        console.log("Email values:", e.target.value);
                                         setEmail(e.target.value)
                                       }}
                                       ref={firstErrorFieldRef} 
@@ -573,7 +497,10 @@ const [hasScrolled, setHasScrolled] = useState(false);
                                 )}
                               />
                             </StyledControllerContainer>
-                              {!isValidEmail && email.length > 0 ? <p className="error-message">Valid email is required!</p> : <></> }
+                              {!isValidEmail && email.length > 0
+                                ? <p className="error-message">Valid email is required!</p>
+                                : <></>
+                              }
 
                           </div>
                         </div>
@@ -595,8 +522,9 @@ const [hasScrolled, setHasScrolled] = useState(false);
                               <div className="mar-15">
 
                                 <StyledControllerContainer>
-                                  <label className="label-contact">Password</label>
+                                  <label className="label-contact" htmlFor="password">Password</label>
                                   <Controller
+                                    id="password"
                                     name="password"
                                     control={control}
                                     defaultValue=""
@@ -619,7 +547,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
                                         inputRef={firstErrorFieldRef}
                                         onChange={(e) => {
                                           field.onChange(e);
-                                          console.log("Password values:", e.target.value);
                                         }}
                                       />
                                     )}
@@ -689,7 +616,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
                                         {...field}
                                         onChange={(e) => {
                                           field.onChange(e);
-                                          console.log("Address values:", e.target.value);
                                         }}
                                       />
                                     )}
@@ -933,7 +859,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
                                         {...field}
                                         onChange={(e) => {
                                           field.onChange(e);
-                                          console.log("Website values:", e.target.value);
                                         }}
                                       />
                                     )}
@@ -964,7 +889,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
                                         {...field}
                                         onChange={(e) => {
                                           field.onChange(e);
-                                          console.log("About values:", e.target.value);
                                         }}
                                       />
                                     )}
@@ -980,8 +904,6 @@ const [hasScrolled, setHasScrolled] = useState(false);
                             field={watch("treatments")} // Pass the value of "treatments" field
                             handleTreatmentSelection={handleTreatmentSelection}
                           />
-
-
 
                           <div className="row">
                             <div className="col-lg-12">
