@@ -1,22 +1,14 @@
-import React, { useContext, Fragment, useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
-import img1 from '../assets/social-3.png'
-import img2 from '../assets/Search.png'
-import img3 from '../assets/logo.png'
+import img3 from '../assets/logo.png';
 import {
   AppBar,
-  Toolbar,
-  IconButton,
-  List,
-  ListItemText,
-  useMediaQuery,
-  Drawer,
-  Hidden,
+  List
 } from '@mui/material';
 import { AuthContext } from '../AuthContext';
-import Logo from '../assets/logo.png';
 
+// A lot of the styling below is not used, is it still needed?
 const bounceAnimation = keyframes`
   0%, 20%, 60%, 100% {
     transform: translateY(0);
@@ -34,6 +26,7 @@ const NavbarMenu = styled.div`
   align-items: center;
   flex-wrap: nowrap;
 `;
+
 const StyledList = styled(List)`
   &.drawerList {
     color: #000;
@@ -62,7 +55,6 @@ const NavbarItem = styled(Link)`
       font-weight: bold; /* Font weight for active item */
     `}
 `;
-
 
 const MenuIconWrapper = styled.span`
   display: inline-block;
@@ -100,6 +92,7 @@ const MenuIconWrapper = styled.span`
       }
     `}
 `;
+
 const LogoImage = styled.img`
   height: 4rem;
   width: 10rem;
@@ -108,43 +101,25 @@ const LogoImage = styled.img`
   cursor: pointer;
   padding: 5px;
 `;
+
 const Navbar = () => {
   const { loggedIn, logout, currentUser , authorLoggedIn, currentAuthorUser, authorLogout} = useContext(AuthContext);
 
-    // Add this console.log to check the value of currentAuthorUser
-  const isMobile = useMediaQuery('(max-width: 856px)');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false); 
-    
-
-
-
-  console.log('current user from navbar', currentUser);
-
-    useEffect(() => {
-    console.log('currentAuthorUser in Navbar:', currentAuthorUser);
-    // Access the authorName property
-    const authorName = currentAuthorUser?.authorName;
-    console.log('current auth name in Navbar:', authorName);
-    // Now it should log the updated authorName when currentAuthorUser changes
-  }, [currentAuthorUser]);
 
   let currentUserID;
-
 
   if(Object.keys(currentUser).length !== 0) {
     try {
       const jsonUser = JSON.parse(currentUser);
       currentUserID = jsonUser.userId;
     } catch (error) {
+      // TODO: handle error
       console.error('Error parsing or accessing user data:', error);
     }
   }
-
-
-  //console.log("author name: ", currentAuthorName)
-
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen); // Toggle the mobile menu state
@@ -152,9 +127,9 @@ const Navbar = () => {
   const handleLinkClick = (text) => {
     // Close the mobile menu when a link is clicked
     setMobileOpen(false);
-    console.log(`Clicked on link: ${text}`);
   };
 
+  // still needed?
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
@@ -167,7 +142,6 @@ const Navbar = () => {
   const handleAuthorLogout= () => {
     authorLogout();
     navigate('/');
-
   }
 
   return (
@@ -176,7 +150,7 @@ const Navbar = () => {
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/" onClick={() => handleLinkClick('Home')}>
-            <img src={img3} alt="Logo" />
+            <img src={img3} alt="Regenerative Medicine Global Logo" />
           </Link>
           <button
             className="navbar-toggler"
@@ -188,10 +162,13 @@ const Navbar = () => {
             aria-label="Toggle navigation"
             onClick={handleDrawerToggle} // Toggle mobile menu
           >
-            {mobileOpen ?  <span className={`navbar-cross-icon`}>X</span> : <span className="navbar-toggler-icon"></span> }
+            {mobileOpen
+              ? <span className={`navbar-cross-icon`}>X</span>
+              : <span className="navbar-toggler-icon"></span>
+            }
 
           </button>
-             <div className={`collapse navbar-collapse${mobileOpen ? ' show' : ''}`} id="navbarSupportedContent">
+          <div className={`collapse navbar-collapse${mobileOpen ? ' show' : ''}`} id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <Link className="nav-link active" aria-current="page" to="/" onClick={() => handleLinkClick('Home')}>
@@ -213,30 +190,29 @@ const Navbar = () => {
                   Articles
                 </Link>
               </li>
-                {authorLoggedIn && (
-  <>
-    <li className="nav-item">
-      <a
-        className="nav-link"
-        href={`/author/${currentAuthorUser.authorId}`}
-        onClick={() => handleLinkClick('Author')}
-      >
-        {currentAuthorUser.authorName}
-      </a>
-    </li>
-    <li className="nav-item">
-      <a
-        className="nav-link"
-        href="#"
-        onClick={handleAuthorLogout} // Assuming handleAuthorLogout is your logout function
-        style={{ color: '#000 !important' }}
-      >
-        Author Logout
-      </a>
-    </li>
-  </>
-)}
-
+              {authorLoggedIn && (
+                <>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      href={`/author/${currentAuthorUser.authorId}`}
+                      onClick={() => handleLinkClick('Author')}
+                    >
+                      {currentAuthorUser.authorName}
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      href="#"
+                      onClick={handleAuthorLogout} // Assuming handleAuthorLogout is your logout function
+                      style={{ color: '#000 !important' }}
+                    >
+                      Author Logout
+                    </a>
+                  </li>
+                </>
+              )}
               {loggedIn && (
                 <li className="nav-item">
                   <a
@@ -276,4 +252,5 @@ const Navbar = () => {
     </AppBar>
   );
 };
+
 export default Navbar;
