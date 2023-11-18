@@ -50,56 +50,35 @@ const StyledFormItem = styled.div`
 `;
 
 const AuthorSignIn = () => {
-    const { authorLogin, currentAuthorUser  } = useContext(AuthContext);
-      const navigate = useNavigate();
+  const { authorLogin } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (email, password) => {
-    console.log('email from handlesubmit: ', email)
-
     try {
       // Make a POST request to the server to verify the login credentials
-    const response = await loginAuthor(email, password );
-
-      // Log the response
-      console.log('Login response:', response);
+      const response = await loginAuthor(email, password );
 
       // Handle the response based on the server's authentication logic
       if (response) {
-        // Login successful
-        console.log('successful login')
-        //const id = response.userId;
+        authorLogin({ authorUserData: response.authorData });
 
-       authorLogin({ authorUserData: response.authorData });
-
-
-        console.log('Login successful');
-     //   console.log('authordata: ', response);
-       //  console.log('auth data from context: ', currentAuthorUser)
-
-             // Redirect to the author's profile page if an ID is available
-      if (response.authorData && response.authorData.id) {
-        // Use the ID from the response for navigation
-        navigate(`/author/${response.authorData.authorId}`);
-      }
-
+        if (response.authorData && response.authorData.id) {
+          // Use the ID from the response for navigation
+          navigate(`/author/${response.authorData.authorId}`);
+        }
 
         // Redirect to the user's profile page
-       // const userData = { ...response, loggedIn: true };
-      //  navigate(`/profile/${id}`, { state: userData });
+        // const userData = { ...response, loggedIn: true };
+        //  navigate(`/profile/${id}`, { state: userData });
       } else {
         // Login failed with specific error: Invalid email or password
         throw new Error('Invalid email or password. Please check your email and password.');
       }
     } catch (error) {
-      // Handle any errors that occur during the request
+      // todo: Handle any errors that occur during the request properly
       console.error('Error during login:', error);
-    //  setError(error.message); // Set the specific error message on the UI
     }
-
-   
   };
-
-
 
   return (
     <StyledContainer>
@@ -119,13 +98,14 @@ const AuthorSignIn = () => {
           }
           return errors;
         }}
-              onSubmit={(values) => handleSubmit(values.email, values.password)} // Pass email and password as arguments
-
+        // Pass email and password as arguments
+        onSubmit={(values) => handleSubmit(values.email, values.password)}
       >
         <StyledForm>
           <StyledFormItem>
-            <label>Email</label>
+            <label htmlFor="email">Email</label>
             <Field
+              id="email"
               name="email"
               as={Input}
               type="email"
@@ -135,8 +115,9 @@ const AuthorSignIn = () => {
           <ErrorMessage name="email" component="div" className="ant-form-explain" style={{ color: 'red' }} />
 
           <StyledFormItem>
-            <label>Password</label>
+            <label htmlFor="password">Password</label>
             <Field
+              id="password"
               name="password"
               as={Input}
               type="password"
@@ -153,10 +134,9 @@ const AuthorSignIn = () => {
         </StyledForm>
       </Formik>
 
-       <StyledTextLink onClick={() => navigate('/authorsignup')}>
+      <StyledTextLink onClick={() => navigate('/authorsignup')}>
         Don't have an account? Click here to sign up
       </StyledTextLink>
-
 
       {/* <StyledTextLink onClick={() => navigate('/resetauthorpassword')}>
         Forgot your password? Click here to reset
