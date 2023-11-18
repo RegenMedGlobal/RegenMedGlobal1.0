@@ -371,7 +371,7 @@ const Author = () => {
             {profilePictureUrl && (
               <img
                 src={profilePictureUrl}
-                alt={`Profile Picture `}
+                alt={`${authorData.authorName} Profile Picture`}
                 style={{ width: '150px', height: '150px', borderRadius: '50%' }}
               />
             )}
