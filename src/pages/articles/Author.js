@@ -8,16 +8,8 @@ import ReactGA from "react-ga"; // Import React Google Analytics
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { SUPABASE_API_KEY, SUPABASE_URL } from "../../config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faInstagram,
-  faFacebook,
-  faTwitter,
-  faYoutube,
-} from "@fortawesome/free-brands-svg-icons";
 
-import { Typography, Spin, Input, Button } from "antd";
-
-const { Title, Paragraph  } = Typography;
+import { Spin, Input, Button } from "antd";
 
 const StyledAuthorContainer = styled.div`
   display: flex;
@@ -27,7 +19,7 @@ const StyledAuthorContainer = styled.div`
 
 const ReadMoreLink = styled(Link)`
   text-decoration: none; // Remove underline
-  color: var(--main-color); 
+  color: var(--main-color);
   font-weight: bold;
 `;
 
@@ -35,8 +27,7 @@ const ArticleHeader = styled.h4`
   text-align: center;
   margin-right: 18%;
   margin-top: 4%;
-`
-
+`;
 
 const AuthorName = styled.h1`
   font-size: 24px;
@@ -55,14 +46,12 @@ const Sidebar = styled.div`
   flex-direction: column;
   align-items: center;
   margin-right: 2rem;
-
   width: 30%;
   margin-left: 3rem;
 `;
 
 const BioContainer = styled.div`
   flex: 1;
-
 `;
 
 const BioLabel = styled.div`
@@ -79,7 +68,6 @@ const Bio = styled.p`
   padding: 10px; /* Padding for the bio content */
   border-radius: 5px; /* Rounded corners */
   margin-left: 10rem;
-
   margin-top: 4rem;
 `;
 
@@ -95,7 +83,7 @@ const EditButton = styled.button`
 const ArticleContainer = styled.div`
   margin-top: 20px;
   margin-left: 10%;
- width: 60%;
+  width: 60%;
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 5px;
@@ -118,20 +106,18 @@ const ArticleMeta = styled.p`
   margin-bottom: 10px;
 `;
 
-
 const Author = () => {
-   const { authorId } = useParams(); 
-   const { authorLoggedIn, currentAuthorUser} = useContext(AuthContext);
-   const [authorData, setAuthorData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [editAvailable, setEditAvailable] = useState(false)
-    const [editMode, setEditMode] = useState(false)
-    const [editedName, setEditedName] = useState("");
+  const { authorId } = useParams(); 
+  const { authorLoggedIn, currentAuthorUser} = useContext(AuthContext);
+  const [authorData, setAuthorData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [editAvailable, setEditAvailable] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [editedName, setEditedName] = useState("");
   const [editedBio, setEditedBio] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
   const [profilePictureUrl, setProfilePictureUrl] = useState("");
- const [authorArticles, setAuthorArticles] = useState([]);
-
+  const [authorArticles, setAuthorArticles] = useState([]);
 
   useEffect(() => {
     // Initialize React Google Analytics
@@ -147,117 +133,102 @@ const Author = () => {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
-useEffect(() => {
-  
-  console.log('author logged in:', authorLoggedIn);
-  console.log('author id:', authorId);
-  //console.log('id from current user:', currentAuthorUser.id);
+  useEffect(() => {
+    // Check if the user is logged in as an author and matches the current author ID
+    if (authorLoggedIn && currentAuthorUser && currentAuthorUser.authorId === authorId) {
+      //console.log('Setting Edit available to true');
+      setEditAvailable(true);
+    } else {
+    // console.log('Setting Edit available to false');
+      setEditAvailable(false);
+    }
+  }, [authorLoggedIn, currentAuthorUser, authorId]);
 
-  // Check if the user is logged in as an author and matches the current author ID
-  if (authorLoggedIn && currentAuthorUser && currentAuthorUser.authorId === authorId) {
-  //console.log('Setting Edit available to true');
-  setEditAvailable(true);
-} else {
- // console.log('Setting Edit available to false');
-  setEditAvailable(false);
-}
-}, [authorLoggedIn, currentAuthorUser, authorId]);
-
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      console.log('Fetching author data...');
-      const { data: authorData, error: authorError } = await supabase
-        .from('author_data')
-        .select('*')
-        .eq('authorId', authorId)
-        .single();
-
-      if (authorError) {
-        console.error('Error fetching author data:', authorError);
-        return;
-      }
-
-      console.log('Fetched author data:', authorData);
-      setAuthorData(authorData);
-
-       // Send a custom event to Google Analytics when author data is fetched
-      ReactGA.event({
-        category: 'Author',
-        action: 'Fetched Author Data',
-        label: authorData?.authorName,
-      });
-
-
-      // Fetch articles
-      if (authorData && authorData.authorId) {
-        console.log('Fetching author articles...');
-        const { data: articles, error: articlesError } = await supabase
-          .from('articles')
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data: authorData, error: authorError } = await supabase
+          .from('author_data')
           .select('*')
           .eq('authorId', authorId)
-          .order('created_at', { ascending: false })
-          .eq('recordStatus', true); 
+          .single();
 
-        if (articlesError) {
-          console.error('Error fetching author articles:', articlesError);
+        if (authorError) {
+          // TODO: Handle the error case properly
+          console.error('Error fetching author data:', authorError);
           return;
         }
 
-        console.log('Fetched author articles:', articles);
-        setAuthorArticles(articles || []);
+        setAuthorData(authorData);
+
+        // Send a custom event to Google Analytics when author data is fetched
+        ReactGA.event({
+          category: 'Author',
+          action: 'Fetched Author Data',
+          label: authorData?.authorName,
+        });
+
+        // Fetch articles
+        if (authorData && authorData.authorId) {
+          const { data: articles, error: articlesError } = await supabase
+            .from('articles')
+            .select('*')
+            .eq('authorId', authorId)
+            .order('created_at', { ascending: false })
+            .eq('recordStatus', true); 
+
+          if (articlesError) {
+            // TODO: Handle the error case properly
+            console.error('Error fetching author articles:', articlesError);
+            return;
+          }
+
+          setAuthorArticles(articles || []);
+        }
+      } catch (error) {
+        // TODO: Handle the error case properly
+        console.error('An error occurred:', error);
+      } finally {
+        setIsLoading(false);
       }
+    };
+
+    fetchData();
+  }, [authorId]);
+
+  const handleRemoveButtonClick = async () => {
+    try {
+      // Check if the author has an existing profile picture
+      if (profilePictureUrl) {
+        // Extract the filename from the URL
+        const filename = profilePictureUrl.split('/').pop();
+
+        // Delete the file from Supabase Storage
+        const { error: deleteError } = await supabase
+          .storage
+          .from('author_photos')
+          .remove([filename]);
+
+        if (deleteError) {
+          // TODO: Handle the error case properly
+          console.error("Error deleting profile picture:", deleteError);
+          return;
+        }
+      }
+
+      // Remove the profile picture from state
+      setProfilePicture(null);
+      setProfilePictureUrl(null);
+      // Update the author data with a null profile picture URL
+      setAuthorData((prevData) => ({
+        ...prevData,
+        profilePictureUrl: null,
+      }));
     } catch (error) {
-      console.error('An error occurred:', error);
-    } finally {
-      console.log('Setting isLoading to false.');
-      setIsLoading(false);
+      // TODO: Handle the error case properly
+      console.error("An error occurred:", error);
     }
   };
-
-  fetchData();
-}, [authorId]);
-
-
-
-
-
-const handleRemoveButtonClick = async () => {
-  try {
-    // Check if the author has an existing profile picture
-    if (profilePictureUrl) {
-      // Extract the filename from the URL
-      const filename = profilePictureUrl.split('/').pop();
-
-      // Delete the file from Supabase Storage
-      const { error: deleteError } = await supabase
-        .storage
-        .from('author_photos')
-        .remove([filename]);
-
-      if (deleteError) {
-        console.error("Error deleting profile picture:", deleteError);
-        return;
-      }
-    }
-
-    // Remove the profile picture from state
-    setProfilePicture(null);
-    setProfilePictureUrl(null);
-     
-
-
-    // Update the author data with a null profile picture URL
-    setAuthorData((prevData) => ({
-      ...prevData,
-      profilePictureUrl: null,
-    }));
-  } catch (error) {
-    console.error("An error occurred:", error);
-  }
-};
-
-
 
    const handleEditButtonClick = () => {
     // Set editedName and editedBio to the current values from authorData
@@ -266,120 +237,116 @@ const handleRemoveButtonClick = async () => {
     setEditMode(true);
   };
 
-  
+  const handleSaveButtonClick = async () => {
+    try {
+      // Upload profile picture if selected
+      if (profilePicture) {
+        // Define the filename as authorId_filename
+        const filename = `author_${authorId}_${profilePicture.name}`;
 
-const handleSaveButtonClick = async () => {
-  try {
-    // Upload profile picture if selected
-    if (profilePicture) {
-      // Define the filename as authorId_filename
-      const filename = `author_${authorId}_${profilePicture.name}`;
+        // Upload the profile picture to Supabase Storage
+        const { data: fileData, error: uploadError } = await supabase
+          .storage
+          .from('author_photos')
+          .upload(filename, profilePicture);
 
-      // Upload the profile picture to Supabase Storage
-      const { data: fileData, error: uploadError } = await supabase
-        .storage
-        .from('author_photos')
-        .upload(filename, profilePicture);
+        if (uploadError) {
+          // TODO: Handle the error case properly
+          console.error("Error uploading profile picture:", uploadError);
+          return;
+        }
 
-      if (uploadError) {
-        console.error("Error uploading profile picture:", uploadError);
-        return;
+        // Get the public URL of the uploaded file
+        const profilePictureUrl = fileData[0].url;
+
+        // Update the author data with the new profile picture URL
+        setAuthorData((prevData) => ({
+          ...prevData,
+          profilePictureUrl,
+        }));
+
+        // Set the profile picture URL explicitly for immediate display
+        setProfilePictureUrl(profilePictureUrl);
+
+        // Reset the profile picture state
+        setProfilePicture(null);
       }
 
-      // Get the public URL of the uploaded file
-      const profilePictureUrl = fileData[0].url;
+      // Update other data in Supabase
+      // TODO: Other data is never used, is this necessary?
+      const { data, error } = await supabase
+        .from("author_data")
+        .update([
+          {
+            authorId: authorId,
+            authorName: editedName,
+            bio: editedBio,
+          },
+        ])
+        .eq("authorId", authorId);
 
-      // Update the author data with the new profile picture URL
-      setAuthorData((prevData) => ({
-        ...prevData,
-        profilePictureUrl,
-      }));
-
-      // Set the profile picture URL explicitly for immediate display
-      setProfilePictureUrl(profilePictureUrl);
-
-      // Reset the profile picture state
-      setProfilePicture(null);
-    }
-
-    // Update other data in Supabase
-    const { data, error } = await supabase
-      .from("author_data")
-      .update([
-        {
-          authorId: authorId,
+      if (error) {
+        // TODO: Handle the error case properly
+        console.error("Error updating author data:", error);
+      } else {
+        // Update the local state with the new values
+        setAuthorData((prevData) => ({
+          ...prevData,
           authorName: editedName,
           bio: editedBio,
-        },
-      ])
-      .eq("authorId", authorId);
-
-    if (error) {
-      console.error("Error updating author data:", error);
-    } else {
-      console.log("Author data updated successfully");
-
-      // Update the local state with the new values
-      setAuthorData((prevData) => ({
-        ...prevData,
-        authorName: editedName,
-        bio: editedBio,
-      }));
-    }
-  } catch (error) {
-    console.error("An error occurred:", error);
-  } finally {
-    // Turn off edit mode after updating data
-    setEditMode(false);
-  }
-};
-
-
-  const handleFileInputChange = (e) => {
-  const file = e.target.files[0];
-  setProfilePicture(file);
-};
-
-useEffect(() => {
-  const fetchAuthorImage = async () => {
-    try {
-      // Fetch all files from storage
-      const { data: files, error: storageError } = await supabase
-        .storage
-        .from('author_photos')
-        .list();
-
-      if (storageError) {
-        console.error('Error fetching files from storage:', storageError);
-        return;
+        }));
       }
-
-      // Find the filename that contains the authorId
-      const authorFilename = files.find(file => file.name.includes(`author_${authorId}_`));
-
-       console.log('Author Filename:', authorFilename);
-
-      if (!authorFilename) {
-        console.error('Image not found for authorId:', authorId);
-        return;
-      }
- // Construct the full image URL based on the format
-      const publicURL = `https://sxjdyfdpdhepsgzhzhak.supabase.co/storage/v1/object/public/author_photos/${authorFilename.name}`;
-      console.log('Public URL:', publicURL);
-      setProfilePictureUrl(publicURL);
     } catch (error) {
-      console.error('An error occurred:', error);
+      // TODO: Handle the error case properly
+      console.error("An error occurred:", error);
     } finally {
-      setIsLoading(false);
+      // Turn off edit mode after updating data
+      setEditMode(false);
     }
   };
 
-  fetchAuthorImage();
-}, [authorId]);
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    setProfilePicture(file);
+  };
 
+  useEffect(() => {
+    const fetchAuthorImage = async () => {
+      try {
+        // Fetch all files from storage
+        const { data: files, error: storageError } = await supabase
+          .storage
+          .from('author_photos')
+          .list();
 
-  console.log('author data: ', authorData)
-  
+        if (storageError) {
+          // TODO: Handle the error case properly
+          console.error('Error fetching files from storage:', storageError);
+          return;
+        }
+
+        // Find the filename that contains the authorId
+        const authorFilename = files.find(file => file.name.includes(`author_${authorId}_`));
+
+        if (!authorFilename) {
+          // TODO: Handle the error case properly
+          console.error('Image not found for authorId:', authorId);
+          return;
+        }
+        // Construct the full image URL based on the format
+        const publicURL = `https://sxjdyfdpdhepsgzhzhak.supabase.co/storage/v1/object/public/author_photos/${authorFilename.name}`;
+        setProfilePictureUrl(publicURL);
+      } catch (error) {
+        // TODO: Handle the error case properly
+        console.error('An error occurred:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAuthorImage();
+  }, [authorId]);
+
   return (
     <StyledAuthorContainer>
       {isLoading ? (
@@ -390,8 +357,9 @@ useEffect(() => {
             <AuthorName>
               {editMode ? (
                 <>
-                  <span>Name:</span>
+                  <label htmlFor="authorName">Name:</label>
                   <Input
+                    id="authorName"
                     value={editedName}
                     onChange={(e) => setEditedName(e.target.value)}
                   />
@@ -412,17 +380,16 @@ useEffect(() => {
                 Remove
               </Button>
             )}
-          <SocialLinks>
-           <AuthorSocialLinks socialLinks={authorData} />
-         </SocialLinks>
-           {editAvailable && (
-  <p>
-    Submit an article{' '}
+            <SocialLinks>
+              <AuthorSocialLinks socialLinks={authorData} />
+            </SocialLinks>
+            {editAvailable && (
+              <p>
+                Submit an article{' '}
 
-    <Link to="/submitarticle">here</Link>
-  </p>
-)}
-
+                <Link to="/submitarticle">here</Link>
+              </p>
+            )}
           </Sidebar>
           <BioContainer>
             <div>About me:</div>
@@ -441,7 +408,7 @@ useEffect(() => {
                 authorData.bio
               )}
             </Bio>
-                {authorArticles && authorArticles.length > 0 ? (
+            {authorArticles && authorArticles.length > 0 ? (
               <div>
                 <ArticleHeader>Articles by {authorData.authorName}</ArticleHeader>
                 {authorArticles.map((article) => (
@@ -449,12 +416,11 @@ useEffect(() => {
                     <ArticleTitle>{article.title}</ArticleTitle>
                     <ArticleDescription>{/* extract description logic here */}</ArticleDescription>
                     <ArticleMeta>
-  By: {article.author} | Published on {new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(article.created_at))}
-</ArticleMeta>
-
+                      By: {article.author} | Published on {new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(article.created_at))}
+                    </ArticleMeta>
                     <ReadMoreLink to={`/article/${article.id}`} state={{ article: article }}>
-  Read More
-</ReadMoreLink>
+                      Read More
+                    </ReadMoreLink>
                   </ArticleContainer>
                 ))}
               </div>
@@ -469,9 +435,10 @@ useEffect(() => {
             )}
             {editMode && (
               <>
-                Upload your profile photo:
+                <label htmlFor="profilePicture">Upload your profile photo:</label>
                 {!profilePictureUrl && (
                   <input
+                    id="profilePicture"
                     type="file"
                     accept="image/*"
                     onChange={handleFileInputChange}
