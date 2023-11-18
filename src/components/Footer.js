@@ -13,7 +13,7 @@ const Footer = () => {
           <div className="col-lg-12">
             <div className="center-footer">
               <div className="center-footer-1">
-                <img src={imgLogo} className="logo-footer" alt="" />
+                <img src={imgLogo} className="logo-footer" alt="Regenerative Medicine Global Logo" />
               </div>
               <div className="center-footer-2">
                 <ul>
