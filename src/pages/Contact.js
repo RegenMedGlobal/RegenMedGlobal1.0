@@ -22,7 +22,7 @@ const Contact = () => {
           </div>
           <div className="col-lg-6">
             <div className="right-contact">
-              <img src={imgPro4} className="pro-44" alt="" />
+              <img src={imgPro4} className="pro-44" alt="Scientist operating a medical research device" />
             </div>
           </div>
         </div>
