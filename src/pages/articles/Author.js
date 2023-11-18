@@ -347,6 +347,8 @@ const Author = () => {
     fetchAuthorImage();
   }, [authorId]);
 
+  console.log('author data: ', authorData)
+
   return (
     <StyledAuthorContainer>
       {isLoading ? (
