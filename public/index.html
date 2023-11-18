@@ -2,26 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-E1K3NF9839"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1K3NF9839"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-  gtag('config', 'G-E1K3NF9839');
-</script>
+      gtag('config', 'G-E1K3NF9839');
+    </script>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Find a Regenerative Medicine Doctor"
+      content="Regenerative Medicine Global - The best resource that assists patients in finding high quality Regenerative Medicine Doctors"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
@@ -30,12 +28,10 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-       <!-- Open Graph Protocol tags for social sharing (example) -->
+    <!-- Open Graph Protocol tags for social sharing (example) -->
     <meta property="og:title" content="RegenMedGlobal" />
-
    <!-- OGP tag for specifying the image to use for social sharing -->
-<meta property="og:image" content="https://i.imgur.com/vwWCOuC.png" />
-
+    <meta property="og:image" content="https://i.imgur.com/vwWCOuC.png" />
     <meta property="og:url" content="https://regenmedglobal.com" />
     <meta property="og:type" content="website" />
 
@@ -51,7 +47,6 @@
     <title>RegenMedGlobal</title>
 	  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsY7TWsifdD_oYfwhEKBqVdLzfBaSeu6A&libraries=places"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -67,19 +62,22 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <form
-  name="contact"
-  method="POST"
-  data-netlify="true"
-  data-netlify-honeypot="bot-field"
-  style="display: none;"
->
-  <input type="text" name="first-name" />
-  <input type="text" name="last-name" />
-  <input type="email" name="email" />
-  <input type="text" name="phone-number" />
-  <textarea name="message"></textarea>
-</form>
-
-
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      style="display: none;"
+    >
+      <label for="first-name">First Name</label>
+      <input id="first-name" type="text" name="first-name" />
+      <label for="last-name">Last Name</label>
+      <input id="last-name" type="text" name="last-name" />
+      <label for="email">Email</label>
+      <input id="email" type="email" name="email" />
+      <label for="phone-number">Phone Number</label>
+      <input id="phone-number" type="text" name="phone-number" />
+      <label for="message">Message</label>
+      <textarea id="message" name="message"></textarea>
+    </form>
   </body>
 </html>
