@@ -50,118 +50,102 @@ const ResetAuthorPassword = () => {
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
+  // isSubmitting is updated but it's not used anywhere else, is it needed?
   const [isSubmitting, setIsSubmitting] = useState(false);
-   const [successMessage, setSuccessMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
 
   const handleCheck = async () => {
     try {
       const values = await form.validateFields(['email', 'authorName']);
-      console.log('values', values)
       const { email, authorName } = values;
 
-     const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
-const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
+      const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
+      // pull in from enivornment variable at runtime
+      const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
 
+      const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
+      // Check if the email and author name match the data in the Supabase author_data table
+      const { data, error } = await supabase
+        .from('author_data')
+        .select()
+        .eq('email', email)
+        .eq('authorName', authorName);
 
+      if (error) {
+        throw error;
+      }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
-    // Check if the email and author name match the data in the Supabase author_data table
-    const { data, error } = await supabase
-      .from('author_data')
-      .select()
-      .eq('email', email)
-      .eq('authorName', authorName);
+      const authorDataMatches = data && data.length > 0;
 
-    console.log('Supabase Response:', { data, error });
-
-    if (error) {
-      throw error;
-    }
-
-    const authorDataMatches = data && data.length > 0;
-
-    if (authorDataMatches) {
-      setShowPasswordFields(true);
-        setErrorMessage(null);
-      // Perform additional actions if needed
-    } else {
-      setErrorMessage('Invalid author name or email.')
-      console.error('Invalid author name or email.');
+      if (authorDataMatches) {
+        setShowPasswordFields(true);
+          setErrorMessage(null);
+        // Perform additional actions if needed
+      } else {
+        setErrorMessage('Invalid author name or email.')
+        // push user's focus to proper field w/o logging below
+        console.error('Invalid author name or email.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
       // Display an error message or handle it in your preferred way
+    } finally {
+      setIsChecking(false);
     }
-    console.log('End of handleCheck');
-  } catch (error) {
-    console.error('Error:', error);
-    // Display an error message or handle it in your preferred way
-  } finally {
-    setIsChecking(false);
-  }
-};
+  };
 
-const handleCancel = () => {
-  setShowPasswordFields(false);
-  setErrorMessage(null);
-  form.resetFields(); // Reset form fields
-};
+  const handleCancel = () => {
+    setShowPasswordFields(false);
+    setErrorMessage(null);
+    form.resetFields(); // Reset form fields
+  };
 
-const handleResetPassword = async () => {
-  try {
-    setIsSubmitting(true);
-    console.log('Starting handleResetPassword');
+  const handleResetPassword = async () => {
+    try {
+      setIsSubmitting(true);
 
-    // Get form values directly without waiting for validation
-    const values = form.getFieldsValue(['email', 'authorName', 'password', 'confirmPassword']);
-    console.log('values in reset pass:', values);
-    const { email, authorName, password, confirmPassword } = values;
+      // Get form values directly without waiting for validation
+      const values = form.getFieldsValue(['email', 'authorName', 'password', 'confirmPassword']);
+      const { email, password, confirmPassword } = values;
 
-    if (password !== confirmPassword) {
-      setErrorMessage('Passwords do not match.');
-      return;
+      if (password !== confirmPassword) {
+        setErrorMessage('Passwords do not match.');
+        return;
+      }
+
+      // Check password strength using zxcvbn
+      const passwordStrength = zxcvbn(password);
+
+      if (passwordStrength.score < 2) {
+        // You can customize the error message based on the strength
+        setErrorMessage('Please choose a stronger password.');
+        return;
+      }
+
+      // Reset the author's password using the resetAuthorPassword function
+      await resetAuthorPassword(email, password);
+
+      message.success('Password reset successfully');
+    
+      // Display success message
+        setSuccessMessage('Password reset successfully');
+        setErrorMessage(null);
+
+        // Hide password fields
+        setShowPasswordFields(false);
+
+      // Clear form fields
+      form.resetFields();
+    } catch (error) {
+      // handle this error w/o the log? push their cursor back to proper field focus?
+      console.error('Error during password reset validation:', error);
+      setErrorMessage('Error resetting password. Please try again.');
+    
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Check password strength using zxcvbn
-    const passwordStrength = zxcvbn(password);
-    console.log('Password strength:', passwordStrength);
-
-    if (passwordStrength.score < 2) {
-      // You can customize the error message based on the strength
-      setErrorMessage('Please choose a stronger password.');
-      return;
-    }
-
-    console.log('Resetting password...'); // Log for debugging
-
-    // Reset the author's password using the resetAuthorPassword function
-    await resetAuthorPassword(email, password);
-
-    console.log('Password reset successfully'); // Log for debugging
-
-    message.success('Password reset successfully');
-  
-    // Display success message
-      setSuccessMessage('Password reset successfully');
-      setErrorMessage(null);
-
-      // Hide password fields
-      setShowPasswordFields(false);
-
-    // Clear form fields
-    form.resetFields();
-  } catch (error) {
-    console.error('Error during password reset validation:', error);
-    setErrorMessage('Error resetting password. Please try again.');
-  
-  } finally {
-    setIsSubmitting(false);
-    console.log('After finally block');
-  }
-};
-
-
-
-
-console.log('End of component rendering');
+  };
 
   return (
     <StyledContainer>
@@ -193,8 +177,6 @@ console.log('End of component rendering');
           <Input type="email" />
         </Form.Item>
 
-
-
         {showPasswordFields && (
           <>
             <Form.Item
@@ -207,7 +189,7 @@ console.log('End of component rendering');
               <Input.Password />
             </Form.Item>
 
-              <Form.Item
+            <Form.Item
               label="Confirm Password"
               name="confirmPassword"
               dependencies={['password']}
@@ -227,26 +209,26 @@ console.log('End of component rendering');
             </Form.Item>
           </>
         )}
-
         {errorMessage && (
           <div className="error-message">{errorMessage}</div>
         )}
-
-           {successMessage && (
-        <Text className="success-message">{successMessage}</Text>
-      )}
-
-           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        {successMessage && (
+          <Text className="success-message">{successMessage}</Text>
+        )}
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           {!showPasswordFields ? (
             <Button type="primary" onClick={handleCheck} loading={isChecking}>
               Submit
             </Button>
           ) : (
-            <><Button type="primary" onClick={handleResetPassword} >
+            <>
+              <Button type="primary" onClick={handleResetPassword} >
                 Reset Password
-              </Button><Button onClick={handleCancel} style={{ marginLeft: 8 }}>
-                  Cancel
-                </Button></>
+              </Button>
+              <Button onClick={handleCancel} style={{ marginLeft: 8 }}>
+                Cancel
+              </Button>
+            </>
           )}
         </Form.Item>
       </Form>
