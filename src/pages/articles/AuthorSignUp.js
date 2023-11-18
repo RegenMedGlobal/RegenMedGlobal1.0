@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import styled from "styled-components";
 import insertNewAuthor from "./functions/insertNewAuthor";
 import zxcvbn from "zxcvbn";
-import { Typography, Modal } from "antd";
+import { Typography } from "antd";
 
 const { Text } = Typography;
 
@@ -60,14 +60,11 @@ const StyledSuccessContainer = styled.div`
   border-radius: 4px;
 `;
 
-
 const AuthorSignUp = () => {
-      const [errors, setErrors] = useState({ message: null });
-        const [successfulSignUp, setSuccessfulSignUp] = useState(false);
-
-
-
-    const validationSchema = Yup.object().shape({
+  const [errors, setErrors] = useState({ message: null });
+  const [successfulSignUp, setSuccessfulSignUp] = useState(false);
+  
+  const validationSchema = Yup.object().shape({
     authorName: Yup.string().required("Please enter your name"),
     email: Yup.string().required("Please enter your email").email("Invalid email format"),
     password: Yup.string()
@@ -85,7 +82,6 @@ const AuthorSignUp = () => {
     youtubeLink: Yup.string().url("Invalid URL format"),
   });
 
-
   const initialValues = {
     authorName: "",
     email: "",
@@ -98,21 +94,18 @@ const AuthorSignUp = () => {
     youtubeLink: "",
   };
 
-
    const handleSubmit = async (values, { resetForm }) => {
-    console.log("Form values:", values);
 
     try {
       const response = await insertNewAuthor(values);
-      console.log("response", response);
 
       if (response && response.message === "Author data inserted successfully") {
         resetForm();
         setErrors({ message: null });
-           setSuccessfulSignUp(true);
-        console.log("Form submitted successfully");
+        setSuccessfulSignUp(true);
       } else {
         setErrors({ message: "An error occurred. Please try again." });
+        // todo: Handle errors properly
         console.error("Form submission failed");
       }
     } catch (error) {
@@ -120,30 +113,25 @@ const AuthorSignUp = () => {
         setErrors({ message: "Email already in use. Please choose a different email address." });
       } else {
         setErrors({ message: "An error occurred. Please try again." });
+        // todo: Handle errors properly
         console.error("Error submitting form:", error);
       }
     }
   };
 
-
-
-  console.log('errors:', errors)
-
- return (
-
+  return (
     <StyledContainer>
       <h1>Author Sign-Up</h1>
       {successfulSignUp ? (
-       <StyledSuccessContainer>
-        <p>Thank You for Signing Up!</p>
-
-      </StyledSuccessContainer>
+        <StyledSuccessContainer>
+          <p>Thank You for Signing Up!</p>
+        </StyledSuccessContainer>
       ) : (
         <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
         {() => (
           <StyledForm>
             <div>
@@ -170,9 +158,9 @@ const AuthorSignUp = () => {
               <StyledErrorMessage name="confirmPassword" component="div" />
             </div>
 
-                 <div>
+            <div>
               <label htmlFor="bio">Bio</label>
-              <StyledField type="text" id="bio" name="bio"  style={{ height: "4rem", verticalAlign: "top" }} />
+              <StyledField type="text" id="bio" name="bio" style={{ height: "4rem", verticalAlign: "top" }} />
               <StyledErrorMessage name="bio" component="div" />
             </div>
 
@@ -207,8 +195,7 @@ const AuthorSignUp = () => {
             <StyledButton type="submit">Submit</StyledButton>
           </StyledForm>
         )}
-      </Formik>
-
+        </Formik>
       )}
     </StyledContainer>
   );
