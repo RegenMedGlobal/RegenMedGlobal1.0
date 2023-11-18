@@ -7,8 +7,6 @@ const sidebarBackgroundColor = "#f2f2f2";
 const sidebarWidth = "300px";
 const sidebarHeight = "80%"; // Adjust the height as needed
 
-const { Text } = Typography;
-
 export const Container = styled.div`
   background-color: #f2f2f2;
   padding: 16px;
@@ -18,7 +16,6 @@ export const Container = styled.div`
   margin-top: 5%;
 
   @media (max-width: 850px) {
-
     margin-top: 3rem;
   }
 
@@ -33,7 +30,6 @@ export const Container = styled.div`
     }
   }
 `;
-
 
 export const Sidebar = styled.div`
   flex: 1;
@@ -82,17 +78,13 @@ export const StyledContactSection = styled.div`
 export const ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
-
   width: 100%;
- 
 
   @media (min-width: 854px) {
-    
     flex-direction: row;
   }
 
-   @media (max-width: 850px) {
-   
+  @media (max-width: 850px) {
     height: 30%;
   }
 `;
@@ -152,8 +144,6 @@ export const ReturnLink = styled(Typography)`
   cursor: pointer;
   transition: font-size 0.3s;
 
-
-
   &:hover {
     text-decoration: underline;
     color: ${mainColor} !important;
@@ -171,7 +161,6 @@ export const CardContainer = styled.div`
   width: 100%; /* Cards take full width on smaller screens */
 `;
 
-
 export const ContactHeader = styled.h2`
   font-size: 20px;
   color: #333;
@@ -183,8 +172,6 @@ export const ContactHeader = styled.h2`
 export const NameCard = styled(CardContainer)`
   margin-bottom: 16px;
   width: 100%;
-
-   
 `;
 
 export const ConditionsContainer = styled.section`
@@ -192,7 +179,6 @@ export const ConditionsContainer = styled.section`
   flex-direction: row;
   flex-wrap: wrap; /* Wrap conditions to new line on smaller screens */
 `;
-
 
 export const StyledArticleContainer = styled.div`
   background-color: #f8f8f8;
@@ -203,7 +189,6 @@ export const StyledArticleContainer = styled.div`
 
   h2 {
      margin-bottom: 3rem;
-
   }
 
   h4 {
