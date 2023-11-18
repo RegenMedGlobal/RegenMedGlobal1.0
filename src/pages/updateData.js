@@ -18,11 +18,11 @@ const updateData = async (id, fieldName, value) => {
     }
 
     console.log('Updated profile:', data);
-    // Handle the success case here
+    // TODO: Handle the success case here
     // Perform any necessary actions or display a success message
   } catch (error) {
     console.error('Error updating profile:', error);
-    // Handle the error case here
+    // TODO: Handle the error case here
     // Perform any necessary error handling or display an error message
   }
 };
