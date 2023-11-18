@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import AuthorSocialLinks from "./AuthorSocialLinks";
 import { AuthContext } from "../../AuthContext";
 import { createClient } from "@supabase/supabase-js";
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import ReactGA from "react-ga"; // Import React Google Analytics
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { SUPABASE_API_KEY, SUPABASE_URL } from "../../config";
@@ -15,6 +15,10 @@ const StyledAuthorContainer = styled.div`
   display: flex;
   margin-top: 8rem;
   padding: 1rem;
+
+   @media (max-width: 865px) {
+    flex-direction: column;
+  }
 `;
 
 const ReadMoreLink = styled(Link)`
@@ -69,6 +73,10 @@ const Bio = styled.p`
   border-radius: 5px; /* Rounded corners */
   margin-left: 10rem;
   margin-top: 4rem;
+
+  @media (max-width: 865px) {
+   margin-right: 4rem;
+  }
 `;
 
 const EditButton = styled.button`
