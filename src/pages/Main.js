@@ -1,25 +1,22 @@
 import React, { useState, useCallback, useEffect } from "react";
 import styled, { createGlobalStyle } from 'styled-components';
-
 import { useNavigate } from "react-router-dom";
-import { Layout, Input, Button, Form, AutoComplete } from "antd";
+import { Layout, Button, Form, AutoComplete } from "antd";
 import insertTopSearch from  "../functions/insertTopSearch";
 import axios from "axios";
-import { terms, MAPBOX_TOKEN } from "../config";
+import { MAPBOX_TOKEN } from "../config";
 import imgHeroBG from "../assets/hero-bg.png";
 import imgVector from "../assets/Vector.png";
 import imgCombined from "../assets/Combined-Shape.png";
+// Consider renaming images to be named after their content
 import imgPro2 from "../assets/pro-2.png";
 import imgPro1 from "../assets/pro-1.png";
 import imgPro3 from "../assets/pro-3.png";
 import Contact from "./Contact";
 import Services from "./Services";
 import { getConditions } from  "../functions/getConditions";
-import Downshift from "downshift";
 // import Autosuggest from 'react-autosuggest';
 import './Autosuggest.css'; // Import your custom CSS for styling
-
-
 
 const GlobalStyles = createGlobalStyle`
   .downshift-dropdown {
@@ -47,14 +44,12 @@ const CustomSuggestion = styled.div`
   padding: 8px;
   background-color: #f0f0f0;
   cursor: pointer;
- 
 
   &:hover {
     /* Add styles for hover state here */
     background-color: #ccc;
   }
 `;
-
 
 const StyledErrorMessage = styled.div`
   color: red;
@@ -64,7 +59,7 @@ const StyledErrorMessage = styled.div`
 `;
 
 const StyledParagraph = styled.p`
- color: #FFF;
+  color: #FFF;
   font-size: 54px;
   font-style: normal;
   font-weight: 600;
@@ -73,14 +68,15 @@ const StyledParagraph = styled.p`
   margin: 0 0 23px 0;
   text-align: left;
 
-   /* Media query for screens with a maximum width of 600px */
+  /* Media query for screens with a maximum width of 600px */
   @media screen and (max-width: 857px) {
     font-size: 26px; /* Decrease the font size for smaller screens */
     line-height: 34px;
     margin-bottom: 2px;
     text-align: center;
   }
-`
+`;
+
 const StyledTreatmentSection = styled.p`
   color: #FFF;
   font-family: 'Poppins', sans-serif;
@@ -95,7 +91,7 @@ const StyledTreatmentSection = styled.p`
   @media screen and (max-width: 857px) {
     height: 10%;
   }
-  `
+`;
 
 const StyledTreatmentContainer = styled.div`
   border-radius: 0;
@@ -121,21 +117,20 @@ const StyledTreatmentContainer = styled.div`
   }
 
  .downshift-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 9999 !important; /* Increase the z-index value */
-  background-color: white;
-  border: 1px solid #ccc;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 9999 !important; /* Increase the z-index value */
+    background-color: white;
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+  }
 `;
 
 
-  const StyledButton = styled.button`
-   border-radius: 12px;
+const StyledButton = styled.button`
+  border-radius: 12px;
   border: 1px solid #E409E8;
   background: linear-gradient(180deg, #0019FB 0%, #E409E8 100%);
   color: #FFF;
@@ -150,13 +145,11 @@ const StyledTreatmentContainer = styled.div`
   width: 80%;
   z-index: 2;
 
-   @media screen and (max-width: 600px) {
-    /* Add the styles you want to apply on mobile */
-   border: 2px solid purple;
-
+  @media screen and (max-width: 600px) {
+  /* Add the styles you want to apply on mobile */
+    border: 2px solid purple;
   }
-  `
-
+`;
 
 const Main = () => {
   const [address, setAddress] = useState("");
@@ -164,114 +157,100 @@ const Main = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
-   const [conditions, setConditions] = useState([]);
+  const [conditions, setConditions] = useState([]);
   const [options, setOptions] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   // Define separate state variables for address and condition input values
-const [addressInputValue, setAddressInputValue] = useState("");
-const [conditionInputValue, setConditionInputValue] = useState("");
+  const [addressInputValue, setAddressInputValue] = useState("");
+  const [conditionInputValue, setConditionInputValue] = useState("");
 
+  const handleSearch = useCallback(async (value) => {
+    const filterTerm = value.trim();
+    setSearchTerm(filterTerm);
 
-
-const handleSearch = useCallback(async (value) => {
-  const filterTerm = value.trim();
-  setSearchTerm(filterTerm);
-  console.log('search term', searchTerm)
-
-  if (filterTerm.length >= 3) {
-    try {
-      const conditionsData = await getConditions(filterTerm); // Pass the filter term
-      const filteredOptions = conditionsData.map((condition) => ({ value: condition }));
-      setOptions(filteredOptions);
-    } catch (error) {
-      console.error('Error fetching conditions:', error);
+    if (filterTerm.length >= 3) {
+      try {
+        const conditionsData = await getConditions(filterTerm); // Pass the filter term
+        const filteredOptions = conditionsData.map((condition) => ({ value: condition }));
+        setOptions(filteredOptions);
+      } catch (error) {
+        // Handle errors properly
+        console.error('Error fetching conditions:', error);
+      }
+    } else {
+      // Clear the options when the input length is less than 3 characters
+      setOptions([]);
     }
-  } else {
-    // Clear the options when the input length is less than 3 characters
-    setOptions([]);
-  }
-}, []);
-
-
+  }, []);
 
   useEffect(() => {
-  const fetchConditions = async () => {
-    const conditionsData = await getConditions();
-    setConditions(conditionsData);
+    const fetchConditions = async () => {
+      const conditionsData = await getConditions();
+      setConditions(conditionsData);
+    };
+
+    fetchConditions();
+  }, []);
+
+  const handleSubmit = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        if (!address) {
+          setErrorMessage("Please enter a location");
+        } else {
+          const filterTerm = searchTerm.trim(); // Trim any leading or trailing whitespace
+
+          // Update top searches in the database
+          insertTopSearch(filterTerm);
+
+          navigate("/results", {
+            state: {
+              searchTerm: filterTerm,
+              location: address,
+              checkedOptions: checkboxOptions,
+            },
+          });
+        }
+      })
+      .catch((errorInfo) => {
+        // Handle errors
+        console.log("Validation Failed:", errorInfo);
+      });
+
+    return false;
   };
 
-  fetchConditions();
-}, []);
+  const handleAddressChange = async (value) => {
+    try {
+      const response = await axios.get(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          value
+        )}.json?access_token=${MAPBOX_TOKEN}`
+      );
 
+      // Filter suggestions for US cities
+      const usCities = response.data.features.filter((suggestion) => {
+        // Check if the place type is a city
+        return suggestion.place_type.includes("place") &&
+          suggestion.context &&
+          suggestion.context.find(
+            (context) => context.id.startsWith("country") && context.short_code === "us"
+          );
+      });
 
-const handleSubmit = () => {
-  form
-    .validateFields()
-    .then((values) => {
-      if (!address) {
-        setErrorMessage("Please enter a location");
-      } else {
-        const filterTerm = searchTerm.trim(); // Trim any leading or trailing whitespace
-        console.log("Search term:", filterTerm);
-        console.log("Location:", address); // Log the location
+      // Update suggestions using the state updater function
+      setSuggestions(usCities);
 
-        // Update top searches in the database
-        insertTopSearch(filterTerm);
-
-        // Update top searches in the database
-        console.log("Before updateTopSearches");
-        // updateTopSearches(filterTerm);
-        console.log("After updateTopSearches");
-
-        navigate("/results", {
-          state: {
-            searchTerm: filterTerm,
-            location: address,
-            checkedOptions: checkboxOptions,
-          },
-        });
-      }
-    })
-    .catch((errorInfo) => {
-      console.log("Validation Failed:", errorInfo);
-    });
-
-  return false;
-};
-
-
-const handleAddressChange = async (value) => {
-  try {
-    const response = await axios.get(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-        value
-      )}.json?access_token=${MAPBOX_TOKEN}`
-    );
-
-    // Filter suggestions for US cities
-    const usCities = response.data.features.filter((suggestion) => {
-      // Check if the place type is a city
-      return suggestion.place_type.includes("place") &&
-        suggestion.context &&
-        suggestion.context.find(
-          (context) => context.id.startsWith("country") && context.short_code === "us"
-        );
-    });
-
-    // Update suggestions using the state updater function
-    setSuggestions(usCities);
-
-    // You can log the updated state inside a useEffect hook
-    useEffect(() => {
-      console.log("Updated Suggestions:", suggestions);
-    }, [suggestions]);
-  } catch (error) {
-    console.error("Error fetching suggestions:", error);
-    // Handle errors or provide user feedback here
-  }
-};
-
-
+      // You can log the updated state inside a useEffect hook
+      useEffect(() => {
+        console.log("Updated Suggestions:", suggestions);
+      }, [suggestions]);
+    } catch (error) {
+      // Handle errors
+      console.error("Error fetching suggestions:", error);
+    }
+  };
 
   const [checkboxOptions, setCheckboxOptions] = useState([
     { label: "PRP", value: "PRP", checked: false },
@@ -293,15 +272,10 @@ const handleAddressChange = async (value) => {
       : {};
   };
 
-
-  const selectStyles = {
-    menu: provided => ({ ...provided, zIndex: "9999 !important" })
-};
-
   return (
     <Layout>
       <div className="banner-top">
-        <img className="bottom-vector" src={imgHeroBG} alt="" />
+        <img className="bottom-vector" src={imgHeroBG} alt="background image design" />
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
@@ -313,7 +287,7 @@ const handleAddressChange = async (value) => {
                     <StyledErrorMessage>{errorMessage}</StyledErrorMessage>
                   )}
                   <StyledTreatmentContainer>
-                      <StyledTreatmentSection>Choose Treatment Type(s):</StyledTreatmentSection>
+                    <StyledTreatmentSection>Choose Treatment Type(s):</StyledTreatmentSection>
                       {checkboxOptions.map((option) => (
                         <Button
                           className={option.checked ? "type-button active" : "type-button"}
@@ -326,28 +300,26 @@ const handleAddressChange = async (value) => {
                         </Button>
                       ))}
                     </StyledTreatmentContainer>
-                  <ul className="banner-ul">
-                        <li>
-                        <img src={imgCombined} className="vec-1" alt="" />
-                    <AutoComplete
-  style={{ width: "70vw", maxWidth: "300px", height: "50px", marginLeft: '4rem' }}
-  value={address}
-  onChange={(value) => setAddress(value)} // Use onChange instead of onSelect
-  onSearch={handleAddressChange}
-  placeholder="Enter a location..."
-  options={suggestions.map((suggestion) => ({
-    label: suggestion.place_name,
-    value: suggestion.place_name,
-  }))}
-  filterOption={(inputValue, option) =>
-    option.label.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-  }
-/>
-
-
+                    <ul className="banner-ul">
+                      <li>
+                        <img src={imgCombined} className="vec-1" alt="Magnifying Glass / Search Icon" />
+                        <AutoComplete
+                          style={{ width: "70vw", maxWidth: "300px", height: "50px", marginLeft: '4rem' }}
+                          value={address}
+                          onChange={(value) => setAddress(value)} // Use onChange instead of onSelect
+                          onSearch={handleAddressChange}
+                          placeholder="Enter a location..."
+                          options={suggestions.map((suggestion) => ({
+                            label: suggestion.place_name,
+                            value: suggestion.place_name,
+                          }))}
+                          filterOption={(inputValue, option) =>
+                            option.label.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                          }
+                        />
                       </li>
                       <li>
-                        <img src={imgVector} className="vec-1" alt="" />
+                        <img src={imgVector} className="vec-1" alt="Stethoscope Icon" />
                         <AutoComplete
                           style={{ width: "70vw", maxWidth: "450px", height: "50px" }}
                           options={options}
@@ -356,34 +328,29 @@ const handleAddressChange = async (value) => {
                           placeholder="Medical condition (optional)"
                         />
                       </li>
-
                       <li>
                         <StyledButton className="styled-button" htmltype="submit" >Search</StyledButton>
                       </li>
                     </ul>
-                    
-                    
-
                   </Form>
                 </div>
               </div>
             </div>
             <div className="col-lg-4">
               <div className="banner-right">
-                <img className="pro-img-3" src={imgPro2} alt="" />
-                <img className="pro-img-2" src={imgPro1} alt="" />
+                <img className="pro-img-3" src={imgPro2} alt="Scientists researching" />
+                <img className="pro-img-2" src={imgPro1} alt="Group of medical health professionals" />
               </div>
             </div>
           </div>
         </div>
       </div>
-
       <div className="Regenerative">
         <div className="container">
           <div className="row">
             <div className="col-lg-6">
               <div className="Regenerative-left">
-                <img src={imgPro3} className="reg-img" alt="" />
+                <img src={imgPro3} className="reg-img" alt="Hand holding a DNA strand" />
               </div>
             </div>
             <div className="col-lg-6">
@@ -396,13 +363,9 @@ const handleAddressChange = async (value) => {
           </div>
         </div>
       </div>
-
-
       <Services />
       <Contact />
       <GlobalStyles />
-
-
     </Layout>
   );
 };
