@@ -94,7 +94,7 @@ const Article = () => {
   const [imageUrl, setImageUrl] = useState(''); 
   const [editMode, setEditMode] = useState(false)
   const [editAvailable, setEditAvailable] = useState(false)
-  const { authorLoggedIn, currentAuthorUser} = useContext(AuthContext);
+  const { authorLoggedIn, currentAuthorUser } = useContext(AuthContext);
 
   useEffect(() => {
     if (authorLoggedIn && currentAuthorUser.authorId === articleAuthorId) {
