@@ -1,4 +1,4 @@
-import React, {  } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Select } from 'antd';
 // import { useLocation } from 'react-router-dom';
@@ -17,10 +17,8 @@ const Sort = ({ sortOrder, resultsLength, onSortOrderChange, radius, handleRadiu
   //   console.log("sortOrder",value);
   //   onSortOrderChange(value);
   // };
-  console.log("sortOrder",sortOrder);
 
   return (
-
     <div className="filter">
       <div className="filter-left">
         <p className="span-clr"><span>{resultsLength}</span> results found</p>
@@ -48,7 +46,6 @@ const Sort = ({ sortOrder, resultsLength, onSortOrderChange, radius, handleRadiu
         </div>
       </div>
     </div>
-
   );
 };
 
