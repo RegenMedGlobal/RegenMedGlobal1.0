@@ -53,6 +53,12 @@ const Sidebar = styled.div`
   margin-right: 2rem;
   width: 30%;
   margin-left: 3rem;
+
+  @media (max-width: 865px) {
+    /* Adjust top margin for screens narrower than 768px (mobile) */
+    width: 90%;
+    margin: 0 auto;
+  }
 `;
 
 const BioContainer = styled.div`
