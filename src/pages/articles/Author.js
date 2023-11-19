@@ -29,8 +29,9 @@ const ReadMoreLink = styled(Link)`
 
 const ArticleHeader = styled.h4`
   text-align: center;
-  margin-right: 18%;
-  margin-top: 4%;
+  width: 90%;
+  height: auto;
+  margin: 15px auto;
 `;
 
 const AuthorName = styled.h1`
@@ -65,18 +66,12 @@ const BioLabel = styled.div`
 
 const Bio = styled.p`
   font-size: 16px;
-  width: 60%;
-  height: 10rem;
+  width: 90%;
   background-color: #f2f2f2; /* Background color */
   border: 1px solid #ccc; /* Border style */
   padding: 10px; /* Padding for the bio content */
   border-radius: 5px; /* Rounded corners */
-  margin-left: 10rem;
-  margin-top: 4rem;
-
-  @media (max-width: 865px) {
-   margin-right: 4rem;
-  }
+  margin: 15px auto;
 `;
 
 const EditButton = styled.button`
@@ -89,11 +84,10 @@ const EditButton = styled.button`
 `;
 
 const ArticleContainer = styled.div`
-  margin-top: 20px;
-  margin-left: 10%;
-  width: 60%;
+  margin: 20px auto;
+  width: 90%;
   border: 1px solid #ddd;
-  padding: 10px;
+  padding: 15px;
   border-radius: 5px;
 `;
 
