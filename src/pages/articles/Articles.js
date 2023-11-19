@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { Input } from 'antd';
+import { AuthContext } from '../../AuthContext';
 
 const { Search } = Input;
 
@@ -79,6 +80,8 @@ const Articles = () => {
   const [filterTerm, setFilterTerm] = useState(initialFilterTerm || '');
   const [filteredArticles, setFilteredArticles] = useState([]);
   // Extract the filterTerm from the query parameter in the URL
+
+  const { authorLoggedIn, loggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -158,9 +161,15 @@ const Articles = () => {
         defaultValue={filterTerm}
       />
       <br/>
-      <p>
-        Want to submit an article?{' '} <StyledLink to="/authorsignin">Click here</StyledLink> to register or log-in!
-      </p>
+      {authorLoggedIn || loggedIn ? (
+        <Link className="nav-link doc-login" to="/submitarticle" style={{ color: 'white' }} >
+          Submit New Article
+        </Link>
+      ) : (
+        <p>
+          Want to submit an article?{' '} <StyledLink to="/authorsignin">Click here</StyledLink> to register or log-in!
+        </p>
+      )}
       {filteredArticles.length === 0 ? (
         <p>No articles found.</p>
       ) : (
