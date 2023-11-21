@@ -1,12 +1,30 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { CheckCircle } from '@mui/icons-material';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { SUPABASE_API_KEY, SUPABASE_URL } from '../../config';
-import { Input } from 'antd';
+import { Input, Button } from 'antd';
 import { AuthContext } from '../../AuthContext';
+import Sidebar from './Sidebar'
 
 const { Search } = Input;
+
+
+const InfoSideBar = styled.div`
+  /* Your sidebar styles here */
+  width: 20%;
+  margin-top: 10rem;
+  padding: 20px;
+`;
+
+const SidebarContent = styled.div`
+   h3 {
+    margin-bottom: 2rem;
+   }
+
+  
+`;
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -30,13 +48,21 @@ const StyledArticleContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   height: 80%;
+  width: 60%;
   margin-top: 8rem;
+
 
   @media (max-width: 865px) {
     /* Adjust top margin for screens narrower than 768px (mobile) */
     margin-top: 7rem; /* You can adjust this value to control the margin */
   }
 `;
+
+const StyledMainContainer = styled.div`
+   border: 2px solid green;
+   display: flex;
+   flex-direction: row;
+`
 
 const ArticleContainer = styled.div`
   border: 1px solid #ddd;
@@ -76,7 +102,7 @@ const Articles = () => {
   const [articles, setArticles] = useState([]);
   const [filterTerm, setFilterTerm] = useState(initialFilterTerm || '');
   const [filteredArticles, setFilteredArticles] = useState([]);
-  // Extract the filterTerm from the query parameter in the URL
+
 
   const { authorLoggedIn, loggedIn } = useContext(AuthContext);
 
@@ -149,7 +175,20 @@ const Articles = () => {
   };
 
   return (
-    <StyledArticleContainer>
+   <StyledMainContainer>
+       <InfoSideBar>
+        <SidebarContent>
+          <h3>What you can find here:</h3>
+          <CheckCircle />
+          <span>
+            Regenerative Medicine
+            <br />
+             <CheckCircle />
+            Newest breakthroughs in medicine & research
+          </span>
+        </SidebarContent>
+      </InfoSideBar>
+     <StyledArticleContainer>
       <h2>Articles</h2>
       <StyledAntdInput
         placeholder="Search articles by content, title, or author"
@@ -185,6 +224,8 @@ const Articles = () => {
         ))
       )}
     </StyledArticleContainer>
+       <Sidebar />
+   </StyledMainContainer>
   );
 };
 
