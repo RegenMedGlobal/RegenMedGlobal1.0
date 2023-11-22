@@ -10,7 +10,6 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ReactGA from "react-ga";
 import Sidebar from "./Sidebar";
-import { SUPABASE_API_KEY, SUPABASE_URL } from '../../config';
 
 const { Title } = Typography;
 
