@@ -257,6 +257,7 @@ const handleFileChange = (info) => {
 
 
 return (
+ <>
   <StyledContainer>
     <Header>Submit Article</Header>
     <h4>{currentAuthorUser.authorName}</h4>
@@ -290,13 +291,14 @@ return (
 
  
 
-    <AntButton type="primary" size="large" onClick={handleArticleSubmission}>
-      Submit Article
-    </AntButton>
 
     {error && <ErrorMessage>{error}</ErrorMessage>}
     {success && <SuccessMessage>Article submitted successfully!</SuccessMessage>}
   </StyledContainer>
+
+    <AntButton type="primary" size="large" onClick={handleArticleSubmission}>
+      Submit Article
+    </AntButton></>
 );
 
 };
