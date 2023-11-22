@@ -16,6 +16,11 @@ const StyledSidebar = styled.div`
   margin-top: 9rem;
   padding: 0 20px;
 
+  input {
+    margin-bottom: 1.6rem;
+    
+  }
+
    @media (max-width: 865px) {
      display: none;
   }
@@ -24,7 +29,10 @@ const StyledSidebar = styled.div`
 const SubscriptionForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
+  width: 12rem;
+
+
 `;
 
 const Sidebar = () => {
@@ -118,8 +126,9 @@ const validateForm = () => {
 
   return (
     <StyledSidebar>
-      <h3>Subscribe</h3>
-      <form onSubmit={handleSubmit}>
+      <h3>Subcribe for the latest news</h3>
+      <SubscriptionForm>
+        <form onSubmit={handleSubmit}>
         <Input
           type="text"
           name="email"
@@ -148,6 +157,7 @@ const validateForm = () => {
           Subscribe
         </Button>
       </form>
+      </SubscriptionForm>
        {showThankYou && <p>Thank you for subscribing!</p>}
     </StyledSidebar>
   );

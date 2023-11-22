@@ -8,6 +8,7 @@ import { Typography, Card, Button as AntButton } from "antd";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ReactGA from "react-ga";
+import Sidebar from "./Sidebar";
 
 const { Title } = Typography;
 
@@ -52,6 +53,14 @@ const StyledContainer = styled.div`
   min-height: 100vh;
 `;
 
+const StyledArticleSidebar = styled.div`
+margin-right: 4rem;
+margin-top: 4rem;
+width: 30%;
+
+
+`
+
 const StyledContent = styled.div`
   width: 100%;
   max-width: 857; /* Max width on mobile */
@@ -83,6 +92,13 @@ const StyledAuthor = styled.p`
 const editorStyle = {
   height: '400px', // Set the desired height here
 };
+
+const StyledMainContainer = styled.section`
+  display: flex;
+  flex-direction: row;
+ 
+  
+`
 
 const Article = () => {
   const { articleId } = useParams(); 
@@ -200,6 +216,7 @@ const Article = () => {
   }
 
   return (
+    <StyledMainContainer>
     <StyledContainer>
       {formattedSrc && <img src={formattedSrc} alt="Article Preview" />}
       <StyledContent>
@@ -234,6 +251,10 @@ const Article = () => {
         </Card>
       </StyledContent>
     </StyledContainer>
+    <StyledArticleSidebar>
+      <Sidebar />
+    </StyledArticleSidebar>
+    </StyledMainContainer>
   );
 };
 
