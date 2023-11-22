@@ -127,31 +127,7 @@ const Author = () => {
   const [profilePictureUrl, setProfilePictureUrl] = useState("");
   const [authorArticles, setAuthorArticles] = useState([]);
 
-  useEffect(() => {
-    // Initialize React Google Analytics
-    ReactGA.initialize("G-7C3YMEXX61");
-    // Send a pageview event to Google Analytics when the component mounts
-    ReactGA.pageview(window.location.pathname + window.location.search);
-  }, []);
-
-  useEffect(() => {
-    // Track a virtual pageview whenever the authorId changes
-    ReactGA.pageview(`/author/${authorId}`);
-  }, [authorId]);
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
-
-  useEffect(() => {
-    // Check if the user is logged in as an author and matches the current author ID
-    if (authorLoggedIn && currentAuthorUser && currentAuthorUser.authorId === authorId) {
-      //console.log('Setting Edit available to true');
-      setEditAvailable(true);
-    } else {
-    // console.log('Setting Edit available to false');
-      setEditAvailable(false);
-    }
-  }, [authorLoggedIn, currentAuthorUser, authorId]);
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -203,6 +179,31 @@ const Author = () => {
 
     fetchData();
   }, [authorId]);
+
+  useEffect(() => {
+    // Initialize React Google Analytics
+    ReactGA.initialize("G-7C3YMEXX61");
+    // Send a pageview event to Google Analytics when the component mounts
+    ReactGA.pageview(window.location.pathname + window.location.search);
+  }, []);
+
+  useEffect(() => {
+    // Track a virtual pageview whenever the authorId changes
+    ReactGA.pageview(`/author/${authorId}`);
+  }, [authorId]);
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
+
+  useEffect(() => {
+    // Check if the user is logged in as an author and matches the current author ID
+    if (authorLoggedIn && currentAuthorUser && currentAuthorUser.authorId === authorId) {
+      //console.log('Setting Edit available to true');
+      setEditAvailable(true);
+    } else {
+    // console.log('Setting Edit available to false');
+      setEditAvailable(false);
+    }
+  }, [authorLoggedIn, currentAuthorUser, authorId]);
 
   const handleRemoveButtonClick = async () => {
     try {
