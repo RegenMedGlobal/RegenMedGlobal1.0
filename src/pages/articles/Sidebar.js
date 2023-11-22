@@ -15,6 +15,10 @@ const StyledSidebar = styled.div`
   width: 20%;
   margin-top: 9rem;
   padding: 0 20px;
+
+   @media (max-width: 865px) {
+     display: none;
+  }
 `;
 
 const SubscriptionForm = styled.form`

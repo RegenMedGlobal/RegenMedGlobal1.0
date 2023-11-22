@@ -16,6 +16,10 @@ const InfoSideBar = styled.div`
   width: 20%;
   margin-top: 10rem;
   padding: 20px;
+
+   @media (max-width: 865px) {
+     display: none;
+  }
 `;
 
 const SidebarContent = styled.div`
@@ -55,6 +59,7 @@ const StyledArticleContainer = styled.div`
   @media (max-width: 865px) {
     /* Adjust top margin for screens narrower than 768px (mobile) */
     margin-top: 7rem; /* You can adjust this value to control the margin */
+    width: 90%;
   }
 `;
 
