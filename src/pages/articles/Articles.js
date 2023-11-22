@@ -64,7 +64,7 @@ const StyledArticleContainer = styled.div`
 `;
 
 const StyledMainContainer = styled.div`
-   border: 2px solid green;
+   
    display: flex;
    flex-direction: row;
 `

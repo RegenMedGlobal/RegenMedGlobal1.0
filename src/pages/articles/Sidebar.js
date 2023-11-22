@@ -26,7 +26,7 @@ const StyledSidebar = styled.div`
   }
 `;
 
-const SubscriptionForm = styled.form`
+const SubscriptionForm = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
