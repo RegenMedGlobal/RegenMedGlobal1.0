@@ -57,9 +57,7 @@ const StyledArticleSidebar = styled.div`
 margin-right: 4rem;
 margin-top: 4rem;
 width: 30%;
-
-
-`
+`;
 
 const StyledContent = styled.div`
   width: 100%;
@@ -96,9 +94,7 @@ const editorStyle = {
 const StyledMainContainer = styled.section`
   display: flex;
   flex-direction: row;
- 
-  
-`
+`;
 
 const Article = () => {
   const { articleId } = useParams(); 
