@@ -4,12 +4,11 @@ import { CheckCircle } from '@mui/icons-material';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { SUPABASE_API_KEY, SUPABASE_URL } from '../../config';
-import { Input, Button } from 'antd';
+import { Input } from 'antd';
 import { AuthContext } from '../../AuthContext';
 import Sidebar from './Sidebar'
 
 const { Search } = Input;
-
 
 const InfoSideBar = styled.div`
   /* Your sidebar styles here */

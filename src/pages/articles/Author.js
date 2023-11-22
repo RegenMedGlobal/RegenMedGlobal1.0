@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import AuthorSocialLinks from "./AuthorSocialLinks";
 import { AuthContext } from "../../AuthContext";
 import { createClient } from "@supabase/supabase-js";
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import ReactGA from "react-ga"; // Import React Google Analytics
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { SUPABASE_API_KEY, SUPABASE_URL } from "../../config";
@@ -127,7 +127,6 @@ const Author = () => {
   const [profilePictureUrl, setProfilePictureUrl] = useState("");
   const [authorArticles, setAuthorArticles] = useState([]);
 
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
