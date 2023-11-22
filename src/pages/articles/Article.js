@@ -47,6 +47,7 @@ const StyledButtonContainer = styled.div`
 
 const StyledContainer = styled.div`
   margin-top: 5rem;
+  margin-left: 7rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,7 +57,7 @@ const StyledContainer = styled.div`
 const StyledArticleSidebar = styled.div`
 margin-right: 4rem;
 margin-top: 4rem;
-width: 30%;
+width: 10%;
 
 
 `
