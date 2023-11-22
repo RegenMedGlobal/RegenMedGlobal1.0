@@ -238,11 +238,22 @@ const Navbar = () => {
                     </a>
                   </li>
                 ) : (
-                  <li>
-                    <Link className="nav-link doc-login" to="/doctorlogin" onClick={() => handleLinkClick('Doctor Login')}>
-                      Free Registration
-                    </Link>
-                  </li>
+                  <>
+                    <li className="nav-item">
+                      <a
+                        className="nav-link"
+                        href={`/doctorlogin`}
+                        onClick={() => handleLinkClick('Doctor Login')}
+                      >
+                        Sign In
+                      </a>
+                    </li>
+                    <li>
+                      <Link className="nav-link doc-login" to="/register" onClick={() => handleLinkClick('Registration')}>
+                        Free Registration
+                      </Link>
+                    </li>
+                  </>
                 )}
               </ul>
             </form>
