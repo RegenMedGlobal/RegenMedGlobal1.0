@@ -1,6 +1,7 @@
 import  { useEffect, useState, useContext } from "react";
 import {useParams, Link } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_API_KEY, SUPABASE_URL } from "../../config";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import { AuthContext } from "../../AuthContext";
