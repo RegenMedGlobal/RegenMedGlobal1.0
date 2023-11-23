@@ -680,6 +680,7 @@ ul.right-nav li {
   height: 72px !important;
   line-height: 72px !important;
   width: 232px !important;
+  text-align: center;
   color: #FFF;
   font-family: 'Poppins', sans-serif !important;
   font-size: 22px !important;
