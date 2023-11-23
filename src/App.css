@@ -1590,7 +1590,7 @@ margin-left: 0;
   margin: 0 0 0 15px;
 }
 .footer-custom:after {
-  background: rgba(209, 30, 245, 0.37);
+ 
   filter: blur(50px);
   width: 245px;
   height: 245px;
@@ -1601,7 +1601,7 @@ margin-left: 0;
   content: "";
 }
 .footer-custom:before {
-  background: #1876D1;
+
   filter: blur(50px);
   width: 245px;
   height: 245px;
