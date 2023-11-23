@@ -25,8 +25,6 @@ const SidebarContent = styled.div`
    h3 {
     margin-bottom: 2rem;
    }
-
-  
 `;
 
 const StyledLink = styled(Link)`
@@ -54,7 +52,6 @@ const StyledArticleContainer = styled.div`
   width: 60%;
   margin-top: 8rem;
 
-
   @media (max-width: 865px) {
     /* Adjust top margin for screens narrower than 768px (mobile) */
     margin-top: 7rem; /* You can adjust this value to control the margin */
@@ -63,10 +60,13 @@ const StyledArticleContainer = styled.div`
 `;
 
 const StyledMainContainer = styled.div`
-   
    display: flex;
    flex-direction: row;
-`
+
+   @media (max-width: 865px) {
+    justify-content: center;
+   }
+`;
 
 const ArticleContainer = styled.div`
   border: 1px solid #ddd;
@@ -106,7 +106,6 @@ const Articles = () => {
   const [articles, setArticles] = useState([]);
   const [filterTerm, setFilterTerm] = useState(initialFilterTerm || '');
   const [filteredArticles, setFilteredArticles] = useState([]);
-
 
   const { authorLoggedIn, loggedIn } = useContext(AuthContext);
 
