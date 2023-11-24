@@ -11,6 +11,7 @@ const { Title } = Typography;
 const StyledTextLink = styled(Typography.Link)`
   margin-top: 16px;
   display: block;
+  text-align: center;
 `;
 
 const StyledContainer = styled.div`
@@ -82,7 +83,7 @@ const AuthorSignIn = () => {
 
   return (
     <StyledContainer>
-      <Title level={1}>Author Sign In</Title>
+      <Title style={{ textAlign: 'center'}} level={1}>Author Sign In</Title>
       <Formik
         initialValues={{
           email: '',
