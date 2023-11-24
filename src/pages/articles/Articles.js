@@ -22,6 +22,7 @@ const InfoSideBar = styled.div`
 `;
 
 const SidebarContent = styled.div`
+text-align: center;
    h3 {
     margin-bottom: 2rem;
    }
@@ -96,7 +97,16 @@ const ArticleDescription = styled.p`
 const ArticleMeta = styled.div`
   font-size: 0.8rem;
   color: #888;
+  text-align: center;
 `;
+
+const ReadMoreLink = styled(Link)`
+  text-decoration: none;
+  text-align: center;
+  color: var(--main-color);
+  font-weight: bold;
+`;
+
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
@@ -220,9 +230,9 @@ const Articles = () => {
               By: {article.author} | Published on {new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(article.created_at))}
             </ArticleMeta>
 
-            <Link to={`/article/${article.id}`} state={{ article: article }}>
+            <ReadMoreLink to={`/article/${article.id}`} state={{ article: article }}>
               Read More
-            </Link>
+            </ReadMoreLink>
           </ArticleContainer>
         ))
       )}

@@ -12,6 +12,7 @@ const StyledSidebar = styled.div`
   align-items: center;
   margin-right: 3rem;
   width: 20%;
+  text-align: center;
   margin-top: 9rem;
   padding: 0 20px;
 
