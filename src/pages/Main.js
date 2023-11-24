@@ -17,6 +17,7 @@ import Services from "./Services";
 import { getConditions } from  "../functions/getConditions";
 // import Autosuggest from 'react-autosuggest';
 import './Autosuggest.css'; // Import your custom CSS for styling
+import ArticleMainPage from "../components/ArticleMainPage";
 
 const GlobalStyles = createGlobalStyle`
   .downshift-dropdown {
@@ -363,6 +364,7 @@ const Main = () => {
           </div>
         </div>
       </div>
+      <ArticleMainPage />
       <Services />
       <Contact />
       <GlobalStyles />
