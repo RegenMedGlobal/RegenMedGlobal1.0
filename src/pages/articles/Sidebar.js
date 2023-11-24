@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Input, Button } from 'antd';
 import styled from 'styled-components';
 import { createClient } from '@supabase/supabase-js';
-import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { SUPABASE_API_KEY, SUPABASE_URL } from '../../config';
 
@@ -18,7 +17,6 @@ const StyledSidebar = styled.div`
 
   input {
     margin-bottom: 1.6rem;
-    
   }
 
    @media (max-width: 865px) {
@@ -26,21 +24,18 @@ const StyledSidebar = styled.div`
   }
 `;
 
-const SubscriptionForm = styled.form`
+const SubscriptionForm = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 12rem;
-
-
 `;
 
 const Sidebar = () => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
-    const [showThankYou, setShowThankYou] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
 
-
-    const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     email: '',
     firstName: '',
     lastName: '',
@@ -52,69 +47,63 @@ const Sidebar = () => {
     lastName: '',
   });
 
-const insertSubscriptionData = async (email, firstName, lastName) => {
-  try {
-    const { data, error } = await supabase
-      .from('subscription_data')
-      .insert([{ email, firstName, lastName }]);
+  const insertSubscriptionData = async (email, firstName, lastName) => {
+    try {
+      const { data, error } = await supabase
+        .from('subscription_data')
+        .insert([{ email, firstName, lastName }]);
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return data; // Return the inserted data if needed
+    } catch (error) {
+      throw error; // Throw any caught error for handling in the calling function
     }
+  };
 
-    return data; // Return the inserted data if needed
-  } catch (error) {
-    throw error; // Throw any caught error for handling in the calling function
-  }
-};
-
-
-const validateForm = () => {
-  const schema = Yup.object().shape({
-    email: Yup.string().email('Invalid email address').required('Email is required'),
-    firstName: Yup.string().required('First name is required'),
-    lastName: Yup.string().required('Last name is required'),
-  });
-
-  return schema
-    .validate(formData, { abortEarly: false })
-    .then(() => {
-      setErrors({ email: '', firstName: '', lastName: '' });
-      return true; // Return true for valid form
-    })
-    .catch((err) => {
-      const newErrors = {};
-      err.inner.forEach((error) => {
-        newErrors[error.path] = error.message;
-      });
-      setErrors(newErrors);
-      return false; // Return false for invalid form
+  const validateForm = async () => {
+    const schema = Yup.object().shape({
+      email: Yup.string().email('Invalid email address').required('Email is required'),
+      firstName: Yup.string().required('First name is required'),
+      lastName: Yup.string().required('Last name is required'),
     });
-};
+
+    return schema
+      .validate(formData, { abortEarly: false })
+      .then(() => {
+        setErrors({ email: '', firstName: '', lastName: '' });
+        return true; // Return true for valid form
+      })
+      .catch((err) => {
+        const newErrors = {};
+        err.inner.forEach((error) => {
+          newErrors[error.path] = error.message;
+        });
+        setErrors(newErrors);
+        return false; // Return false for invalid form
+      });
+  };
 
 
-   const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form data:', formData);
 
     const isValid = await validateForm();
-    console.log('Is form valid?', isValid);
 
     if (isValid) {
       const { email, firstName, lastName } = formData;
       console.log('Submitting data:', { email, firstName, lastName });
 
-     try {
-  await insertSubscriptionData(email, firstName, lastName);
-  console.log('Subscription data inserted successfully');
-  setFormData({ email: '', firstName: '', lastName: '' }); // Reset form after successful insertion
-  setShowThankYou(true);
-} catch (error) {
-  console.error('Error inserting subscription data:', error.message);
-  // Handle the error case if needed
-}
-
-
+      try {
+        await insertSubscriptionData(email, firstName, lastName);
+        setFormData({ email: '', firstName: '', lastName: '' }); // Reset form after successful insertion
+        setShowThankYou(true);
+      } catch (error) {
+        console.error('Error inserting subscription data:', error.message);
+        // Handle the error case if needed
+      }
     }
   };
 
@@ -122,7 +111,6 @@ const validateForm = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
 
   return (
     <StyledSidebar>

@@ -25,9 +25,24 @@ const Footer = () => {
               </div>
               <div className="center-footer-3">
                 <ul>
-                  <li><a href="https://www.facebook.com/profile.php?id=100088034185909&mibextid=LQQJ4d" target="_blank"><FaFacebook size={24} /></a></li>
-                  <li><a href="https://www.instagram.com/regenmedglobal/" target="_blank"><FaInstagram size={24} /></a></li>
-                  <li><a href="https://www.youtube.com/@regenmedglobal?si=VthSGwqyHB_1Pv9z" target="_blank"><FaYoutube size={24} /></a></li>
+                  <li>
+                    <a href="https://www.facebook.com/profile.php?id=100088034185909&amp;mibextid=LQQJ4d" target="_blank">
+                      <FaFacebook size={24} />
+                      <span className="sr-only">Visit our Facebook page</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://www.instagram.com/regenmedglobal/" target="_blank">
+                      <FaInstagram size={24} />
+                      <span className="sr-only">Visit our Instagram page</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://www.youtube.com/@regenmedglobal?si=VthSGwqyHB_1Pv9z" target="_blank">
+                      <FaYoutube size={24} />
+                      <span className="sr-only">Visit our YouTube channel</span>
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>

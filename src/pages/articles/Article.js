@@ -98,9 +98,7 @@ const editorStyle = {
 const StyledMainContainer = styled.section`
   display: flex;
   flex-direction: row;
- 
-  
-`
+`;
 
 const Article = () => {
   const { articleId } = useParams(); 

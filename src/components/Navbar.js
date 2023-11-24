@@ -7,6 +7,8 @@ import {
   List
 } from '@mui/material';
 import { AuthContext } from '../AuthContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 // A lot of the styling below is not used, is it still needed?
 const bounceAnimation = keyframes`
@@ -164,7 +166,7 @@ const Navbar = () => {
           >
             {mobileOpen
               ? <span className={`navbar-cross-icon`}>X</span>
-              : <span className="navbar-toggler-icon"></span>
+             : <span className="navbar-toggler-icon"></span>
             }
 
           </button>
@@ -238,11 +240,22 @@ const Navbar = () => {
                     </a>
                   </li>
                 ) : (
-                  <li>
-                    <Link className="nav-link doc-login" to="/doctorlogin" onClick={() => handleLinkClick('Doctor Login')}>
-                      Free Registration
-                    </Link>
-                  </li>
+                  <>
+                    <li className="nav-item">
+                      <a
+                        className="nav-link"
+                        href={`/doctorlogin`}
+                        onClick={() => handleLinkClick('Doctor Login')}
+                      >
+                        Sign In
+                      </a>
+                    </li>
+                    <li>
+                      <Link className="nav-link doc-login" to="/register" onClick={() => handleLinkClick('Registration')}>
+                        Free Registration
+                      </Link>
+                    </li>
+                  </>
                 )}
               </ul>
             </form>

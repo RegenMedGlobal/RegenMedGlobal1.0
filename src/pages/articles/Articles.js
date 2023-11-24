@@ -4,12 +4,11 @@ import { CheckCircle } from '@mui/icons-material';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { SUPABASE_API_KEY, SUPABASE_URL } from '../../config';
-import { Input, Button } from 'antd';
+import { Input } from 'antd';
 import { AuthContext } from '../../AuthContext';
 import Sidebar from './Sidebar'
 
 const { Search } = Input;
-
 
 const InfoSideBar = styled.div`
   /* Your sidebar styles here */
@@ -26,8 +25,6 @@ const SidebarContent = styled.div`
    h3 {
     margin-bottom: 2rem;
    }
-
-  
 `;
 
 const StyledLink = styled(Link)`
@@ -55,7 +52,6 @@ const StyledArticleContainer = styled.div`
   width: 60%;
   margin-top: 8rem;
 
-
   @media (max-width: 865px) {
     /* Adjust top margin for screens narrower than 768px (mobile) */
     margin-top: 7rem; /* You can adjust this value to control the margin */
@@ -64,10 +60,13 @@ const StyledArticleContainer = styled.div`
 `;
 
 const StyledMainContainer = styled.div`
-   border: 2px solid green;
    display: flex;
    flex-direction: row;
-`
+
+   @media (max-width: 865px) {
+    justify-content: center;
+   }
+`;
 
 const ArticleContainer = styled.div`
   border: 1px solid #ddd;
@@ -107,7 +106,6 @@ const Articles = () => {
   const [articles, setArticles] = useState([]);
   const [filterTerm, setFilterTerm] = useState(initialFilterTerm || '');
   const [filteredArticles, setFilteredArticles] = useState([]);
-
 
   const { authorLoggedIn, loggedIn } = useContext(AuthContext);
 
