@@ -34,7 +34,9 @@ margin-bottom: 2%;
 
 const ErrorMessage = styled.p`
   color: red;
-  margin: 10px 0;
+  text-align: center;
+  margin-top: 2rem;
+  font-weight: bold;
 `;
 
 const Header = styled.h2`
@@ -44,7 +46,9 @@ const Header = styled.h2`
 
 const SuccessMessage = styled.p`
   color: green;
-  margin: 10px 0;
+   text-align: center;
+  margin-top: 2rem;
+  font-weight: bold;
 `;
 
 const UploadButton = styled.button`
@@ -292,11 +296,11 @@ return (
  
 
 
-    {error && <ErrorMessage>{error}</ErrorMessage>}
-    {success && <SuccessMessage>Article submitted successfully!</SuccessMessage>}
+  
   </StyledContainer>
-
-    <AntButton type="primary" size="large" onClick={handleArticleSubmission}>
+  {error && <ErrorMessage>{error}</ErrorMessage>}
+    {success && <SuccessMessage>Article submitted successfully!</SuccessMessage>}
+    <AntButton style={{marginLeft: '50rem', marginTop: '2rem', marginBottom: '4rem', width: '20%'}} type="primary" size="large" onClick={handleArticleSubmission}>
       Submit Article
     </AntButton></>
 );
