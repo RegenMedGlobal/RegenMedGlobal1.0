@@ -6,7 +6,7 @@ import insertNewAuthor from "./functions/insertNewAuthor";
 import zxcvbn from "zxcvbn";
 import { Typography } from "antd";
 
-const { Text } = Typography;
+const { Text, Title} = Typography;
 
 const StyledContainer = styled.div`
   margin-top: 10rem;
@@ -121,7 +121,7 @@ const AuthorSignUp = () => {
 
   return (
     <StyledContainer>
-      <h1>Author Sign-Up</h1>
+      <Title style={{ textAlign: 'center'}} level={1}>Author Sign-Up</Title>
       {successfulSignUp ? (
         <StyledSuccessContainer>
           <p>Thank You for Signing Up!</p>
