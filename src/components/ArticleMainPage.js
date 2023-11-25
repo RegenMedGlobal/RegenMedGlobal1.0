@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_API_KEY, SUPABASE_URL } from '../config';
-import { Button, Typography  } from 'antd';
-import { ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { Button as AntButton, Typography  } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
@@ -14,6 +14,19 @@ const StyledContainer= styled.section`
 
 `
 
+const StyledButton = styled(AntButton)`
+  margin-top: 7rem;
+
+`;
+
+const StyledLeftArrow = styled(LeftOutlined)`
+ 
+`;
+
+const StyledRightArrow = styled(RightOutlined)`
+ 
+`;
+
 const ArticleBox = styled.div`
   background-color: white;
   border: 1px solid #ccc;
@@ -23,6 +36,11 @@ const ArticleBox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-sizing: border-box;
+
+    @media (max-width: 865px) {
+     height: 12rem;
+  }
 `;
 
 const ReadMoreLink = styled.a`
@@ -38,7 +56,7 @@ const ButtonContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px; /* Adjust margin as needed */
+  margin-top: 20px; 
 `;
 
 const StyledHeader = styled.h3`
@@ -84,12 +102,18 @@ const fetchArticles = async () => {
     });
   };
 
-  const handleNextArticle = () => {
-    setCurrentArticleIndex((prevIndex) => {
-      const newIndex = (prevIndex + 3) % articles.length;
-      return newIndex;
-    });
-  };
+ const handleNextArticle = () => {
+  setCurrentArticleIndex((prevIndex) => {
+    const newIndex = prevIndex + 3;
+    if (newIndex >= articles.length) {
+      // If newIndex exceeds the length of articles, reset to the beginning
+      return 0;
+    }
+    return newIndex;
+  });
+};
+
+
  const renderArticles = () => {
     if (articles.length === 0) {
       return <div>No articles available</div>;
@@ -98,7 +122,7 @@ const fetchArticles = async () => {
     return articles.slice(currentArticleIndex, currentArticleIndex + 3).map((article) => {
       // Split the article content into sentences
       const sentences = article.content.split('.'); // Split by period to approximate sentences
-      const truncatedContent = sentences.slice(0, 3).join('. '); // Take the first three sentences
+      const truncatedContent = sentences.slice(0, 2).join('. '); // Take the first three sentences
 
       return (
         <div key={article.id} style={{ width: '33.33%', display: 'inline-block', padding: '10px' }}>
@@ -113,27 +137,21 @@ const fetchArticles = async () => {
   };
 
    return (
-    <StyledContainer>
-        <Title level={2} style={{ color: 'white' }}>Latest News</Title>
-        <div style={{ textAlign: 'center' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-
-        <div style={{ flex: '1' }}>
-         <Button onClick={handlePreviousArticle} startIcon={<ChevronLeft />} sx={{ borderRadius: '50%', backgroundColor: 'blue', color: 'white' }} />
-        </div>
-
-        <div style={{ flex: '5', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          {renderArticles()}
-        </div>
-
-  
-        <div style={{ flex: '1' }}>
-            <Button onClick={handleNextArticle} endIcon={<ChevronRight />} sx={{ borderRadius: '50%', backgroundColor: 'blue', color: 'white' }} />
+     <StyledContainer>
+      <Title level={2} style={{ color: 'white', textAlign: 'center' }}>Latest News</Title>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ flex: '1' }}>
+            <StyledButton onClick={handlePreviousArticle} icon={<StyledLeftArrow  />} />
+          </div>
+          <div style={{ flex: '5', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            {renderArticles()}
+          </div>
+          <div style={{ flex: '1' }}>
+           <StyledButton onClick={handleNextArticle} icon={<StyledRightArrow  />} />
+          </div>
         </div>
       </div>
-
-      
-    </div>
     </StyledContainer>
   );
 };
