@@ -46,6 +46,7 @@ const ArticleBox = styled.div`
 const ReadMoreLink = styled.a`
   text-decoration: none;
   color: blue;
+  margin-bottom: 1rem;
   &:hover {
     color: darkblue;
   }
@@ -63,6 +64,14 @@ const StyledHeader = styled.h3`
  color: white;
 `
 
+const StyledArticleContent = styled.div`
+  flex-grow: 1;
+  line-height: 1.6;
+   overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* Limit to 3 lines */
+`;
 
 const ArticleMainPage = () => {
   const [articles, setArticles] = useState([]);
@@ -121,14 +130,20 @@ const fetchArticles = async () => {
 
     return articles.slice(currentArticleIndex, currentArticleIndex + 3).map((article) => {
       // Split the article content into sentences
-      const sentences = article.content.split('.'); // Split by period to approximate sentences
-      const truncatedContent = sentences.slice(0, 2).join('. '); // Take the first three sentences
+       const sentences = article.content.split('.'); // Split by period to approximate sentences
+    const cleanSentences = sentences.map(sentence => sentence.replace(/\s+/g, ' ').trim()); // Clean up each sentence
+    const truncatedSentences = cleanSentences.slice(0, 3);
+    let truncatedContent = truncatedSentences.join('. ');
+
+    if (truncatedContent.length < article.content.length) {
+      truncatedContent += '...'; // Add an ellipsis if the content is truncated
+    }
 
       return (
         <div key={article.id} style={{ width: '33.33%', display: 'inline-block', padding: '10px' }}>
           <ArticleBox>
-            <h3>{article.title}</h3>
-            <div dangerouslySetInnerHTML={{ __html: truncatedContent }} />
+            <h5>{article.title}</h5>
+            <StyledArticleContent dangerouslySetInnerHTML={{ __html: truncatedContent }} />
             <ReadMoreLink href={`/article/${article.id}`}>Read More</ReadMoreLink>
           </ArticleBox>
         </div>
