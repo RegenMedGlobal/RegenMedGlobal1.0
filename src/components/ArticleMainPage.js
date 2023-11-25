@@ -28,27 +28,34 @@ const StyledRightArrow = styled(RightOutlined)`
 `;
 
 const ArticleBox = styled.div`
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
   height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
+  transition: box-shadow 0.3s ease-in-out;
 
-    @media (max-width: 865px) {
-     height: 12rem;
+  &:hover {
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 865px) {
+    height: 12rem;
   }
 `;
 
+
 const ReadMoreLink = styled.a`
   text-decoration: none;
-  color: blue;
+  color: var(--main-color);
+  font-weight: bold;
   margin-bottom: 1rem;
   &:hover {
-    color: darkblue;
+    color: darkpruple;
   }
 `;
 
