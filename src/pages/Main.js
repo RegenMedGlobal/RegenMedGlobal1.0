@@ -337,6 +337,7 @@ const Main = () => {
                 </div>
               </div>
             </div>
+            
             <div className="col-lg-4">
               <div className="banner-right">
                 <img className="pro-img-3" src={imgPro2} alt="Scientists researching" />
@@ -346,6 +347,7 @@ const Main = () => {
           </div>
         </div>
       </div>
+      <ArticleMainPage />
       <div className="Regenerative">
         <div className="container">
           <div className="row">
@@ -364,7 +366,7 @@ const Main = () => {
           </div>
         </div>
       </div>
-      <ArticleMainPage />
+      
       <Services />
       <Contact />
       <GlobalStyles />
