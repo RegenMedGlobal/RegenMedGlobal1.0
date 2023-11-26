@@ -347,7 +347,7 @@ const Main = () => {
           </div>
         </div>
       </div>
-      <ArticleMainPage />
+      {/* <ArticleMainPage /> */}
       <div className="Regenerative">
         <div className="container">
           <div className="row">
