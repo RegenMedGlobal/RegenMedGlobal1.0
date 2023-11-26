@@ -45,6 +45,7 @@ const ArticleBox = styled.div`
 
   @media (max-width: 865px) {
     height: 12rem;
+    width: 12rem;
   }
 `;
 
@@ -78,6 +79,11 @@ const StyledArticleContent = styled.div`
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3; /* Limit to 3 lines */
+    text-align: justify;
+
+    @media (max-width: 865px) {
+    
+  }
 `;
 
 const ArticleMainPage = () => {
@@ -135,7 +141,9 @@ const fetchArticles = async () => {
       return <div>No articles available</div>;
     }
 
-    return articles.slice(currentArticleIndex, currentArticleIndex + 3).map((article) => {
+     const numArticlesToShow = window.innerWidth < 865 ? 1 : 3;
+
+     return articles.slice(currentArticleIndex, currentArticleIndex + numArticlesToShow).map((article) => {
       // Split the article content into sentences
        const sentences = article.content.split('.'); // Split by period to approximate sentences
     const cleanSentences = sentences.map(sentence => sentence.replace(/\s+/g, ' ').trim()); // Clean up each sentence
@@ -160,7 +168,7 @@ const fetchArticles = async () => {
 
    return (
      <StyledContainer>
-      <Title level={2} style={{ color: 'white', textAlign: 'center' }}>Latest News</Title>
+      <Title level={2} style={{ color: 'white', textAlign: 'center', marginTop: '2rem' }}>Latest News</Title>
       <div style={{ textAlign: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ flex: '1' }}>

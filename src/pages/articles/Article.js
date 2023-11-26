@@ -71,6 +71,7 @@ const StyledContent = styled.div`
 
   @media (min-width: 768px) {
     max-width: 60%; /* Max width on desktop */
+   
     text-align: justify; /* Justify text */
   }
 `;
@@ -98,6 +99,11 @@ const editorStyle = {
 const StyledMainContainer = styled.section`
   display: flex;
   flex-direction: row;
+
+   @media (max-width: 869px) {
+    width: 95%;
+   
+  }
 `;
 
 const Article = () => {
@@ -110,15 +116,41 @@ const Article = () => {
   const [imageUrl, setImageUrl] = useState(''); 
   const [editMode, setEditMode] = useState(false)
   const [editAvailable, setEditAvailable] = useState(false)
-  const { authorLoggedIn, currentAuthorUser } = useContext(AuthContext);
+  const { authorLoggedIn, currentAuthorUser, currentUser, loggedIn } = useContext(AuthContext);
+
+
+let currentUserString = currentUser;
+let doctorUserId = ''; // Define doctorUserId here
+
+try {
+  // Parse the string into a JavaScript object
+  let currentUserObject = JSON.parse(currentUserString);
+
+  // Check if the parsed object has the userId property
+  if (currentUserObject && Object.prototype.hasOwnProperty.call(currentUserObject, 'userId')) {
+    doctorUserId = currentUserObject.userId; // Assign value to the outer doctorUserId
+    console.log('User ID:', doctorUserId); // Access userId
+  } else {
+    console.log('User is not logged in or currentUser is not defined');
+  }
+} catch (error) {
+  console.log('Error parsing currentUser:', error);
+}
+
+console.log('doctoruserid: ', doctorUserId); // Now doctorUserId is accessible here
+
+
+  console.log('edit available? ', editAvailable)
+
+  
 
   useEffect(() => {
-    if (authorLoggedIn && currentAuthorUser.authorId === articleAuthorId) {
+    if (authorLoggedIn && currentAuthorUser.authorId === articleAuthorId || loggedIn && doctorUserId === articleAuthorId  ) {
       setEditAvailable(true);
     } else {
       setEditAvailable(false);
     }
-  }, [authorLoggedIn, currentAuthorUser.authorId, articleAuthorId]);
+  }, [authorLoggedIn, currentAuthorUser.authorId, articleAuthorId, loggedIn, currentUser.id]);
 
   const linkTo = articleAuthorId.startsWith('A')
     ? `/author/${articleAuthorId}`
