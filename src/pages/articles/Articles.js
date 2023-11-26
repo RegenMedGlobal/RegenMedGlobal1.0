@@ -211,7 +211,11 @@ const Articles = () => {
       />
       <br/>
       {authorLoggedIn || loggedIn ? (
-        <Link className="nav-link doc-login" to="/submitarticle" style={{ color: 'white' }} >
+        <Link
+          className="submit-article-link"
+          to="/submitarticle"
+          style={{ color: 'white' }}
+        >
           Submit New Article
         </Link>
       ) : (
