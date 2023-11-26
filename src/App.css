@@ -1898,6 +1898,7 @@ nav.navbar.navbar-expand-lg.bg-body-tertiary {
 }
 ul.right-nav {
   flex-wrap: wrap;
+  flex-direction: column;
 }
 a.navbar-brand img {
   width: 107px;
