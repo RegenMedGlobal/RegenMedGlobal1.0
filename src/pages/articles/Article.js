@@ -214,7 +214,7 @@ const Article = () => {
   return (
     <StyledMainContainer>
     <StyledContainer>
-      {formattedSrc && <img src={formattedSrc} alt="Article Preview" />}
+      {/* {formattedSrc && <img src={formattedSrc} alt="Article Preview" />} */}
       <StyledContent>
         <Card>
           <TitleWrapper>
