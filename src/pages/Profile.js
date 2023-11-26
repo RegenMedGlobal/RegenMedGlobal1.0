@@ -70,6 +70,7 @@ const Profile = () => {
  
 ///
   useEffect(() => {
+      console.log('profileid in getarticle useffect: ', profileId)
     const getArticleData = async () => {
       const result = await fetchArticleData(profileId);
 
@@ -298,6 +299,8 @@ const handleReturnToResults = () => {
       </Container>
     );
   }
+
+  console.log('doctorArticles', doctorArticles)
   
   return (
     <Container>
