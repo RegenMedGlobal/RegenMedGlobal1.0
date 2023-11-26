@@ -166,7 +166,7 @@ const Navbar = () => {
           >
             {mobileOpen
               ? <span className={`navbar-cross-icon`}>X</span>
-             : <span className="navbar-toggler-icon"></span>
+              : <FontAwesomeIcon icon={faBars} />
             }
 
           </button>
