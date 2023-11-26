@@ -182,17 +182,14 @@ const debouncedHandleAddressChange = debounce(async (value) => {
       )}.json?access_token=${MAPBOX_TOKEN}`
     );
 
-    // Filter suggestions for US cities
-    const usCities = response.data.features.filter((suggestion) => {
+    const resultCities = response.data.features.filter((suggestion) => {
       // Check if the place type is a city
       return suggestion.place_type.includes("place") &&
-        suggestion.context &&
-        suggestion.context.find(
-          (context) => context.id.startsWith("country") && context.short_code === "us"
-        );
+        suggestion.context
+
     });
 
-    setSuggestions(usCities);
+    setSuggestions(resultCities);
   } catch (error) {
     console.error("Error fetching suggestions:", error);
   }
