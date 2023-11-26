@@ -17,7 +17,7 @@
     "@google-cloud/storage": "^7.3.1",
     "@hookform/resolvers": "^3.1.1",
     "@mantine/core": "^6.0.15",
-    "@mui/icons-material": "^5.14.12",
+    "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.13.6",
     "@react-google-maps/api": "^2.18.1",
     "@rewind-ui/core": "^0.13.0",
