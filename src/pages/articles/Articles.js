@@ -75,7 +75,7 @@ const ArticleContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: #f8f8f8;
-  width: 60%;
+  width: 90%;
   margin: 20px 0 auto;
   display: flex;
   flex-direction: column;
