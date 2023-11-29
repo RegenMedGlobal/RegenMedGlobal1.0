@@ -2,15 +2,11 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
 import img3 from '../assets/logo.png';
-import {
-  AppBar,
-  List
-} from '@mui/material';
+import { AppBar } from '@mui/material';
 import { AuthContext } from '../AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import SubscriptionForm from './SubscriptionForm';
-
 
 const NavbarItem = styled(Link)`
   text-decoration: none;
@@ -30,37 +26,35 @@ const NavbarItem = styled(Link)`
       color: yellow;
       font-size: 20px; /* Font size for active item */
       font-weight: bold; /* Font weight for active item */
-    `}
+  `}
 `;
-
-
 
 const SubscribeContainer = styled.div`
   display: none; /* Hide by default for non-mobile screens */
   
-  @media (max-width: 859px) {
+  @media (max-width: 991px) {
     display: block; /* Show for mobile screens */
     text-align: center;
   }
 
-.subscribe-button {
-  cursor: pointer;
-  color: white;
-
-}
-
+  .subscribe-button {
+    cursor: pointer;
+    color: white;
+  }
 
   .subscribe-link {
     color: white; 
     text-decoration: none; /* Remove underline */
   }
 `;
+
 const Navbar = () => {
   const { loggedIn, logout, currentUser , authorLoggedIn, currentAuthorUser, authorLogout} = useContext(AuthContext);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false); 
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [subscribeOpen, setSubscribeOpen] = useState(false);
 
   let currentUserID;
 
@@ -82,8 +76,6 @@ const Navbar = () => {
     setMobileOpen(false);
   };
 
-
-
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -94,21 +86,32 @@ const Navbar = () => {
     navigate('/');
   }
 
+  const handleSubscribeClick = () => {
+    setSubscribeOpen(!subscribeOpen);
+  }
+
   return (
 
-   <AppBar position="fixed">
+    <AppBar position="fixed">
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/" onClick={() => handleLinkClick('Home')}>
             <img src={img3} alt="Regenerative Medicine Global Logo" />
           </Link>
 
-           <SubscribeContainer>
-        <SubscriptionForm
-          trigger={<button className="subscribe-button">Subscribe</button>} // Custom trigger with Subscribe text
-        />
-      </SubscribeContainer>
-
+          <SubscribeContainer>
+            <button
+              className="subscribe-button"
+              onClick={handleSubscribeClick}
+            >
+              Subscribe
+            </button>
+            {subscribeOpen && (
+              <SubscriptionForm
+                modalOpen={subscribeOpen}
+              />
+            )}
+          </SubscribeContainer>
 
           <button
             className="navbar-toggler"

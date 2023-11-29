@@ -7,12 +7,15 @@ import { createClient } from '@supabase/supabase-js';
 import * as Yup from 'yup';
 
 const StyledModal = styled(Modal)`
-  /* Your modal styles */
 `;
 
-const SubscriptionForm = () => {
+const SubscriptionForm = ({ modalOpen }) => {
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(modalOpen);
+
+  console.log('modalOpen', modalOpen);
+  console.log('isOpen', isOpen);
   const [showThankYou, setShowThankYou] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -27,17 +30,17 @@ const SubscriptionForm = () => {
     lastName: '',
   });
 
-const insertSubscriptionData = async (email, firstName, lastName) => {
-  const { data, error } = await supabase
-    .from('subscription_data')
-    .insert([{ email, firstName, lastName }]);
+  const insertSubscriptionData = async (email, firstName, lastName) => {
+    const { data, error } = await supabase
+      .from('subscription_data')
+      .insert([{ email, firstName, lastName }]);
 
-  if (error) {
-    throw error; // Throw the error for handling in the calling function
-  }
+    if (error) {
+      throw error; // Throw the error for handling in the calling function
+    }
 
-  return data; // Return the inserted data if needed
-};
+    return data; // Return the inserted data if needed
+  };
 
   const validateForm = async () => {
     const schema = Yup.object().shape({
@@ -92,55 +95,52 @@ const handleSubmit = async (e) => {
   }
 };
 
-
- const handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   return (
-    <>
-      <StyledModal
-        open={isOpen}
-        onCancel={closeModal}
-        footer={null}
-        centered
-      >
-        <h2>Subscribe for the latest news:</h2>
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <div>{errors.email}</div>}
-          <Input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
-            onChange={handleChange}
-          />
-          {errors.firstName && <div>{errors.firstName}</div>}
-          <Input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChange={handleChange}
-          />
-          {errors.lastName && <div>{errors.lastName}</div>}
-          {!showThankYou && (
-            <Button type="primary" htmlType="submit">
-            Subscribe
-          </Button>
-          )}
-          {showThankYou && <p>Thank you for subscribing!</p>}
-        </form>
-      </StyledModal>
-    </>
+    <StyledModal
+      open={isOpen}
+      onCancel={closeModal}
+      footer={null}
+      centered
+    >
+      <h2>Subscribe for the latest news:</h2>
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        {errors.email && <div>{errors.email}</div>}
+        <Input
+          type="text"
+          name="firstName"
+          placeholder="First Name"
+          value={formData.firstName}
+          onChange={handleChange}
+        />
+        {errors.firstName && <div>{errors.firstName}</div>}
+        <Input
+          type="text"
+          name="lastName"
+          placeholder="Last Name"
+          value={formData.lastName}
+          onChange={handleChange}
+        />
+        {errors.lastName && <div>{errors.lastName}</div>}
+        {!showThankYou && (
+          <Button type="primary" htmlType="submit">
+          Subscribe
+        </Button>
+        )}
+        {showThankYou && <p>Thank you for subscribing!</p>}
+      </form>
+    </StyledModal>
   );
 };
 
