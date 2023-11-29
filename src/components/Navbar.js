@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { AuthContext } from '../AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import SubscriptionForm from './SubscriptionForm';
 
 
