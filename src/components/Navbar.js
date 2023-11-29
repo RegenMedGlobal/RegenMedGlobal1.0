@@ -37,10 +37,16 @@ const SubscribeContainer = styled.div`
     text-align: center;
   }
 
-  .subscribe-button {
-    cursor: pointer;
-    color: white;
-  }
+ .subscribe-button {
+  cursor: pointer;
+  margin-right: 2rem;
+  background-color: transparent;
+  padding: 10px;
+  border: 2px solid white;
+  color: white;
+  border-radius: 20px; /* Adjust the value to control the oval shape */
+}
+
 
   .subscribe-link {
     color: white; 
