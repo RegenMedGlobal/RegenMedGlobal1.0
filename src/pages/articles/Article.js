@@ -48,7 +48,6 @@ const StyledButtonContainer = styled.div`
 
 const StyledContainer = styled.div`
   margin-top: 5rem;
-  margin-left: 7rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,12 +55,14 @@ const StyledContainer = styled.div`
 `;
 
 const StyledArticleSidebar = styled.div`
-margin-right: 4rem;
-margin-top: 4rem;
-width: 10%;
+  margin-right: 4rem;
+  margin-top: 4rem;
+  width: 10%;
 
-
-`
+  @media (max-width: 865px) {
+    display: none;
+  }
+`;
 
 const StyledContent = styled.div`
   width: 100%;
@@ -71,7 +72,6 @@ const StyledContent = styled.div`
 
   @media (min-width: 768px) {
     max-width: 60%; /* Max width on desktop */
-   
     text-align: justify; /* Justify text */
   }
 `;
@@ -85,7 +85,7 @@ const StyledAuthor = styled.p`
   font-weight: bold;
   color: var(--main-color);
 
-   a {
+  a {
     font-weight: bold;
     color: var(--main-color); /* Apply the color to links within StyledAuthor */
      text-decoration: none; 
@@ -100,9 +100,9 @@ const StyledMainContainer = styled.section`
   display: flex;
   flex-direction: row;
 
-   @media (max-width: 869px) {
+  @media (max-width: 869px) {
     width: 95%;
-   
+    margin: 0 auto;
   }
 `;
 
@@ -118,31 +118,26 @@ const Article = () => {
   const [editAvailable, setEditAvailable] = useState(false)
   const { authorLoggedIn, currentAuthorUser, currentUser, loggedIn } = useContext(AuthContext);
 
+  let currentUserString = currentUser;
+  let doctorUserId = ''; // Define doctorUserId here
 
-let currentUserString = currentUser;
-let doctorUserId = ''; // Define doctorUserId here
+  try {
+    // Parse the string into a JavaScript object
+    let currentUserObject = JSON.parse(currentUserString);
 
-try {
-  // Parse the string into a JavaScript object
-  let currentUserObject = JSON.parse(currentUserString);
-
-  // Check if the parsed object has the userId property
-  if (currentUserObject && Object.prototype.hasOwnProperty.call(currentUserObject, 'userId')) {
-    doctorUserId = currentUserObject.userId; // Assign value to the outer doctorUserId
-    console.log('User ID:', doctorUserId); // Access userId
-  } else {
-    console.log('User is not logged in or currentUser is not defined');
+    // Check if the parsed object has the userId property
+    if (currentUserObject && Object.prototype.hasOwnProperty.call(currentUserObject, 'userId')) {
+      doctorUserId = currentUserObject.userId; // Assign value to the outer doctorUserId
+      console.log('User ID:', doctorUserId); // Access userId
+    } else {
+      console.log('User is not logged in or currentUser is not defined');
+    }
+  } catch (error) {
+    console.log('Error parsing currentUser:', error);
   }
-} catch (error) {
-  console.log('Error parsing currentUser:', error);
-}
 
-console.log('doctoruserid: ', doctorUserId); // Now doctorUserId is accessible here
-
-
+  console.log('doctoruserid: ', doctorUserId); // Now doctorUserId is accessible here
   console.log('edit available? ', editAvailable)
-
-  
 
   useEffect(() => {
     if (authorLoggedIn && currentAuthorUser.authorId === articleAuthorId || loggedIn && doctorUserId === articleAuthorId  ) {

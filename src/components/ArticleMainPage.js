@@ -11,12 +11,10 @@ const { Title } = Typography;
 
 const StyledContainer= styled.section`
   background-color: #140437;
-
-`
+`;
 
 const StyledButton = styled(AntButton)`
   margin-top: 7rem;
-
 `;
 
 const StyledLeftArrow = styled(LeftOutlined)`

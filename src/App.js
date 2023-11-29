@@ -103,7 +103,7 @@ function App() {
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
         </Routes>
         </div>
-        <Footer />
+      
       </div>
     </AuthProvider>
 
