@@ -295,6 +295,7 @@ p.span-clr span {
   font-weight: 600;
   line-height: normal;
   background: linear-gradient(180deg, #2117F9 0%, #E409E8 140%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-align: left;
@@ -719,6 +720,7 @@ nav.navbar.navbar-expand-lg.bg-body-tertiary {
 }
 ul.navbar-nav.me-auto.mb-2.mb-lg-0 li a:hover {
   background: linear-gradient(180deg, #2117F9 0%, #E409E8 140%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -748,6 +750,7 @@ p.dr-1 input[type="text"] {
   border-radius: 6px;
   outline: none;
   border: 1px solid #ccc;
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: #000;
   background: #fff;
@@ -790,6 +793,7 @@ p.dr-1 input[type="text"]::-ms-input-placeholder { /* Microsoft Edge */
   border-radius: 6px;
   outline: none;
   border: 1px solid #ccc;
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: #000;
   background: #fff;
@@ -856,6 +860,7 @@ margin-left: 0;
   border-radius: 6px;
   outline: none;
   border: 1px solid #ccc;
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: #000;
   background: #fff;
@@ -870,6 +875,7 @@ margin-left: 0;
   border-radius: 6px;
   outline: none;
   border: 1px solid #ccc;
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: #000;
   background: #fff;
