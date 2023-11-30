@@ -13,9 +13,6 @@ const SubscriptionForm = ({ modalOpen }) => {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
   const [isOpen, setIsOpen] = useState(modalOpen);
-
-  console.log('modalOpen', modalOpen);
-  console.log('isOpen', isOpen);
   const [showThankYou, setShowThankYou] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -65,35 +62,30 @@ const SubscriptionForm = ({ modalOpen }) => {
       });
   };
 
-  const openModal = () => {
-    setIsOpen(true);
-  };
-
   const closeModal = () => {
     setIsOpen(false);
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const isValid = await validateForm();
+    const isValid = await validateForm();
 
-  if (isValid) {
-    const { email, firstName, lastName } = formData;
-    console.log('Submitting data:', { email, firstName, lastName });
+    if (isValid) {
+      const { email, firstName, lastName } = formData;
 
-    try {
-      await insertSubscriptionData(email, firstName, lastName);
-      setFormData({ email: '', firstName: '', lastName: '' }); // Reset form after successful insertion
-      setShowThankYou(true); // Show the "Thank you" message
-      // The modal remains open after submission.
-      // No setIsOpen(false) here to ensure it stays open.
-    } catch (error) {
-      console.error('Error inserting subscription data:', error.message);
-      // Handle the error case if needed
+      try {
+        await insertSubscriptionData(email, firstName, lastName);
+        setFormData({ email: '', firstName: '', lastName: '' }); // Reset form after successful insertion
+        setShowThankYou(true); // Show the "Thank you" message
+        // The modal remains open after submission.
+        // No setIsOpen(false) here to ensure it stays open.
+      } catch (error) {
+        console.error('Error inserting subscription data:', error.message);
+        // Handle the error case if needed
+      }
     }
-  }
-};
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
