@@ -1,9 +1,6 @@
-/* eslint-disable no-unused-vars */
-
 import styled from "styled-components";
-import { useForm, Controller } from "react-hook-form";
-import Select, { components } from "react-select";
-import { useState, useEffect, useRef } from "react";
+import { Controller } from "react-hook-form";
+import { useState, useRef } from "react";
 import CreatableSelect from "react-select/creatable";
 
 const StyledControllerContainer = styled.div`
@@ -86,9 +83,9 @@ const ConditionsInput = ({
         name="conditions"
         control={control}
         render={({ field }) => {
-          if(!ref.current) {
+          if (!ref.current) {
             ref.current = true;
-            if(selection && selection.length > 0) {
+            if (selection && selection.length > 0) {
               selection.forEach((value) => {
                 field.value.push(value);
               })
