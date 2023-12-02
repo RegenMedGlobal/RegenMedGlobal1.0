@@ -11,14 +11,24 @@ const { Title } = Typography;
 
 const StyledContainer= styled.section`
   background-color: #140437;
+
+`;
+
+const ArticleTitle = styled.h5`
+  
+  @media (max-width: 865px) {
+    font-size: .75rem; /* Responsive font size for mobile */
+  }
 `;
 
 const StyledButton = styled(AntButton)`
   margin-top: 7rem;
+
+  
 `;
 
 const StyledLeftArrow = styled(LeftOutlined)`
- 
+=
 `;
 
 const StyledRightArrow = styled(RightOutlined)`
@@ -30,7 +40,7 @@ const ArticleBox = styled.div`
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 20px;
-  height: 300px;
+  height:  14rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -43,7 +53,8 @@ const ArticleBox = styled.div`
 
   @media (max-width: 865px) {
     height: 12rem;
-    width: 12rem;
+    width: 18rem;
+    margin-left: 9%;
   }
 `;
 
@@ -155,8 +166,9 @@ const fetchArticles = async () => {
       return (
         <div key={article.id} style={{ width: '33.33%', display: 'inline-block', padding: '10px' }}>
           <ArticleBox>
-            <h5>{article.title}</h5>
-            <StyledArticleContent dangerouslySetInnerHTML={{ __html: truncatedContent }} />
+                <ArticleTitle>{article.title}</ArticleTitle>
+            <p>By: {article.author}</p>
+            <p> Published on {new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(article.created_at))}</p>
             <ReadMoreLink href={`/article/${article.id}`}>Read More</ReadMoreLink>
           </ArticleBox>
         </div>
