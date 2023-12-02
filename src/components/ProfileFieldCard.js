@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { Input, Button } from 'antd';
 import { EditOutlined, MailOutlined, PhoneOutlined, CheckCircleOutlined } from '@ant-design/icons';
@@ -6,9 +5,8 @@ import styled from "styled-components";
 import { getConditions } from "../functions/getConditions";
 import debounce from 'lodash/debounce';
 import { Select } from "antd";
-import CreatableSelect from 'react-select/creatable';
 import SelectConditions from "./Condiitons/SelectConditions";
-import { states, countries, provinces, EDGE_URL } from "../config";
+import { states, countries } from "../config";
 
 const CardContainer = styled.div`
   background-color: transparent;
@@ -21,7 +19,6 @@ const CardContainer = styled.div`
   align-items: flex-start;
   position: relative;
   text-align: left;
-
   margin-bottom: 0px;
 
   @media (max-width: 855px) {
@@ -55,14 +52,11 @@ const StyledTreatmentButton = styled(Button)`
   }
 `;
 
-
-
 const StyledTreatmentButtons = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 4%;
-  
 `;
 
 const NameValue = styled.div`
@@ -84,15 +78,11 @@ const Label = styled.div`
   }
 `;
 
-
-
 const LabelText = styled.span`
   position: relative; /* Make the span a positioned container */
   display: inline-block; /* Display as inline block to fit the text width */
   margin-bottom: 4px; /* Adjust the spacing between the label and the bar */
   font-weight: bold; /* Apply font-weight to the label text */
-
- 
 `;
 // &:after {
 //   content: ''; /* Create a pseudo-element for the bar */
@@ -141,13 +131,13 @@ const IconContainer = styled.div`
 `;
 
 const LabelBar = styled.div`
-  
 `;
 
 const StyledValue = styled.div`
   font-size: 15px;
   font-weight: 400; /* Increase font weight */
 `;
+
 const StyledValueWithIcon = styled.div`
   display: flex;
   align-items: center;
@@ -159,13 +149,10 @@ const StyledValueWithIcon = styled.div`
    @media (max-width: 768px) {
     font-size: 1.3rem; /* Adjust font size for smaller screens */
     height: 50%;
-   
   }
 `;
 
 const treatmentOptions = ["PRP", "Stem Cell Therapy", "Prolotherapy"];
-
-
 
 const ProfileFieldCard = ({
   fieldName,
@@ -182,6 +169,7 @@ const ProfileFieldCard = ({
   labelNameOnEdit,
   profileData,
   setAddress,
+  onKeyDown
   //customClass,
 }) => {
 
@@ -277,8 +265,7 @@ const ProfileFieldCard = ({
 
 
   const handleTreatmentButtonClick = (option) => {
-    console.log('Option clicked:', option);
-    console.log('Current fieldValue:', fieldValue);
+
 
     if (fieldValue !== undefined) {
       // Check if the option is already included in fieldValue
@@ -288,14 +275,10 @@ const ProfileFieldCard = ({
           .split(",")
           .filter((treatment) => treatment.trim() !== option)
           .join(", ");
-        console.log('Removing option from fieldValue:', option);
-        console.log('Checking treatment:', updatedValue);
         onInputChange(fieldName, updatedValue);
       } else {
         // If it's not included, add it to fieldValue
         const updatedValue = fieldValue ? `${fieldValue}, ${option}` : option;
-        console.log('Checking treatment:', updatedValue);
-        console.log('Updated value:', updatedValue);
         onInputChange(fieldName, updatedValue);
       }
     }
@@ -330,8 +313,6 @@ const ProfileFieldCard = ({
                   ? labelName + ":"
                   : fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ":"
               )}
-
-
             </LabelText>
           </Label>
           <LabelBar />
@@ -352,9 +333,16 @@ const ProfileFieldCard = ({
               )}
               {fieldName === "conditions" && editMode && (
                 <div className="select-box-edit" style={{ "width": "100%" }}>
-                  <SelectConditions onInputChange={onInputChange} selectedOptions={fieldValue.trim() != "" ? fieldValue.split(',').map((value) => { return { label: value, value: value } }) : "" } options={filteredConditions.filter((option)=>{
-                    return !fieldValue.split(',').includes(option)
-                  }).map(condition => ({ value: condition, label: condition }))} filterTerm={filterTerm} setFilterTerm={setFilterTerm} setOptions={setFilteredConditions} />
+                  <SelectConditions
+                    onInputChange={onInputChange}
+                    selectedOptions={fieldValue.trim() != "" ? fieldValue.split(',').map((value) => { return { label: value, value: value } }) : "" }
+                    options={filteredConditions.filter((option)=>{
+                      return !fieldValue.split(',').includes(option)
+                    }).map(condition => ({ value: condition, label: condition }))}
+                    filterTerm={filterTerm}
+                    setFilterTerm={setFilterTerm}
+                    setOptions={setFilteredConditions}
+                  />
  
                 </div>
               )}
@@ -460,8 +448,14 @@ const ProfileFieldCard = ({
 
                 </>
               ) :
-                <textarea className="area-text input-get" value={fieldValue.trim() || ""}
-                  onChange={(event) => onInputChange(fieldName, event)} >{fieldValue.trim() || ""}</textarea>
+                <textarea
+                  className="area-text input-get"
+                  value={fieldValue || ""}
+                  onChange={(event) => onInputChange(fieldName, event)}
+                  onKeyDown={event => onKeyDown(fieldName, event)}
+                >
+                  {fieldValue || ""}
+                </textarea>
               )
 
             ) :

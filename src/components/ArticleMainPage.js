@@ -11,12 +11,10 @@ const { Title } = Typography;
 
 const StyledContainer= styled.section`
   background-color: #140437;
-
-`
+`;
 
 const StyledButton = styled(AntButton)`
   margin-top: 7rem;
-
 `;
 
 const StyledLeftArrow = styled(LeftOutlined)`
@@ -82,9 +80,7 @@ const StyledArticleContent = styled.div`
     text-align: justify;
 
     @media (max-width: 865px) {
-      h5 {
-        font-size: 12px;
-      }
+    
   }
 `;
 

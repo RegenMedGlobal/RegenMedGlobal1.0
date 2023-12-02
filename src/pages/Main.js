@@ -152,6 +152,10 @@ const StyledButton = styled.button`
   }
 `;
 
+const StyledSecondText = styled.span`
+  margin-left: 3%;
+`
+
 const Main = () => {
   const [address, setAddress] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -230,18 +234,13 @@ const Main = () => {
         )}.json?access_token=${MAPBOX_TOKEN}`
       );
 
-      // Filter suggestions for US cities
-      const usCities = response.data.features.filter((suggestion) => {
+      const resultCities = response.data.features.filter((suggestion) => {
         // Check if the place type is a city
         return suggestion.place_type.includes("place") &&
-          suggestion.context &&
-          suggestion.context.find(
-            (context) => context.id.startsWith("country") && context.short_code === "us"
-          );
+          suggestion.context
       });
 
-      // Update suggestions using the state updater function
-      setSuggestions(usCities);
+      setSuggestions(resultCities);
 
       // You can log the updated state inside a useEffect hook
       useEffect(() => {
@@ -281,7 +280,7 @@ const Main = () => {
           <div className="row">
             <div className="col-lg-8">
               <div className="banner-left">
-                <StyledParagraph>Find a Regenerative Medicine Doctor based on your condition</StyledParagraph>
+                <StyledParagraph>Find a Regenerative <br /> <StyledSecondText>Medicine Doctor</StyledSecondText></StyledParagraph>
                 <div className="banner-bottom">
                   <Form form={form} onFinish={handleSubmit} >
                   {errorMessage && (
@@ -347,7 +346,7 @@ const Main = () => {
           </div>
         </div>
       </div>
-      <ArticleMainPage />
+      {/* <ArticleMainPage /> */}
       <div className="Regenerative">
         <div className="container">
           <div className="row">

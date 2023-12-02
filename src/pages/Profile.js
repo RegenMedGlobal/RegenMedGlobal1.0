@@ -4,7 +4,7 @@ import { AuthContext } from "../AuthContext";
 import getProfile from "../functions/getProfile";
 import isVerified from "../functions/isVerified";
 import updateData from "./updateData";
-import { Typography, Button } from 'antd';
+import { Typography } from 'antd';
 import ReactGA from 'react-ga';
 import ProfileFieldCard from "../components/ProfileFieldCard";
 import DoctorContact from "./DoctorContact";
@@ -12,14 +12,22 @@ import fetchArticleData from "./articles/functions/fetchArticleData";
 import { terms } from "../config";
 import Map from "../components/Map";
 import {
-  Container, Sidebar, Content, StyledArticleContainer, StyledContactSection, ReturnLink, ProfileWrapper, MapContainer, CardContainer, Card, ContactHeader, NameCard, StyledContactMap, ConditionsContainer
+  Card,
+  CardContainer,
+  ContactHeader,
+  Container,
+  Content,
+  MapContainer,
+  NameCard,
+  ProfileWrapper,
+  ReturnLink,
+  Sidebar,
+  StyledArticleContainer,
+  StyledContactSection
 } from './StyledComponents'; 
 
-
-
-
 const Profile = () => {
-     const { userId } = useParams(); 
+  const { userId } = useParams(); 
   const { loggedIn, currentUser } = useContext(AuthContext);
   const [profileId, setProfileId] = useState(``);
   const [loading, setLoading] = useState(false);
@@ -37,10 +45,7 @@ const Profile = () => {
   const [profileData, setProfileData] = useState([]);
   const [isProfileVerified, setIsProfileVerified] = useState(false);
   const [shouldDisplayDoctorContact, setShouldDisplayDoctorContact ] = useState(true)
-   const [doctorArticles, setDoctorArticles] = useState([]);
-
-  
-
+  const [doctorArticles, setDoctorArticles] = useState([]);
 
   function isJSONEmpty(json) {
     for (var key in json) {
@@ -51,25 +56,19 @@ const Profile = () => {
     return true;
   }
 
-  // Add console.log statements to check values
-  console.log("loggedIn:", loggedIn);
-  console.log("current user from profile:", currentUser);
   let currentUserID;
   try {
     if(!isJSONEmpty(currentUser)) {
       const jsonUser = JSON.parse(currentUser);
-      console.log("jsonuser", jsonUser);
       currentUserID = jsonUser.userId;
-      console.log("current userid from json in profile:", currentUserID);
     }
   } catch (error) {
+    // TODO: // Handle error
     console.error("Error parsing or accessing user data:", error);
   }
 
-
- 
-///
   useEffect(() => {
+
     const getArticleData = async () => {
       const result = await fetchArticleData(profileId);
 
@@ -86,34 +85,31 @@ const Profile = () => {
     getArticleData();
   }, [profileId]); // Empty dependency array means this effect will run once when the component mounts
 
-  console.log('article data: ', doctorArticles)
+  useEffect(() => {
+    setLoading(true);
 
+    getProfile(userId)
+      .then((response) => {
+        console.log('Fetched profile data-:', response); // Debugging log
+        setProfileName(response.name)
+        setProfileEmail(response.email)
+        // Initialize the editMode property for each field
+        const profileDataWithEditModes = Object.keys(response).map((fieldName) => ({
+          fieldName,
+          fieldValue: response[fieldName],
+          editMode: false, // Initialize editMode to false
+        }));
 
-useEffect(() => {
-  setLoading(true);
-
-  getProfile(userId)
-    .then((response) => {
-      console.log('Fetched profile data-:', response); // Debugging log
-      setProfileName(response.name)
-      setProfileEmail(response.email)
-      // Initialize the editMode property for each field
-      const profileDataWithEditModes = Object.keys(response).map((fieldName) => ({
-        fieldName,
-        fieldValue: response[fieldName],
-        editMode: false, // Initialize editMode to false
-      }));
-
-      setProfileData(profileDataWithEditModes); // Update state with initialized data
-      setProfileId(response.id); // Set profileId based on the API response
-      setLoading(false);
-    })
-    .catch((error) => {
-      setLoading(false);
-      setError(error?.message || 'Something went wrong!');
-      console.error('Error fetching profile data:', error);
-    });
-}, [currentUser]);
+        setProfileData(profileDataWithEditModes); // Update state with initialized data
+        setProfileId(response.id); // Set profileId based on the API response
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error?.message || 'Something went wrong!');
+        console.error('Error fetching profile data:', error);
+      });
+  }, [currentUser]);
 
   useEffect(() => {
     // Call the isVerified function with the profileId as a parameter
@@ -131,24 +127,16 @@ useEffect(() => {
       });
   }, [profileId]);
 
-
   useEffect(() => {
-  const profileIdFromUrl = location.pathname.split('/profile/')[1];
-  setProfileId(profileIdFromUrl);
-  
-  // Track the page view with a unique identifier (e.g., the profile ID)
-  ReactGA.pageview(`/profile/${profileIdFromUrl}`);
+    const profileIdFromUrl = location.pathname.split('/profile/')[1];
+    setProfileId(profileIdFromUrl);
+    // Track the page view with a unique identifier (e.g., the profile ID)
+    ReactGA.pageview(`/profile/${profileIdFromUrl}`);
 
-  // Set a custom page title with the profile's name or any other relevant information
-  ReactGA.ga('set', 'title', `Profile - ${profileName}`);
-  ReactGA.ga('send', 'pageview');
-
-}, []);
-
-
-  useEffect(() => {
-    console.log('profile data:', profileData);
-  }, [profileData]);
+    // Set a custom page title with the profile's name or any other relevant information
+    ReactGA.ga('set', 'title', `Profile - ${profileName}`);
+    ReactGA.ga('send', 'pageview');
+  }, []);
 
   const setConditionSuggestionsFromTerms = () => {
     setConditionsSuggestions(terms.map((term) => ({ value: term, label: term })));
@@ -158,27 +146,26 @@ useEffect(() => {
     setConditionSuggestionsFromTerms();
   }, []);
 
-const setAddress = (city, state, country, zipCode) => {
-  console.log({city, state, country, zipCode})
-}
+  // todo: is this needed?
+  const setAddress = (city, state, country, zipCode) => {
+    console.log({city, state, country, zipCode})
+  }
 
-const handleEditField = (fieldName) => {
-  console.log(`Editing field: ${fieldName}`);
-  setProfileData((prevData) =>
-    prevData.map((field) => {
-      if (field.fieldName.toLowerCase() === fieldName.toLowerCase()) {
-        return {
-          ...field,
-          editMode: true,
-        };
-      }
-      return field;
-    })
-  );
-};
+  const handleEditField = (fieldName) => {
+    setProfileData((prevData) =>
+      prevData.map((field) => {
+        if (field.fieldName.toLowerCase() === fieldName.toLowerCase()) {
+          return {
+            ...field,
+            editMode: true,
+          };
+        }
+        return field;
+      })
+    );
+  };
 
-const handleCloseField = async (fieldName) => {
-
+  const handleCloseField = async (fieldName) => {
 
     setProfileData((prevData) => prevData.map((field) => {
       if (field.fieldName === fieldName) {
@@ -191,89 +178,80 @@ const handleCloseField = async (fieldName) => {
     }));
   };
 
-const handleSaveField = async (fieldName) => {
-  console.log("batman is here", fieldName, profileData);
-  try {
-    //console.log('Updating profile data...');
+  const handleSaveField = async (fieldName) => {
+    try {
+      if (fieldName == "address") {
+        await updateData(profileId, "city", profileData.find((field) => field.fieldName === "city")?.fieldValue || '');
+        await updateData(profileId, "state", profileData.find((field) => field.fieldName === "state")?.fieldValue || '');
+        await updateData(profileId, "country", profileData.find((field) => field.fieldName === "country")?.fieldValue || '');
+        await updateData(profileId, "zipCode", profileData.find((field) => field.fieldName === "zipCode")?.fieldValue || '');
+      }
 
-    if(fieldName == "address") {
-      await updateData(profileId, "city", profileData.find((field) => field.fieldName === "city")?.fieldValue || '');
-      await updateData(profileId, "state", profileData.find((field) => field.fieldName === "state")?.fieldValue || '');
-      await updateData(profileId, "country", profileData.find((field) => field.fieldName === "country")?.fieldValue || '');
-      await updateData(profileId, "zipCode", profileData.find((field) => field.fieldName === "zipCode")?.fieldValue || '');
-
+      await updateData(profileId, fieldName, profileData.find((field) => field.fieldName === fieldName)?.fieldValue || '');
+    } catch (error) {
+      // TODO: Handle error
+      console.error('Error updating profile:', error);
     }
 
+    setProfileData((prevData) => prevData.map((field) => {
+      if (field.fieldName === fieldName) {
+        return {
+          ...field,
+          editMode: false,
+        };
+      }
+      return field;
+    }));
+  };
 
-    await updateData(profileId, fieldName, profileData.find((field) => field.fieldName === fieldName)?.fieldValue || '');
-    //console.log('Profile data updated successfully.');
-  } catch (error) {
-    //console.error('Error updating profile:', error);
+  const handleInputChange = (fieldName, event) => {
+    const updatedValue = fieldName === 'treatments' || fieldName === 'conditions' ? event : event.target.value;
+    setProfileData((prevData) => prevData.map((field) => {
+      if (field.fieldName === fieldName) {
+        return {
+          ...field,
+          fieldValue: updatedValue,
+        };
+      }
+      return field;
+    }));
+  };
+
+  const handleTextareaKeyDown = (fieldName, event) => {
+    if (event.key === 'Enter') {
+      handleSaveField(fieldName);
+    }
   }
 
-  //console.log('Updating profileData state...');
-  setProfileData((prevData) => prevData.map((field) => {
-    if (field.fieldName === fieldName) {
-      console.log('Setting editMode to false for fieldName:', fieldName);
-      return {
-        ...field,
-        editMode: false,
-      };
+  const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
+    if (fieldName === "Conditions" && fieldValue && !editMode) {
+      return fieldValue.split(",").map((condition, i) => (
+        <span key={i}>
+          {condition.trim()}
+          {i !== fieldValue.split(",").length - 1 && ", "}
+        </span>
+      ));
+    } else if (fieldName === "Website" && fieldValue && !editMode) {
+      return <a href={fieldValue} target="_blank">{fieldValue}</a>;
+    } else if (fieldName === "Email" && fieldValue && !editMode) {
+      return <a href={`mailto:${fieldValue}`}>{fieldValue}</a>;
+    } else if (fieldValue && !editMode) {
+      return fieldValue;
+    } else {
+      return null;
     }
-    return field;
-  }));
-  console.log('ProfileData state updated.');
-};
+  };
 
-const handleInputChange = (fieldName, event) => {
-  console.log(`event: `, event);
-  const updatedValue = fieldName === 'treatments' || fieldName === 'conditions' ? event : event.target.value;
-  console.log('Field Name:', fieldName);
-  console.log('Updated Value:', updatedValue);
-  setProfileData((prevData) => prevData.map((field) => {
-    if (field.fieldName === fieldName) {
-      return {
-        ...field,
-        fieldValue: updatedValue,
-      };
-    }
-    return field;
-  }));
-};
-
-
-const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
-  if (fieldName === "Conditions" && fieldValue && !editMode) {
-    console.log("Rendering Conditions field value:", fieldValue);
-    return fieldValue.split(",").map((condition, i) => (
-      <span key={i}>
-        {condition.trim()}
-        {i !== fieldValue.split(",").length - 1 && ", "}
-      </span>
-    ));
-  } else if (fieldName === "Website" && fieldValue && !editMode) {
-    return <a href={fieldValue} target="_blank">{fieldValue}</a>;
-  } else if (fieldName === "Email" && fieldValue && !editMode) {
-    return <a href={`mailto:${fieldValue}`}>{fieldValue}</a>;
-  } else if (fieldValue && !editMode) {
-    return fieldValue;
-  } else {
-    return null;
-  }
-};
-
-
-const handleReturnToResults = () => {
-  navigate("/results", {
-    state: {
-      searchTerm: state.initialSearch,
-      location: `${state.city}, ${state.state}, ${state.country}`,
-      radius: resultRadius,
-      checkedOptions: state.initialTreatments
-    },
-  });
-};
-
+  const handleReturnToResults = () => {
+    navigate("/results", {
+      state: {
+        searchTerm: state.initialSearch,
+        location: `${state.city}, ${state.state}, ${state.country}`,
+        radius: resultRadius,
+        checkedOptions: state.initialTreatments
+      },
+    });
+  };
 
   if (loading) {
     return (
@@ -283,6 +261,7 @@ const handleReturnToResults = () => {
     );
   }
 
+  // TODO: Handle error gracefully
   if (error) {
     return (
       <Container>
@@ -291,6 +270,7 @@ const handleReturnToResults = () => {
     );
   }
 
+  // TODO: How would they get here if they're not logged in or not have any profile data?
   if (!profileData || profileData.length === 0) {
     return (
       <Container>
@@ -312,125 +292,119 @@ const handleReturnToResults = () => {
         </ReturnLink>
       )}
       <ProfileWrapper>
-      <Sidebar>
-        <NameCard>
+        <Sidebar>
+          <NameCard>
+            {/* TODO: This section can be DRYed out */}
             <ProfileFieldCard
-    fieldName="name"
-    fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "name")?.fieldValue || ""}
-    editMode={profileData.find((field) => field.fieldName.toLowerCase() === "name")?.editMode || false}
-    onEditField={handleEditField}
-    onSaveField={handleSaveField}
-    onCloseField={handleCloseField}
-    onInputChange={handleInputChange}
-    loggedIn={loggedIn}
-    currentUserID={currentUserID}
-    profileId={profileId}
-    labelName="Clinic Name"
-  >
-    {renderFieldValue("name", profileData.find((field) => field.fieldName.toLowerCase() === "name")?.fieldValue || "", false)}
-  </ProfileFieldCard>
-        </NameCard>
-          
-         
-    <StyledContactSection>
-      <hr/>
-        <ContactHeader>How to reach us</ContactHeader>
-        <hr />
-      <ProfileFieldCard
-        fieldName="email"
-        fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "email")?.fieldValue || ""}
-        editMode={profileData.find((field) => field.fieldName.toLowerCase() === "email")?.editMode || false}
-        onEditField={handleEditField}
-        onSaveField={handleSaveField}
-        onCloseField={handleCloseField}
-        onInputChange={handleInputChange}
-        loggedIn={loggedIn}
-        currentUserID={currentUserID}
-        profileId={profileId}
-      >
-        {renderFieldValue("email", profileData.find((field) => field.fieldName.toLowerCase() === "email")?.fieldValue || "", false)}
-      </ProfileFieldCard>
+              fieldName="name"
+              fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "name")?.fieldValue || ""}
+              editMode={profileData.find((field) => field.fieldName.toLowerCase() === "name")?.editMode || false}
+              onEditField={handleEditField}
+              onSaveField={handleSaveField}
+              onCloseField={handleCloseField}
+              onInputChange={handleInputChange}
+              loggedIn={loggedIn}
+              currentUserID={currentUserID}
+              profileId={profileId}
+              labelName="Clinic Name"
+            >
+              {renderFieldValue("name", profileData.find((field) => field.fieldName.toLowerCase() === "name")?.fieldValue || "", false)}
+            </ProfileFieldCard>
+          </NameCard>
+          <StyledContactSection>
+            <hr/>
+              <ContactHeader>How to reach us</ContactHeader>
+            <hr />
+            <ProfileFieldCard
+              fieldName="email"
+              fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "email")?.fieldValue || ""}
+              editMode={profileData.find((field) => field.fieldName.toLowerCase() === "email")?.editMode || false}
+              onEditField={handleEditField}
+              onSaveField={handleSaveField}
+              onCloseField={handleCloseField}
+              onInputChange={handleInputChange}
+              loggedIn={loggedIn}
+              currentUserID={currentUserID}
+              profileId={profileId}
+            >
+              {renderFieldValue("email", profileData.find((field) => field.fieldName.toLowerCase() === "email")?.fieldValue || "", false)}
+            </ProfileFieldCard>
 
-      <ProfileFieldCard
-        fieldName="phone"
-        fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "phone")?.fieldValue || ""}
-        editMode={profileData.find((field) => field.fieldName.toLowerCase() === "phone")?.editMode || false}
-        onEditField={handleEditField}
-        onSaveField={handleSaveField}
-        onCloseField={handleCloseField}
-        onInputChange={handleInputChange}
-        loggedIn={loggedIn}
-        currentUserID={currentUserID}
-        profileId={profileId}
-      >
-        {renderFieldValue("phone", profileData.find((field) => field.fieldName.toLowerCase() === "phone")?.fieldValue || "", false)}
-      </ProfileFieldCard>
+            <ProfileFieldCard
+              fieldName="phone"
+              fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "phone")?.fieldValue || ""}
+              editMode={profileData.find((field) => field.fieldName.toLowerCase() === "phone")?.editMode || false}
+              onEditField={handleEditField}
+              onSaveField={handleSaveField}
+              onCloseField={handleCloseField}
+              onInputChange={handleInputChange}
+              loggedIn={loggedIn}
+              currentUserID={currentUserID}
+              profileId={profileId}
+            >
+              {renderFieldValue("phone", profileData.find((field) => field.fieldName.toLowerCase() === "phone")?.fieldValue || "", false)}
+            </ProfileFieldCard>
 
-      <ProfileFieldCard
-    fieldName="address"
-    fieldValue={`
-      ${profileData.find((field) => field.fieldName === "address")?.fieldValue || ""}
-      ${profileData.find((field) => field.fieldName === "city")?.fieldValue || ""}
-      ${profileData.find((field) => field.fieldName === "state")?.fieldValue || ""}
-      ${profileData.find((field) => field.fieldName === "country")?.fieldValue || ""}
-      ${profileData.find((field) => field.fieldName === "zipCode")?.fieldValue || ""}
-    `}
-    editMode={profileData.find((field) => field.fieldName.toLowerCase() === "address")?.editMode || false}
-    onEditField={handleEditField}
-    onSaveField={handleSaveField}
-    onCloseField={handleCloseField}
-    onInputChange={handleInputChange}
-    loggedIn={loggedIn}
-    currentUserID={currentUserID}
-    profileId={profileId}
+            <ProfileFieldCard
+              fieldName="address"
+              fieldValue={`
+                ${profileData.find((field) => field.fieldName === "address")?.fieldValue || ""}
+                ${profileData.find((field) => field.fieldName === "city")?.fieldValue || ""}
+                ${profileData.find((field) => field.fieldName === "state")?.fieldValue || ""}
+                ${profileData.find((field) => field.fieldName === "country")?.fieldValue || ""}
+                ${profileData.find((field) => field.fieldName === "zipCode")?.fieldValue || ""}
+              `}
+              editMode={profileData.find((field) => field.fieldName.toLowerCase() === "address")?.editMode || false}
+              onEditField={handleEditField}
+              onSaveField={handleSaveField}
+              onCloseField={handleCloseField}
+              onInputChange={handleInputChange}
+              loggedIn={loggedIn}
+              currentUserID={currentUserID}
+              profileId={profileId}
 
-    profileData={profileData}
-    setAddress={setAddress}
-  >
-{renderFieldValue("address", profileData.find((field) => field.fieldName.toLowerCase() === "address")?.fieldValue || "", false)}
-    </ProfileFieldCard>
+              profileData={profileData}
+              setAddress={setAddress}
+            >
+              {renderFieldValue("address", profileData.find((field) => field.fieldName.toLowerCase() === "address")?.fieldValue || "", false)}
+            </ProfileFieldCard>
 
-      <ProfileFieldCard
-        fieldName="website"
-        fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "website")?.fieldValue || ""}
-        editMode={profileData.find((field) => field.fieldName.toLowerCase() === "website")?.editMode || false}
-        onEditField={handleEditField}
-        onSaveField={handleSaveField}
-        onCloseField={handleCloseField}
-        onInputChange={handleInputChange}
-        loggedIn={loggedIn}
-        currentUserID={currentUserID}
-        profileId={profileId}
-      >
-        {renderFieldValue("website", profileData.find((field) => field.fieldName.toLowerCase() === "website")?.fieldValue || "", false)}
-      </ProfileFieldCard>
+            <ProfileFieldCard
+              fieldName="website"
+              fieldValue={profileData.find((field) => field.fieldName.toLowerCase() === "website")?.fieldValue || ""}
+              editMode={profileData.find((field) => field.fieldName.toLowerCase() === "website")?.editMode || false}
+              onEditField={handleEditField}
+              onSaveField={handleSaveField}
+              onCloseField={handleCloseField}
+              onInputChange={handleInputChange}
+              loggedIn={loggedIn}
+              currentUserID={currentUserID}
+              profileId={profileId}
+            >
+              {renderFieldValue("website", profileData.find((field) => field.fieldName.toLowerCase() === "website")?.fieldValue || "", false)}
+            </ProfileFieldCard>
 
-      
+          </StyledContactSection>
+          {loggedIn && currentUserID === profileId && (
+            <p>
+              Post an article  <Link to="/submitarticle">here</Link>
+            </p>
+          )}
 
-      
-    </StyledContactSection>
- {loggedIn && currentUserID === profileId && (
-        <p>
-          Post an article  <Link to="/submitarticle">here</Link>
-        </p>
-      )}
+          {doctorArticles && doctorArticles.map && (
+            <StyledArticleContainer>
+              <h2>Articles by this clinic:</h2>
+              {doctorArticles.map((article, index) => (
+                <div key={index}>
+                  <Link to={`/article/${article.id}`}>
+                    <h4>{article.title}</h4>
+                  </Link>
 
- 
-       {doctorArticles && doctorArticles.map && (
-        <StyledArticleContainer>
-          <h2>Articles by this clinic:</h2>
-          {doctorArticles.map((article, index) => (
-            <div key={index}>
-              <Link to={`/article/${article.id}`}>
-                <h4>{article.title}</h4>
-              </Link>
-
-            </div>
-          ))}
-        </StyledArticleContainer>
-      )}
-    
-</Sidebar>
+                </div>
+              ))}
+            </StyledArticleContainer>
+          )}
+        </Sidebar>
 
         <Content>
           <CardContainer>
@@ -441,13 +415,14 @@ const handleReturnToResults = () => {
                 editMode={profileData.find((field) => field.fieldName.toLowerCase() === "description")?.editMode || false}
                 onEditField={handleEditField}
                 onSaveField={handleSaveField}
-                 onCloseField={handleCloseField}
+                onCloseField={handleCloseField}
                 onInputChange={handleInputChange}
                 loggedIn={loggedIn}
                 currentUserID={currentUserID}
                 profileId={profileId}
                 labelName="About Us"
                 labelNameOnEdit="About Us"
+                onKeyDown={handleTextareaKeyDown}
               />
             </Card>
 
@@ -458,7 +433,7 @@ const handleReturnToResults = () => {
                 editMode={profileData.find((field) => field.fieldName.toLowerCase() === "treatments")?.editMode || false}
                 onEditField={handleEditField}
                 onSaveField={handleSaveField}
-                 onCloseField={handleCloseField}
+                onCloseField={handleCloseField}
                 onInputChange={handleInputChange}
                 loggedIn={loggedIn}
                 currentUserID={currentUserID}
@@ -467,16 +442,15 @@ const handleReturnToResults = () => {
                 labelNameOnEdit="Choose Treatment Type(s) offered at your clinic"
               />
             </Card>
-        
-            {/* <ConditionsContainer> */}
-              <Card>
+
+            <Card>
               <ProfileFieldCard
                 fieldName="conditions"
                 fieldValue={profileData.find((field) => field.fieldName === "conditions")?.fieldValue || ""}
                 editMode={profileData.find((field) => field.fieldName.toLowerCase() === "conditions")?.editMode || false}
                 onEditField={handleEditField}
                 onSaveField={handleSaveField}
-                 onCloseField={handleCloseField}
+                onCloseField={handleCloseField}
                 onInputChange={handleInputChange}
                 loggedIn={loggedIn}
                 currentUserID={currentUserID}
@@ -485,32 +459,20 @@ const handleReturnToResults = () => {
                 labelNameOnEdit="Choose Conditions specialized at your clinic"
               />
             </Card>
-            
-            {/* </ConditionsContainer> */}
-         
-
-
-
           </CardContainer>
-       
-      
-        {isProfileVerified ? <DoctorContact email={profileEmail} profileId={profileId} /> : null}
-     <MapContainer>
-  <Map
-    city={profileData.find((field) => field.fieldName === "city")?.fieldValue}
-    state={profileData.find((field) => field.fieldName === "state")?.fieldValue}
-    country={profileData.find((field) => field.fieldName === "country")?.fieldValue}
-    address={profileData.find((field) => field.fieldName === "address")?.fieldValue}
-  />
-</MapContainer>
-
-
-      
+          {isProfileVerified ? <DoctorContact email={profileEmail} profileId={profileId} /> : null}
+          <MapContainer>
+            <Map
+              city={profileData.find((field) => field.fieldName === "city")?.fieldValue}
+              state={profileData.find((field) => field.fieldName === "state")?.fieldValue}
+              country={profileData.find((field) => field.fieldName === "country")?.fieldValue}
+              address={profileData.find((field) => field.fieldName === "address")?.fieldValue}
+            />
+          </MapContainer>
         </Content>
       </ProfileWrapper>
     </Container>
   );
 };
-
 
 export default Profile;

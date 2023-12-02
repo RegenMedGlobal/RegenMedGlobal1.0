@@ -39,10 +39,10 @@ useEffect(() => {
   ReactGA.pageview(`/profile/${profileIdFromUrl}`);
 
   // Set a custom page title with the profile's name or any other relevant information
-  ReactGA.ga('set', 'title', `Profile - ${profileName}`);
+  ReactGA.ga('set', 'title', `Profile - ${profileId}`);
   ReactGA.ga('send', 'pageview');
 
-}, [location.pathname, profileName]);
+}, [location.pathname, profileId]);
 
 
   // Add console.log statements to check values

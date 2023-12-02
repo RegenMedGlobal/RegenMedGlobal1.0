@@ -2,40 +2,11 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
 import img3 from '../assets/logo.png';
-import {
-  AppBar,
-  List
-} from '@mui/material';
+import { AppBar } from '@mui/material';
 import { AuthContext } from '../AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-
-// A lot of the styling below is not used, is it still needed?
-const bounceAnimation = keyframes`
-  0%, 20%, 60%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-20px);
-  }
-  80% {
-    transform: translateY(-10px);
-  }
-`;
-
-const NavbarMenu = styled.div`
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-`;
-
-const StyledList = styled(List)`
-  &.drawerList {
-    color: #000;
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-  }
-`;
+import SubscriptionForm from './SubscriptionForm';
 
 const NavbarItem = styled(Link)`
   text-decoration: none;
@@ -55,53 +26,32 @@ const NavbarItem = styled(Link)`
       color: yellow;
       font-size: 20px; /* Font size for active item */
       font-weight: bold; /* Font weight for active item */
-    `}
+  `}
 `;
 
-const MenuIconWrapper = styled.span`
-  display: inline-block;
-  width: 24px;
-  height: 2px;
-  background-color: #fff;
-  position: relative;
-  transition: background-color 0.3s ease-in-out;
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background-color: #fff;
-    transition: transform 0.3s ease-in-out;
+const SubscribeContainer = styled.div`
+  display: none; /* Hide by default for non-mobile screens */
+  
+  @media (max-width: 991px) {
+    display: block; /* Show for mobile screens */
+    text-align: center;
   }
-  &::before {
-    top: -6px;
-  }
-  &::after {
-    top: 6px;
-  }
-  ${props =>
-    props.open &&
-    css`
-      background-color: transparent;
-      &::before {
-        transform: rotate(45deg);
-        top: 0;
-      }
-      &::after {
-        transform: rotate(-45deg);
-        top: 0;
-      }
-    `}
-`;
 
-const LogoImage = styled.img`
-  height: 4rem;
-  width: 10rem;
-  margin-right: 1px;
-  margin-left: 1rem;
+ .subscribe-button {
   cursor: pointer;
-  padding: 5px;
+  margin-right: 2rem;
+  background-color: transparent;
+  padding: 10px;
+  border: 2px solid white;
+  color: white;
+  border-radius: 20px; /* Adjust the value to control the oval shape */
+}
+
+
+  .subscribe-link {
+    color: white; 
+    text-decoration: none; /* Remove underline */
+  }
 `;
 
 const Navbar = () => {
@@ -109,7 +59,8 @@ const Navbar = () => {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false); 
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [subscribeOpen, setSubscribeOpen] = useState(false);
 
   let currentUserID;
 
@@ -131,11 +82,6 @@ const Navbar = () => {
     setMobileOpen(false);
   };
 
-  // still needed?
-  const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
-  };
-
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -146,14 +92,33 @@ const Navbar = () => {
     navigate('/');
   }
 
+  const handleSubscribeClick = () => {
+    setSubscribeOpen(!subscribeOpen);
+  }
+
   return (
 
-   <AppBar position="fixed">
+    <AppBar position="fixed">
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/" onClick={() => handleLinkClick('Home')}>
             <img src={img3} alt="Regenerative Medicine Global Logo" />
           </Link>
+
+          <SubscribeContainer>
+            <button
+              className="subscribe-button"
+              onClick={handleSubscribeClick}
+            >
+              Subscribe
+            </button>
+            {subscribeOpen && (
+              <SubscriptionForm
+                modalOpen={subscribeOpen}
+              />
+            )}
+          </SubscribeContainer>
+
           <button
             className="navbar-toggler"
             type="button"
@@ -166,7 +131,7 @@ const Navbar = () => {
           >
             {mobileOpen
               ? <span className={`navbar-cross-icon`}>X</span>
-             : <span className="navbar-toggler-icon"></span>
+              : <FontAwesomeIcon icon={faBars} />
             }
 
           </button>

@@ -1,9 +1,6 @@
-/* eslint-disable no-unused-vars */
-
 import styled from "styled-components";
-import { useForm, Controller } from "react-hook-form";
-import Select, { components } from "react-select";
-import { useState, useEffect, useRef } from "react";
+import { Controller } from "react-hook-form";
+import { useState, useRef } from "react";
 import CreatableSelect from "react-select/creatable";
 
 const StyledControllerContainer = styled.div`
@@ -86,9 +83,9 @@ const ConditionsInput = ({
         name="conditions"
         control={control}
         render={({ field }) => {
-          if(!ref.current) {
+          if (!ref.current) {
             ref.current = true;
-            if(selection && selection.length > 0) {
+            if (selection && selection.length > 0) {
               selection.forEach((value) => {
                 field.value.push(value);
               })
@@ -106,20 +103,18 @@ const ConditionsInput = ({
               onInputChange={handleLocalInputChange}
               // onChange={handleSelectChange.bind(field)}
               onChange={(selectedOptions, actionMeta) => {
-                if (actionMeta.action === 'select-option') {
+                // TODO: Move to event handler...
+                // Use of field etc makes this a challenge
+                if (actionMeta.action === 'select-option' || actionMeta.action === 'create-option') {
                   // Handle the selection of an option
-                  const {value} = field
-                  console.log(selectedOptions[0], "----", value)
-                  console.log(!value.includes(selectedOptions[0]))
-                  if(!value.includes(selectedOptions[0])) {
+                  const { value } = field;
+
+                  if (!value.includes(selectedOptions[0])) {
                     value.push(selectedOptions[0]);
-                    console.log("Selected Options:", value);
                     // Update your state variable with the selected options
                     field.onChange(value);
-                  }else {
-                    console.log(value)
-                    console.log("Already There")
-                    return false
+                  } else {
+                    return false;
                   }
                 }
               }}
