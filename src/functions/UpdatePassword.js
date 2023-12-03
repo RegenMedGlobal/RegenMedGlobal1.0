@@ -1,9 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_API_KEY, SCHEMA_NAME } from '../config.js';
+import { supabaseCustomSchema as supabase } from '../SupaBaseClient';
 
-const supabaseUrl = SUPABASE_URL;
-const supabaseKey = SUPABASE_API_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey, {db: {schema: SCHEMA_NAME} });
 const maindataTable = 'maindata';
 
 const generateSalt = () => {

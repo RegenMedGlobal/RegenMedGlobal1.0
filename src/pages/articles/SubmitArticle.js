@@ -2,14 +2,12 @@ import { useState, useRef, useContext, useEffect } from 'react';
 import { Upload, Button as AntButton, Input, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 import ReactQuill from 'react-quill';
 import { AuthContext } from '../../AuthContext';
 import getProfile from '../../functions/getProfile';
 import 'react-quill/dist/quill.snow.css'; // Import styles
-
-
+import { supabase } from '../../SupaBaseClient';
 
 const StyledContainer = styled.div`
   display: flex;
@@ -82,12 +80,6 @@ const SubmitArticle = () => {
   console.log('current author usser: ', currentAuthorUser)
 
   console.log('current author  from submit article: ', currentAuthorUser.authorName)
-
-  
-  const SUPABASE_URL = 'https://sxjdyfdpdhepsgzhzhak.supabase.co';
- const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4amR5ZmRwZGhlcHNnemh6aGFrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4ODc1MDE2NiwiZXhwIjoyMDA0MzI2MTY2fQ.2_rrSgYe0ncUmBlRZAKiHN_q22RsqqNXsjamTRVujz8';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
   const modules = {
     toolbar: [
@@ -195,7 +187,7 @@ const handleFileChange = (info) => {
         }
 
         // Construct the image URL from the path
-        imageUrl = `${SUPABASE_URL}/storage/v1/object/${imageStorageData.path}`;
+        imageUrl = `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/${imageStorageData.path}`;
       }
 
       // Insert a record in your database table with author, id, title, and image URL

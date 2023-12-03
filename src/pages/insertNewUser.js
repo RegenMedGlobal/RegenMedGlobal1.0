@@ -1,10 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_API_KEY, EMAILJS_API_KEY, EMAILJS_SERVICE_ID, MAILCHIMP_API_KEY, SCHEMA_NAME } from '../config.js';
+import { EMAILJS_API_KEY, EMAILJS_SERVICE_ID, MAILCHIMP_API_KEY } from '../config.js';
 import axios from 'axios';
+import { supabaseCustomSchema as supabase } from '../SupaBaseClient';
 
-const supabaseUrl = SUPABASE_URL;
-const supabaseKey = SUPABASE_API_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey, { db: { schema: SCHEMA_NAME } });
 const maindataTable = 'maindata';
 
 import emailjs from 'emailjs-com';

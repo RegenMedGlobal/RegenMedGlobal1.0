@@ -1,8 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_API_KEY, SUPABASE_URL } from '../../../config';
-
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
+import { supabase } from '../../../SupaBaseClient';
 
 const fetchArticles = async () => {
   try {

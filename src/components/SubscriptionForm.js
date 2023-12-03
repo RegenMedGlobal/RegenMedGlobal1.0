@@ -1,17 +1,15 @@
 
 import React, { useState } from 'react';
 import { Modal, Input, Button } from 'antd';
-import { SUPABASE_URL, SUPABASE_API_KEY } from '../config';
 import styled from 'styled-components';
-import { createClient } from '@supabase/supabase-js';
 import * as Yup from 'yup';
+import { supabase } from '../SupaBaseClient';
 
 const StyledModal = styled(Modal)`
 `;
 
 const SubscriptionForm = ({ modalOpen }) => {
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
   const [isOpen, setIsOpen] = useState(modalOpen);
   const [showThankYou, setShowThankYou] = useState(false);
 

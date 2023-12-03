@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { CheckCircle } from '@mui/icons-material';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { SUPABASE_API_KEY, SUPABASE_URL } from '../../config';
 import { Input } from 'antd';
 import { AuthContext } from '../../AuthContext';
 import Sidebar from './Sidebar'
+import { supabase } from '../../SupaBaseClient';
 
 const { Search } = Input;
 
@@ -106,9 +105,6 @@ const ReadMoreLink = styled(Link)`
   color: var(--main-color);
   font-weight: bold;
 `;
-
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
 const Articles = () => {
   const urlParams = new URLSearchParams(window.location.search);
