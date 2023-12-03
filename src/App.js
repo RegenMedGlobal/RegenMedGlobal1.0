@@ -74,7 +74,6 @@ function App() {
     }
   }, [routeLocation]);
 
-
   return (
     <AuthProvider>
       <div className={`App ${className}`}>

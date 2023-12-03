@@ -1,7 +1,4 @@
-import { SUPABASE_API_KEY, SUPABASE_URL } from '../../../config';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
+import { supabase } from '../../../SupaBaseClient';
 
 const generateSalt = () => {
   const randomBytes = new Uint8Array(16);

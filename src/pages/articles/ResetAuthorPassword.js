@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
 import styled from 'styled-components';
-import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_API_KEY, SUPABASE_URL } from '../../config';
 import resetAuthorPassword from './functions/resetAuthorPassword';
 import zxcvbn from "zxcvbn";
+import { supabase } from '../../SupaBaseClient';
 
 const { Text } = Typography;
 
@@ -61,7 +60,6 @@ const ResetAuthorPassword = () => {
       const values = await form.validateFields(['email', 'authorName']);
       const { email, authorName } = values;
 
-      const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
       // Check if the email and author name match the data in the Supabase author_data table
       const { data, error } = await supabase
         .from('author_data')

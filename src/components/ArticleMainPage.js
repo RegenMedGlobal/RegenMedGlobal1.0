@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_API_KEY, SUPABASE_URL } from '../config';
 import { Button as AntButton, Typography  } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
+import { supabase } from '../SupaBaseClient';
 
 const { Title } = Typography;
 

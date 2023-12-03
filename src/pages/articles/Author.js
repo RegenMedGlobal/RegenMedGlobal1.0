@@ -2,14 +2,12 @@ import {useParams, Link} from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import AuthorSocialLinks from "./AuthorSocialLinks";
 import { AuthContext } from "../../AuthContext";
-import { createClient } from "@supabase/supabase-js";
 import styled from 'styled-components';
 import ReactGA from "react-ga"; // Import React Google Analytics
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { SUPABASE_API_KEY, SUPABASE_URL } from "../../config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import { Spin, Input, Button } from "antd";
+import { supabase } from '../../SupaBaseClient';
 
 const StyledAuthorContainer = styled.div`
   display: flex;
@@ -190,8 +188,6 @@ const Author = () => {
     // Track a virtual pageview whenever the authorId changes
     ReactGA.pageview(`/author/${authorId}`);
   }, [authorId]);
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
   useEffect(() => {
     // Check if the user is logged in as an author and matches the current author ID

@@ -2,9 +2,8 @@
 import { useState } from 'react';
 import { Input, Button } from 'antd';
 import styled from 'styled-components';
-import { createClient } from '@supabase/supabase-js';
 import * as Yup from 'yup';
-import { SUPABASE_API_KEY, SUPABASE_URL } from '../../config';
+import { supabase } from '../../SupaBaseClient';
 
 const StyledSidebar = styled.div`
   display: flex;
@@ -33,7 +32,6 @@ const SubscriptionForm = styled.div`
 `;
 
 const Sidebar = () => {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
   const [showThankYou, setShowThankYou] = useState(false);
 
   const [formData, setFormData] = useState({
