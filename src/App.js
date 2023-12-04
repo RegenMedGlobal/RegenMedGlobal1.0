@@ -14,7 +14,6 @@ import Claim from './pages/Claim'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import AuthProvider from './AuthContext'
 import ResetPassword from './pages/ResetPassword'
-import Home from './pages/Home'
 import Footer from './components/Footer'
 import "@fontsource/poppins";
 import CodeValidator from './pages/CodeValidator'
