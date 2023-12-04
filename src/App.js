@@ -30,14 +30,12 @@ import Videos from './pages/podcasts/Videos'
 // Initialize Google Analytics with your Measurement ID
 ReactGA.initialize('G-E1K3NF9839');
 
-
 function App() {
 
    useEffect(() => {
     // Track a page view when the component mounts
     ReactGA.pageview(window.location.pathname + window.location.search);
   }, []);
-
 
   const routeLocation = useLocation();
   const [className, setClassName] = useState("");
@@ -92,8 +90,8 @@ function App() {
           <Route path='/articles' element={<Articles />} />
           <Route path="/article/:articleId" element={<Article />} />
           <Route path="/author/:authorId" element={<Author />} />
-         <Route path='/submitarticle' element={<SubmitArticle />} />
-         <Route path='/authorsignup' element={<AuthorSignUp />} />
+          <Route path='/submitarticle' element={<SubmitArticle />} />
+          <Route path='/authorsignup' element={<AuthorSignUp />} />
           <Route path='/authorsignin' element={<AuthorSignIn />} />
           <Route path='/ResetPassword' element={<ResetPassword />} />
           <Route path='/resetauthorpassword' element={<ResetAuthorPassword />} />
@@ -101,11 +99,9 @@ function App() {
           <Route path='/CodeValidator/:id' element={<CodeValidator />} />
         </Routes>
         </div>
-      
       </div>
     </AuthProvider>
-
-  )
+  );
 }
 
 export default App
