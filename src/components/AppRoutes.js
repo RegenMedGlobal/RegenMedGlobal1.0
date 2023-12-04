@@ -12,6 +12,7 @@ const Contact = lazy(() => import('../pages/Contact'));
 const DoctorLogin = lazy(() => import('../pages/DoctorLogin'));
 const Logout = lazy(() => import('../pages/Logout'));
 const Main = lazy(() => import('../pages/Main'));
+const NotFound = lazy(() => import('../pages/NotFound'));
 const Profile = lazy(() => import('../pages/Profile'));
 const Register = lazy(() => import('../pages/Register'));
 const ResetAuthorPassword = lazy(() => import('../pages/articles/ResetAuthorPassword'));
@@ -44,6 +45,7 @@ export const AppRoutes = () => {
       <Route path='/resetauthorpassword' element={<ResetAuthorPassword />} />
       <Route path='/videos' element={<Videos />} />
       <Route path='/CodeValidator/:id' element={<CodeValidator />} />
+      <Route path='*' element={<NotFound />} /> {/* 404 page */}
     </Routes>
   );
 }
