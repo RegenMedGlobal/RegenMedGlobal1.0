@@ -1,7 +1,5 @@
 import  { useEffect, useState, useContext } from "react";
 import {useParams, Link } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
-import { SUPABASE_API_KEY, SUPABASE_URL } from "../../config";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import { AuthContext } from "../../AuthContext";
@@ -10,6 +8,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ReactGA from "react-ga";
 import Sidebar from "./Sidebar";
+import { supabase } from '../../SupaBaseClient';
 
 const { Title } = Typography;
 
@@ -150,8 +149,6 @@ const Article = () => {
   const linkTo = articleAuthorId.startsWith('A')
     ? `/author/${articleAuthorId}`
     : `/profile/${articleAuthorId}`;
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY);
 
    useEffect(() => {
     window.scrollTo(0, 0);
