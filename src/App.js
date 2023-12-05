@@ -2,14 +2,13 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import './App.css';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import "@fontsource/poppins";
 
-import { AppRoutes } from './components/AppRoutes'
-import AuthProvider from './AuthContext'
-import Navbar from './components/Navbar'
-// import Footer from './components/Footer'
-
+import { AppRoutes } from './components/AppRoutes';
+import AuthProvider from './AuthContext';
+import Navbar from './components/Navbar';
+// import Footer from './components/Footer';
 
 import ReactGA from 'react-ga';
 
