@@ -169,7 +169,6 @@ const ProfileFieldCard = ({
   labelNameOnEdit,
   profileData,
   setAddress,
-  onKeyDown
   //customClass,
 }) => {
 
@@ -452,7 +451,6 @@ const ProfileFieldCard = ({
                   className="area-text input-get"
                   value={fieldValue || ""}
                   onChange={(event) => onInputChange(fieldName, event)}
-                  onKeyDown={event => onKeyDown(fieldName, event)}
                 >
                   {fieldValue || ""}
                 </textarea>

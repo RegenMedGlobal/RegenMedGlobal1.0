@@ -217,12 +217,6 @@ const Profile = () => {
     }));
   };
 
-  const handleTextareaKeyDown = (fieldName, event) => {
-    if (event.key === 'Enter') {
-      handleSaveField(fieldName);
-    }
-  }
-
   const renderFieldValue = (fieldName, fieldValue, editMode, index) => {
     if (fieldName === "Conditions" && fieldValue && !editMode) {
       return fieldValue.split(",").map((condition, i) => (
@@ -422,7 +416,6 @@ const Profile = () => {
                 profileId={profileId}
                 labelName="About Us"
                 labelNameOnEdit="About Us"
-                onKeyDown={handleTextareaKeyDown}
               />
             </Card>
 
