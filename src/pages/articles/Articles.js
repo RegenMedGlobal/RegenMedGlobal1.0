@@ -215,9 +215,7 @@ const Articles = () => {
           Submit New Article
         </Link>
       ) : (
-        <p>
-          Want to submit an article?{' '} <StyledLink to="/authorsignin">Click here</StyledLink> to register or log-in!
-        </p>
+        null
       )}
       {filteredArticles.length === 0 ? (
         <p>No articles found.</p>
