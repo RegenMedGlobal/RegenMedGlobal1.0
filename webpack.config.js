@@ -1,17 +1,15 @@
 const webpack = require('webpack');
 
-
 module.exports = function override(config, env) {
   module: {
     rules: [
-        {
-            test: /\bmapbox-gl-csp-worker.js\b/i,
-            use: { loader: 'worker-loader' }
-        }
+      {
+        test: /\bmapbox-gl-csp-worker.js\b/i,
+        use: { loader: 'worker-loader' }
+      }
     ]
 }
 
-  
 console.log('Custom Webpack configuration is being used.');
 
   config.resolve.fallback = {
