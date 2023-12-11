@@ -8,7 +8,7 @@ module.exports = function override(config, env) {
         use: { loader: 'worker-loader' }
       }
     ]
-}
+  }
 
 console.log('Custom Webpack configuration is being used.');
 

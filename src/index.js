@@ -1,7 +1,4 @@
 import React from 'react';
-// polyfill for Array.prototype.at - cover old Safari crash
-import '@babel/polyfill';
-import 'core-js/features/array/at';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
