@@ -7,7 +7,6 @@ export const EMAILJS_API_KEY = 'qVS-rHwiDSnK_KcU9';
 export const MAILCHIMP_API_KEY = '62187fe32cbe5dee78bde2adf5715dfb-us11';
 export const MAILGUN_DOMAIN = 'sandbox47ce8785c831477abdac4337e652ee45.mailgun.org';
 export const TOMTOM_API_KEY = 'gC8HgENnEmix00louuAFWGM1mjOg6Kb8'
-export const MAPBOX_TOKEN = 'pk.eyJ1IjoiYmVuaGF2aXMiLCJhIjoiY2xsNXJscXg5MGI2bjNqcXAzcDN0NTE3YyJ9.LDwyHdaWOPkORyIeYFNO0Q'
 export const states = [
     'Alabama',
     'Alaska',

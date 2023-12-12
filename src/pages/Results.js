@@ -17,7 +17,6 @@ import Result from "./Result";
 import ResultsMap from "./ResultsMap";
 import Sort from "../components/Sort";
 import getData from "../functions/getData";
-import {  MAPBOX_TOKEN } from "../config";
 import geocodeCity from "../functions/geoCodeCity";
 import { getConditions } from  "../functions/getConditions";
 import debounce from 'lodash.debounce';
@@ -175,17 +174,17 @@ const handleSearch = useCallback((value) => {
 const debouncedHandleAddressChange = debounce(async (value) => {
   setAddress(value);
 
-  try {
-    const response = await axios.get(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-        value
-      )}.json?access_token=${MAPBOX_TOKEN}`
-    );
 
     const resultCities = response.data.features.filter((suggestion) => {
       // Check if the place type is a city
       return suggestion.place_type.includes("place") &&
         suggestion.context
+    try {
+      const response = await axios.get(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          value
+        )}.json?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`
+      );
 
     });
 
@@ -338,7 +337,7 @@ const getFilteredConditions = (value) => {
           console.log("No User Location Found")
           const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
             address
-          )}.json?access_token=${MAPBOX_TOKEN}`;
+          )}.json?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`;
 
           const response = await axios.get(geocodeUrl);
           const features = response.data.features;

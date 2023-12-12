@@ -4,7 +4,6 @@ import mapboxgl from "mapbox-gl"; // This is a dependency of react-map-gl even i
 // eslint-disable-next-line import/no-webpack-loader-syntax
 mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 import 'mapbox-gl/dist/mapbox-gl.css'; // Import Mapbox styles
-import { MAPBOX_TOKEN } from '../config'; // Import the Mapbox access token
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -26,7 +25,7 @@ const Map = ({ address }) => {
   const fetchCoordinates = async (address) => {
     try {
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${MAPBOX_TOKEN}`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`
       );
       const data = await response.json();
 
@@ -51,7 +50,7 @@ const Map = ({ address }) => {
       <ReactMapGL
         {...viewport}
         onViewportChange={setViewport}
-        mapboxAccessToken={MAPBOX_TOKEN}
+        mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         mapStyle="mapbox://styles/mapbox/streets-v11"
       >
         {viewport.latitude !== 0 && viewport.longitude !== 0 && (

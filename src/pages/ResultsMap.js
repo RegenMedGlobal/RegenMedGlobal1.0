@@ -3,14 +3,13 @@ import PropTypes from 'prop-types';
 import mapboxgl from 'mapbox-gl';
 mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { MAPBOX_TOKEN } from '../config';
 
 const ResultsMap = ({ results }) => {
   const [map, setMap] = useState(null);
   const [center, setCenter] = useState([0, 0]); // Default center at [0, 0]
 
   useEffect(() => {
-    mapboxgl.accessToken = MAPBOX_TOKEN; // Replace with your Mapbox access token
+    mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN; // Replace with your Mapbox access token
 
     const mapInstance = new mapboxgl.Map({
       container: 'map',
@@ -33,9 +32,6 @@ const ResultsMap = ({ results }) => {
           console.log("Map Changes")
           const fetchCoordinates = async () => {
             const coordinatesPromises = results.map(async (result) => {
-              const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-                result.address
-              )}.json?access_token=${MAPBOX_TOKEN}`;
 
               try {
                 const response = await fetch(geocodeUrl);
@@ -139,6 +135,9 @@ const ResultsMap = ({ results }) => {
         results: PropTypes.arrayOf(
           PropTypes.shape({
             address: PropTypes.string.isRequired,
+        const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          result.address
+        )}.json?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`;
           })
         ).isRequired,
       };
