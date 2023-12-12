@@ -2,17 +2,13 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { HERE_API_KEY} from '../config';
 import styled from 'styled-components';
-import { getDistance } from 'geolib';
 import test from '../assets/rec-1.png'
 import rec from '../assets/rec-3.png'
 import isVerified from "../functions/isVerified";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 
-const apiKey = HERE_API_KEY; 
 const mainColor = '#4811ab'; // Define the main color variable
 
 const StyledLayout = styled(Layout)`
@@ -81,15 +77,20 @@ const styles = {
   },
 };
 
-const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreatments, resultRadius,  }) => {
-  console.log('Result component rendered. : ', result);
-
+const Result = ({
+  initialSearch,
+  initialTreatments,
+  isSelected,
+  result,
+  resultAddress,
+  resultRadius
+}) => {
 
   const { id, name, city, country, resultState, specialty, placeId, address } = result;
-  const [distance, setDistance] = useState(result.distance.toFixed(2));
+  const distance = result.distance.toFixed(2)
   const [isProfileVerified, setIsProfileVerified] = useState(false);
-  const [userLocation, setUserLocation] = useState(null);
-  console.log('Result city: ', city);
+
+// TODO: Determine if this is needed
 
 // const fetchDistance = async () => {
 //   if (!resultAddress || !userLocation) {
@@ -124,8 +125,13 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
   // }, [resultAddress, userLocation]);
 
   useEffect(() => {
+    let tempId;
+
+    if (typeof id === 'string') {
+      tempId = parseInt(id);
+    }
     // Call the isVerified function with the profileId as a parameter
-    isVerified(id)
+    isVerified(tempId)
       .then((result) => {
         setIsProfileVerified(result);
       })
@@ -203,15 +209,9 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
 // };
   
   const navigate = useNavigate();
- 
 
   const handleProfileClick = (result) => {
-  //  console.log('Result:', result); // Log the result object
-    console.log('initial search: ', initialSearch)
-    console.log('result address: ', resultAddress)
-   // console.log('initial treatments:', initialTreatments)
 
-    
     navigate(`/profile/${id}`, {
       state: {
         ...result,
@@ -229,25 +229,24 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
   return (
     <StyledLayout className={`result-card ${isSelected ? 'selected' : ''}`} onClick={() => handleProfileClick(result)}>
       <div className='left-flx'>
-      <img className='test-img' src={test} />
+        <img className='test-img' src={test} />
       </div>
       <div className='flex-right-cus'>
-<Link style={{ textDecoration: 'none' }}>
-  <div className="claimed-info">
-    <h4>{name}</h4>
-    {isProfileVerified && <span>
-      <FontAwesomeIcon icon={faCheckCircle} className="checkmark-icon" style={styles.checkmarkIcon} />
-      <span style={styles.claimedText}>Claimed</span>
-    </span>}
-  </div>
-</Link>
-
-
+        <Link style={{ textDecoration: 'none' }}>
+        <div className="claimed-info">
+          <h4>{name}</h4>
+          {isProfileVerified && (
+            <span>
+              <FontAwesomeIcon icon={faCheckCircle} className="checkmark-icon" style={styles.checkmarkIcon} />
+              <span style={styles.claimedText}>Claimed</span>
+            </span>
+          )}
+        </div>
+        </Link>
         <p className='add-css'><img className='test-img-1' src={rec} /> {address}</p>
         <p className='add-css-1'>{specialty}</p>
       </div>
-     
-       {distance && (
+      {distance && (
         <p>{`Distance: ${distance} miles`}</p>
       )} 
       {placeId && (
@@ -263,12 +262,15 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
 
 Result.propTypes = {
   result: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]),
     name: PropTypes.string.isRequired,
     city: PropTypes.string.isRequired,
     state: PropTypes.string.isRequired,
     country: PropTypes.string.isRequired,
-    specialty: PropTypes.string.isRequired,
+    specialty: PropTypes.string,
     placeId: PropTypes.string,
     address: PropTypes.string.isRequired,
   }).isRequired,
