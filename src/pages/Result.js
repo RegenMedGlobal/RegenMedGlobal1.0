@@ -2,17 +2,13 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { HERE_API_KEY} from '../config';
 import styled from 'styled-components';
-import { getDistance } from 'geolib';
 import test from '../assets/rec-1.png'
 import rec from '../assets/rec-3.png'
 import isVerified from "../functions/isVerified";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 
-const apiKey = HERE_API_KEY; 
 const mainColor = '#4811ab'; // Define the main color variable
 
 const StyledLayout = styled(Layout)`
@@ -95,6 +91,7 @@ const Result = ({
   const [isProfileVerified, setIsProfileVerified] = useState(false);
 
 // TODO: Determine if this is needed
+
 // const fetchDistance = async () => {
 //   if (!resultAddress || !userLocation) {
 //     setDistance('');
@@ -128,8 +125,13 @@ const Result = ({
   // }, [resultAddress, userLocation]);
 
   useEffect(() => {
+    let tempId;
+
+    if (typeof id === 'string') {
+      tempId = parseInt(id);
+    }
     // Call the isVerified function with the profileId as a parameter
-    isVerified(id)
+    isVerified(tempId)
       .then((result) => {
         setIsProfileVerified(result);
       })
@@ -207,7 +209,6 @@ const Result = ({
 // };
   
   const navigate = useNavigate();
- 
 
   const handleProfileClick = (result) => {
 
@@ -261,12 +262,15 @@ const Result = ({
 
 Result.propTypes = {
   result: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]),
     name: PropTypes.string.isRequired,
     city: PropTypes.string.isRequired,
     state: PropTypes.string.isRequired,
     country: PropTypes.string.isRequired,
-    specialty: PropTypes.string.isRequired,
+    specialty: PropTypes.string,
     placeId: PropTypes.string,
     address: PropTypes.string.isRequired,
   }).isRequired,
