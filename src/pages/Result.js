@@ -81,16 +81,20 @@ const styles = {
   },
 };
 
-const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreatments, resultRadius,  }) => {
-  console.log('Result component rendered. : ', result);
-
+const Result = ({
+  initialSearch,
+  initialTreatments,
+  isSelected,
+  result,
+  resultAddress,
+  resultRadius
+}) => {
 
   const { id, name, city, country, resultState, specialty, placeId, address } = result;
-  const [distance, setDistance] = useState(result.distance.toFixed(2));
+  const distance = result.distance.toFixed(2)
   const [isProfileVerified, setIsProfileVerified] = useState(false);
-  const [userLocation, setUserLocation] = useState(null);
-  console.log('Result city: ', city);
 
+// TODO: Determine if this is needed
 // const fetchDistance = async () => {
 //   if (!resultAddress || !userLocation) {
 //     setDistance('');
@@ -206,12 +210,7 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
  
 
   const handleProfileClick = (result) => {
-  //  console.log('Result:', result); // Log the result object
-    console.log('initial search: ', initialSearch)
-    console.log('result address: ', resultAddress)
-   // console.log('initial treatments:', initialTreatments)
 
-    
     navigate(`/profile/${id}`, {
       state: {
         ...result,
@@ -229,25 +228,24 @@ const Result = ({ result, isSelected, resultAddress, initialSearch, initialTreat
   return (
     <StyledLayout className={`result-card ${isSelected ? 'selected' : ''}`} onClick={() => handleProfileClick(result)}>
       <div className='left-flx'>
-      <img className='test-img' src={test} />
+        <img className='test-img' src={test} />
       </div>
       <div className='flex-right-cus'>
-<Link style={{ textDecoration: 'none' }}>
-  <div className="claimed-info">
-    <h4>{name}</h4>
-    {isProfileVerified && <span>
-      <FontAwesomeIcon icon={faCheckCircle} className="checkmark-icon" style={styles.checkmarkIcon} />
-      <span style={styles.claimedText}>Claimed</span>
-    </span>}
-  </div>
-</Link>
-
-
+        <Link style={{ textDecoration: 'none' }}>
+        <div className="claimed-info">
+          <h4>{name}</h4>
+          {isProfileVerified && (
+            <span>
+              <FontAwesomeIcon icon={faCheckCircle} className="checkmark-icon" style={styles.checkmarkIcon} />
+              <span style={styles.claimedText}>Claimed</span>
+            </span>
+          )}
+        </div>
+        </Link>
         <p className='add-css'><img className='test-img-1' src={rec} /> {address}</p>
         <p className='add-css-1'>{specialty}</p>
       </div>
-     
-       {distance && (
+      {distance && (
         <p>{`Distance: ${distance} miles`}</p>
       )} 
       {placeId && (
