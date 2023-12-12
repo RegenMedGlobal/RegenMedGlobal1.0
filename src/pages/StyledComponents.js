@@ -7,6 +7,8 @@ const sidebarBackgroundColor = "#f2f2f2";
 const sidebarWidth = "300px";
 const sidebarHeight = "80%"; // Adjust the height as needed
 
+// TODO: // If this exists, should all styled components be here, just reusable ones, or should these be moved to their respective files?
+
 export const Container = styled.div`
   background-color: #f2f2f2;
   padding: 16px;

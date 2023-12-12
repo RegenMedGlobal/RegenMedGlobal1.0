@@ -7,9 +7,9 @@ const AuthProvider = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-   const [authorLoggedIn, setAuthorLoggedIn] = useState(false); // New authorLoggedIn state
+  const [authorLoggedIn, setAuthorLoggedIn] = useState(false); // New authorLoggedIn state
   const [currentAuthorUser, setCurrentAuthorUser] = useState({});
-   const [currentAuthorName, setCurrentAuthorName] = useState(''); 
+  const [currentAuthorName, setCurrentAuthorName] = useState(''); 
   const [error, setError] = useState(null);
 
   useEffect(() => {
