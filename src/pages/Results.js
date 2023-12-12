@@ -101,7 +101,7 @@ const Results = () => {
       }
     };
     fetchConditions();
-  }, [filterTerm, debouncedFetchConditions]);
+  }, [filterTerm]);
 
   const handleSearch = useCallback((value) => {
     setFilterTerm(value);
