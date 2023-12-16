@@ -7,14 +7,12 @@
   color: #333; /* Customize the text color */
 }
 
-
 /* Profile.module.css */
 .name-header {
   font-size: 24px; /* Adjust the font size as needed */
   font-weight: bold;
   margin-bottom: 8px; /* Add margin to separate it from other fields */
 }
-
 
 /* Add styles for the profile field container */
 .profile-field-container {
@@ -27,8 +25,6 @@
 .profile-field-container .anticon {
   margin-right: 8px;
 }
-
-
 
 .profile-field-container a:hover {
   color: white;
@@ -43,7 +39,6 @@
 .profile-field-container .phone .anticon {
   margin-right: 4px;
 }
-
 
 /* Style the container for the profile card */
 .profile-card {
@@ -121,7 +116,6 @@
   margin-top: 16px;
 }
 
-
 .name-header,
 .contact-field {
   background-color: transparent;
@@ -138,4 +132,3 @@
   height: 100%; /* Make the sidebar take the full height */
   width: 25%; /* Adjust the width as needed */
 }
-

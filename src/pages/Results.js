@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useCallback, Suspense, useMemo} from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import {
   Layout as AntLayout,
   Pagination,
-  Input,
-  Form,
   Button,
-  Select,
   Progress as AntProgress,
   AutoComplete,
 } from "antd";
-import { getDistance, fromAddress } from "geolib";
+import { getDistance } from "geolib";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
@@ -17,64 +14,12 @@ import Result from "./Result";
 import ResultsMap from "./ResultsMap";
 import Sort from "../components/Sort";
 import getData from "../functions/getData";
-import {  MAPBOX_TOKEN } from "../config";
 import geocodeCity from "../functions/geoCodeCity";
 import { getConditions } from  "../functions/getConditions";
 import debounce from 'lodash.debounce';
 
-
 const StyledAntLayout = styled(AntLayout)`
  
-`;
-
-const StyledForm = styled(Form)`
-  width: 40%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const SearchContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 1rem;
-`;
-
-const AutocompleteContainer = styled.div`
-  position: relative;
-  width: 13rem;
-  margin-right: 20rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .location-search-input {
-    width: 100%;
-  }
-
-  .autocomplete-dropdown-container {
-    position: absolute;
-    top: 100%;
-    width: 100%;
-    max-height: 10rem;
-    overflow-y: auto;
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    z-index: 10;
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-    margin-right: auto;
-    margin-left: auto;
-
-    .location-search-input {
-      width: 100%;
-      min-width: 15rem; /* Adjust the max-width value as needed */
-    }
-  }
 `;
 
 const ButtonContainer = styled.div`
@@ -88,19 +33,17 @@ const ButtonContainer = styled.div`
     margin: 0 5px 5px 0;
   }
 `;
-const { Option } = Select;
+
+// TODO: Should user be able set this with a dropdown and expand results?
 const PAGE_SIZE = 5;
+const selectedMarkerIndex = -1;
 
 const Results = () => {
-
-
 
   const [sortOrder, setSortOrder] = useState("distance");
   const { state } = useLocation();
   const [radius, setRadius] = useState(25);
   const [results, setResults] = useState([]);
-  //console.log('state in results:', state)
-  const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(-1);
   const [currentResults, setCurrentResults] = useState([]);
   const [sortedResults, setSortedResults] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
@@ -111,7 +54,7 @@ const Results = () => {
       { label: "Prolotherapy", value: "Prolotherapy", checked: false },
     ]
   );
-    
+
   const [page, setPage] = useState(1);
   const [filterTerm, setFilterTerm] = useState(state?.searchTerm ?? "");
   const [storedValues, setStoredValues] = useState({
@@ -128,102 +71,90 @@ const Results = () => {
   const [percent, setPercent] = useState(0);
   const [conditions, setConditions] = useState([]);
 
-  
   // Save search parameters when the user leaves the results page
-// Save search parameters when the user leaves the results page
-useEffect(() => {
-  window.onbeforeunload = () => {
-    // Save individual search parameters
-    const searchParams = {
-      filterTerm,
-      address,
-      radius,
-      checkboxOptions,
+  useEffect(() => {
+    window.onbeforeunload = () => {
+      // Save individual search parameters
+      const searchParams = {
+        filterTerm,
+        address,
+        radius,
+        checkboxOptions,
+      };
+      localStorage.setItem("searchParameters", JSON.stringify(searchParams));
     };
-    localStorage.setItem("searchParameters", JSON.stringify(searchParams));
-  };
 
-  return () => {
-    window.onbeforeunload = null; // Cleanup the event handler
-  };
-}, [filterTerm, address, radius, checkboxOptions]);
+    return () => {
+      window.onbeforeunload = null; // Cleanup the event handler
+    };
+  }, [filterTerm, address, radius, checkboxOptions]);
 
- 
+  const debouncedFetchConditions = debounce(async (term) => {
+    const conditionsData = await getConditions(term);
+    setConditions(conditionsData);
+  }, 300);
 
-const debouncedFetchConditions = debounce(async (term) => {
-  const conditionsData = await getConditions(term);
-  setConditions(conditionsData);
-}, 300);
+  useEffect(() => {
+    const fetchConditions = async () => {
+      if (filterTerm.trim().length >= 3) {
+        debouncedFetchConditions(filterTerm);
+      }
+    };
+    fetchConditions();
+  }, [filterTerm]);
 
-useEffect(() => {
-  const fetchConditions = async () => {
-    if (filterTerm.trim().length >= 3) {
-      debouncedFetchConditions(filterTerm);
+  const handleSearch = useCallback((value) => {
+    setFilterTerm(value);
+  }, []);
+
+  const debouncedHandleAddressChange = debounce(async (value) => {
+    setAddress(value);
+
+    try {
+      const response = await axios.get(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          value
+        )}.json?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`
+      );
+
+      const resultCities = response.data.features.filter((suggestion) => {
+        // Check if the place type is a city
+        return suggestion.place_type.includes("place") &&
+          suggestion.context
+      });
+
+      setSuggestions(resultCities);
+    } catch (error) {
+      // TODO: // Handle Error State properly
+      console.error("Error fetching suggestions:", error);
     }
+  }); // Adjust the debounce delay as needed
+
+
+  const handleAddressChange = (value) => {
+    debouncedHandleAddressChange(value);
   };
-  fetchConditions();
-}, [filterTerm, debouncedFetchConditions]);
-
-
-
-const handleSearch = useCallback((value) => {
-  setFilterTerm(value);
-  console.log("Condition Search Term:", value);
-}, []);
-
-
-const debouncedHandleAddressChange = debounce(async (value) => {
-  setAddress(value);
-
-  try {
-    const response = await axios.get(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-        value
-      )}.json?access_token=${MAPBOX_TOKEN}`
-    );
-
-    const resultCities = response.data.features.filter((suggestion) => {
-      // Check if the place type is a city
-      return suggestion.place_type.includes("place") &&
-        suggestion.context
-
-    });
-
-    setSuggestions(resultCities);
-  } catch (error) {
-    console.error("Error fetching suggestions:", error);
-  }
-}); // Adjust the debounce delay as needed
-
-
-const handleAddressChange = (value) => {
-  debouncedHandleAddressChange(value);
-};
 
   const handleRadiusChange = (value) => {
     setRadius(value);
-    console.log(`radius: ${radius}`);
   };
 
   const onSortOrderChange = (value) => {
     setSortOrder(value)
-    console.log("Sort: ", sortOrder)
-  }
+  };
 
+  const handleChangePage = (page) => {
+    setPage(page);
+  };
 
-const handleChangePage = (page) => {
-  setPage(page);
-};
-
-
+  // Does this need to do anything???
   const handleProfileClick = (result) => {
     console.log("Clicked result:", result);
   };
 
   useEffect(() => {
-    
+
     const fetchUserLocation = async () => {
-      console.log("FETCH-USER-LOCATION")
       try {
         const position = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -233,12 +164,12 @@ const handleChangePage = (page) => {
         setUserLocation({ latitude, longitude });
         
       } catch (error) {
+        // TODO: // Handle Error State
         console.log("Error retrieving user location:", error);
         setUserLocation(null); // Set userLocation to null in case of error or denial
         setSortOrder("asc")
       }
     };
-
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -258,6 +189,7 @@ const handleChangePage = (page) => {
     }
   }, []);
 
+  // Should this be set everytime a storedValue is changed??
   useEffect(() => {
     localStorage.setItem("storedValues", JSON.stringify(storedValues));
   }, [storedValues]);
@@ -270,34 +202,33 @@ const handleChangePage = (page) => {
     localStorage.setItem("checkboxOptions", JSON.stringify(updatedOptions));
   };
 
+  // TODO: Does this need to be used anywhere
   const handleInputChange = useCallback((e) => {
     const searchTerm = e.target.value;
     setFilterTerm(searchTerm);
   }, []);
 
-const updateResults = (filteredResults) => {
-  if (filteredResults.length === 0) {
-    setResults([]);
-    setCurrentResults([]);
-    setSortedResults([]);
-  } else {
-    setResults(filteredResults);
-    setCurrentResults(filteredResults);
-    setSortedResults(filteredResults);
-    setPage(1);
-  }
-};
+  const updateResults = (filteredResults) => {
+    if (filteredResults.length === 0) {
+      setResults([]);
+      setCurrentResults([]);
+      setSortedResults([]);
+    } else {
+      setResults(filteredResults);
+      setCurrentResults(filteredResults);
+      setSortedResults(filteredResults);
+      setPage(1);
+    }
+  };
 
-const getFilteredConditions = (value) => {
-  const filterTerm = value.trim().toLowerCase();
-  return conditions.filter((condition) => condition.toLowerCase().includes(filterTerm));
-};
-
+  const getFilteredConditions = (value) => {
+    const filterTerm = value.trim().toLowerCase();
+    return conditions.filter((condition) => condition.toLowerCase().includes(filterTerm));
+  };
 
   useEffect(() => {
     
     const fetchResults = async () => {
-      console.log("FETCH-RESULT")
       setLoading(true);
 
       if (!address || address.length === 0) {
@@ -327,6 +258,7 @@ const getFilteredConditions = (value) => {
         );
 
         if (error) {
+          // TODO: // Handle Error State
           console.log("Error retrieving search results:", error);
           setLoading(false);
           return;
@@ -335,10 +267,9 @@ const getFilteredConditions = (value) => {
         // Include and Calculate Distance
         let baseLocation = {}
         if(!userLocation) {
-          console.log("No User Location Found")
           const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
             address
-          )}.json?access_token=${MAPBOX_TOKEN}`;
+          )}.json?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`;
 
           const response = await axios.get(geocodeUrl);
           const features = response.data.features;
@@ -351,29 +282,27 @@ const getFilteredConditions = (value) => {
             };
           }
 
-        }else {
+        } else {
           // User Location
-          baseLocation = userLocation
+          baseLocation = userLocation;
         }
 
-
         let dataWithDistance = data.map((obj) => {
-            let dis_in_miles = null
+            let dis_in_miles = null;
             if(baseLocation) {
-              let dis_in_meters = getDistance({ latitude: obj.latitude, longitude: obj.longitude }, baseLocation)
-              dis_in_miles = dis_in_meters * 0.000621371; 
+              let dis_in_meters = getDistance({ latitude: obj.latitude, longitude: obj.longitude }, baseLocation);
+              dis_in_miles = dis_in_meters * 0.00062137;
             }
+
             return {
               ...obj,
               distance: dis_in_miles
             }
-          })
-
-          // console.log("Main Data", dataWithDistance)
-          // console.log("User Location", userLocation)
+          });
         
         updateResults(dataWithDistance);
       } catch (error) {
+        // TODO: // Handle Error State
         console.log("Error retrieving search results:", error);
       } finally {
         setLoading(false);
@@ -393,15 +322,16 @@ const getFilteredConditions = (value) => {
       if (city && state && country) {
         const getGeocodedAddress = async () => {
           const geocodedAddress = await geocodeCity(city, state, country);
-          console.log("geocodedAddress:", JSON.stringify(geocodedAddress));
           setFilterCoordinates(geocodedAddress);
         };
 
         getGeocodedAddress();
       } else {
+        // TODO: // Handle Error State -> Display warning to user?
         console.log("Invalid address format:", address);
       }
     } else {
+      // TODO: // Handle Error State - display error to user?
       console.log("Invalid address:", address);
     }
   }, [address]);
@@ -412,10 +342,7 @@ const getFilteredConditions = (value) => {
     }
   }, [results]);
 
-
-
   useEffect(() => {
-    console.log("Current sorted results:", sortedResults);
 
     // Update currentResults based on sortedResults
     const startIndex = (page - 1) * PAGE_SIZE;
@@ -425,105 +352,106 @@ const getFilteredConditions = (value) => {
   }, [sortedResults, page]);
 
 
-useEffect(() => {
-const sortResults = () => {
-   let sorted = [...results];
+  useEffect(() => {
+    const sortResults = () => {
+      let sorted = [...results];
 
- if (sortOrder === "distance") {
-  console.log("Sorting by distance...");
-  sorted.sort((a, b) => a.distance - b.distance);
+      if (sortOrder === "distance") {
+        console.log("Sorting by distance...");
+        sorted.sort((a, b) => a.distance - b.distance);
 
-//  if (!userLocation) {
-//   console.log(`User location not available. Address: ${address}`);
+        // TODO: // Is this still needed?? If so Would this be a candidate for DRYing out as it looks like its reused...
 
-//   // Use the Mapbox Geocoding API to convert the address to coordinates
-//   const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-//     address
-//   )}.json?access_token=${MAPBOX_TOKEN}`;
+        //  if (!userLocation) {
+        //   console.log(`User location not available. Address: ${address}`);
 
-//   // Create an array of promises
-//   const geocodingPromises = sorted.map((result) => {
-//     return new Promise(async (resolve) => {
-//       try {
-//         const response = await axios.get(geocodeUrl);
-//         const features = response.data.features;
+        //   // Use the Mapbox Geocoding API to convert the address to coordinates
+        //   const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        //     address
+        //   )}.json?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`;
 
-//         if (features.length > 0) {
-//           // Extract coordinates from the first feature
-//           const coordinates = features[0].center;
-//           const addressCoordinates = {
-//             latitude: coordinates[1],
-//             longitude: coordinates[0],
-//           };
+        //   // Create an array of promises
+        //   const geocodingPromises = sorted.map((result) => {
+        //     return new Promise(async (resolve) => {
+        //       try {
+        //         const response = await axios.get(geocodeUrl);
+        //         const features = response.data.features;
 
-//           const distance = getDistance(
-//             { latitude: result.latitude, longitude: result.longitude },
-//             addressCoordinates
-//           );
+        //         if (features.length > 0) {
+        //           // Extract coordinates from the first feature
+        //           const coordinates = features[0].center;
+        //           const addressCoordinates = {
+        //             latitude: coordinates[1],
+        //             longitude: coordinates[0],
+        //           };
 
-//           resolve({ ...result, distance });
-//         } else {
-//           // Handle the case where the geocoding response doesn't contain valid coordinates
-//           console.log('Invalid address:', address);
-//           resolve({ ...result, distance: 0 }); // Set a default distance or handle it as needed
-//         }
-//       } catch (error) {
-//         // Handle any errors from the geocoding request
-//         console.error('Error geocoding address:', error);
-//         resolve({ ...result, distance: 0 }); // Set a default distance or handle it as needed
-//       }
-//     });
-//   });
+        //           const distance = getDistance(
+        //             { latitude: result.latitude, longitude: result.longitude },
+        //             addressCoordinates
+        //           );
 
-//   // Wait for all promises to resolve
-//   Promise.all(geocodingPromises).then((resolvedResults) => {
-//     // Sort the resolved results by distance
-//     resolvedResults.sort((a, b) => a.distance - b.distance);
-//     sorted = resolvedResults;
-//   });
-// }
+        //           resolve({ ...result, distance });
+        //         } else {
+        //           // Handle the case where the geocoding response doesn't contain valid coordinates
+        //           console.log('Invalid address:', address);
+        //           resolve({ ...result, distance: 0 }); // Set a default distance or handle it as needed
+        //         }
+        //       } catch (error) {
+        //         // Handle any errors from the geocoding request
+        //         console.error('Error geocoding address:', error);
+        //         resolve({ ...result, distance: 0 }); // Set a default distance or handle it as needed
+        //       }
+        //     });
+        //   });
 
-//  else {
-//     // Calculate distances based on user location
-//     sorted = results.map((result) => {
-//       const distance = getDistance(
-//         {
-//           latitude: userLocation.latitude,
-//           longitude: userLocation.longitude,
-//         },
-//         { latitude: result.latitude, longitude: result.longitude }
-//       );
-//       console.log(`Distance for ${result.name}: ${distance} miles`);
-//       return { ...result, distance };
-//     });
+        //   // Wait for all promises to resolve
+        //   Promise.all(geocodingPromises).then((resolvedResults) => {
+        //     // Sort the resolved results by distance
+        //     resolvedResults.sort((a, b) => a.distance - b.distance);
+        //     sorted = resolvedResults;
+        //   });
+        // }
 
-//     // Sort the results by distance
-//     sorted.sort((a, b) => a.distance - b.distance);
-//   }
-} else if (sortOrder === "asc") {
-  console.log("Sorting in ascending order...");
-  sorted.sort((a, b) => a.name.localeCompare(b.name));
-} else if (sortOrder === "desc") {
-  console.log("Sorting in descending order...");
-  sorted.sort((a, b) => b.name.localeCompare(a.name));
-}
+        //  else {
+        //     // Calculate distances based on user location
+        //     sorted = results.map((result) => {
+        //       const distance = getDistance(
+        //         {
+        //           latitude: userLocation.latitude,
+        //           longitude: userLocation.longitude,
+        //         },
+        //         { latitude: result.latitude, longitude: result.longitude }
+        //       );
+        //       console.log(`Distance for ${result.name}: ${distance} miles`);
+        //       return { ...result, distance };
+        //     });
 
-return sorted;
+        //     // Sort the results by distance
+        //     sorted.sort((a, b) => a.distance - b.distance);
+        //   }
+      } else if (sortOrder === "asc") {
+        console.log("Sorting in ascending order...");
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (sortOrder === "desc") {
+        console.log("Sorting in descending order...");
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+      }
 
-};
+      return sorted;
 
+    };
 
-  const sortedResults = sortResults();
+    const sortedResults = sortResults();
 
-  // Update currentResults based on sortedResults
-  const startIndex = (page - 1) * PAGE_SIZE;
-  const endIndex = startIndex + PAGE_SIZE;
-  const slicedResults = sortedResults.slice(startIndex, endIndex);
-  setCurrentResults(slicedResults);
+    // Update currentResults based on sortedResults
+    const startIndex = (page - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    const slicedResults = sortedResults.slice(startIndex, endIndex);
+    setCurrentResults(slicedResults);
 
-  // Update sortedResults state
-  setSortedResults(sortedResults);
-}, [results, sortOrder, page, setCurrentResults, setSortedResults, filterCoordinates]);
+    // Update sortedResults state
+    setSortedResults(sortedResults);
+  }, [results, sortOrder, page, setCurrentResults, setSortedResults, filterCoordinates]);
 
 
 
@@ -548,7 +476,6 @@ return sorted;
               ))}
             </ButtonContainer>
 
-
             <h4 className="search-top">Location</h4>
             <AutoComplete
               style={{ width: "100vw", maxWidth: "100%" }}
@@ -566,36 +493,29 @@ return sorted;
 
             <h4 className="search-top">Condition (Optional)</h4>
             <AutoComplete
-  style={{ width: "100%", margin: "0 auto" }}
-  value={filterTerm}
-  options={getFilteredConditions(filterTerm).map((condition) => ({
-    value: condition,
-  }))}
-  onChange={handleSearch}
-  placeholder="Search medical conditions"
-/>
+              style={{ width: "100%", margin: "0 auto" }}
+              value={filterTerm}
+              options={getFilteredConditions(filterTerm).map((condition) => ({
+                value: condition,
+              }))}
+              onChange={handleSearch}
+              placeholder="Search medical conditions"
+            />
 
             <div className="mar-test"></div>
-
-
           </div>
-
-          
-
-
           <div className="div-2">
-            {window.innerWidth > 500 && <ResultsMap
-              style={{ width: "20%" }}
-              results={results}
-            />}
+            {window.innerWidth > 500 && (
+              <ResultsMap
+                style={{ width: "20%" }}
+                results={results}
+              />
+            )}
           </div>
-
-
         </section>
-
         <section className="results-list">
-
           <Suspense fallback={<div>Loading...</div>}>
+            {/* TODO: Refactor nested ternaries */}
             {loading ? (
               <div className="operation-div">
                 <AntProgress className="card-data" percent={percent} status="active" strokeColor="#4811ab" trailColor="#ffdb58" style={{ height: "8rem" }} />
@@ -604,17 +524,18 @@ return sorted;
             ) : !address ? (
               <h2>No Address Found</h2>
             ) : currentResults.length === 0 ? (
-            <>
-              <Sort sortOrder={sortOrder} onSortOrderChange={onSortOrderChange} radius={radius} handleRadiusChange={handleRadiusChange} setRadius={setRadius} />
-              <h2>No Results Found</h2></>
+              <>
+                <Sort sortOrder={sortOrder} onSortOrderChange={onSortOrderChange} radius={radius} handleRadiusChange={handleRadiusChange} setRadius={setRadius} />
+                <h2>No Results Found</h2>
+              </>
             ) : (
               <div>
-                 <Sort sortOrder={sortOrder} resultsLength={results.length} onSortOrderChange={onSortOrderChange} radius={radius} handleRadiusChange={handleRadiusChange} setRadius={setRadius} />
+                <Sort sortOrder={sortOrder} resultsLength={results.length} onSortOrderChange={onSortOrderChange} radius={radius} handleRadiusChange={handleRadiusChange} setRadius={setRadius} />
                 {currentResults.map((result, index) => (
                   <Result
                     result={result}
                     key={result.id}
-                     resultAddress={`${result.address}, ${result.city}, ${result.state}, ${result.country}`}
+                    resultAddress={`${result.address}, ${result.city}, ${result.state}, ${result.country}`}
                     initialSearch={filterTerm}
                     initialTreatments={checkboxOptions}
                     resultRadius={radius}
@@ -628,18 +549,15 @@ return sorted;
                   current={page}
                   onChange={handleChangePage}
                 />
-
-
               </div>
             )}
-
-            {window.innerWidth < 500 && currentResults.length > 0 && <ResultsMap
-              style={{ width: "20%" }}
-              results={results}
-            />}
-
+            {window.innerWidth < 500 && currentResults.length > 0 && (
+              <ResultsMap
+                style={{ width: "20%" }}
+                results={results}
+              />
+            )}
           </Suspense>
-
         </section>
       </section>
     </StyledAntLayout>
@@ -647,5 +565,3 @@ return sorted;
 };
 
 export default Results;
-
-

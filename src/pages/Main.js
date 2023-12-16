@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Layout, Button, Form, AutoComplete } from "antd";
 import insertTopSearch from  "../functions/insertTopSearch";
 import axios from "axios";
-import { MAPBOX_TOKEN } from "../config";
 import imgHeroBG from "../assets/hero-bg.png";
 import imgVector from "../assets/Vector.png";
 import imgCombined from "../assets/Combined-Shape.png";
@@ -231,7 +230,7 @@ const Main = () => {
       const response = await axios.get(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
           value
-        )}.json?access_token=${MAPBOX_TOKEN}`
+        )}.json?access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`
       );
 
       const resultCities = response.data.features.filter((suggestion) => {
