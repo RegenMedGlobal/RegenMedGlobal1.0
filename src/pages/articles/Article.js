@@ -167,6 +167,23 @@ const Article = () => {
     });
   }, [articleId]);
 
+  // Attempt to dynamically update the og:title tag
+  // TODO: check if this works, otherwise will have to use a different approach
+  // Possibly use a node server
+  useEffect(() => {
+    // Update og:title
+    const ogTitleMetaTag = document.querySelector('meta[property="og:title"]');
+    if (ogTitleMetaTag) {
+      ogTitleMetaTag.content = articleTitle;
+    } else {
+      // If the og:title tag doesn't exist, create it and append it to the head
+      const newOgTitleMetaTag = document.createElement('meta');
+      newOgTitleMetaTag.setAttribute('property', 'og:title');
+      newOgTitleMetaTag.content = articleTitle;
+      document.head.appendChild(newOgTitleMetaTag);
+    }
+  }, [articleId, articleTitle]);
+
   useEffect(() => {
     const fetchArticleContent = async () => {
       try {
